@@ -1,6 +1,6 @@
 <template>
   <div>
-    <svg class='board' :width='width' :height='height'>
+    <svg class='board selector' :width='width' :height='height'>
       <g :transform='`translate(${this.padding}, ${this.padding})`'>
         <Piece v-for='(piece, i) in pieces'
               :key='i'
@@ -56,13 +56,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.board {
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  background: rgb(166, 206, 227);
-  overflow: hidden;
-}
-</style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class='game'>
     <svg class='board' :width='size' :height='size'>
       <g :transform='`translate(${this.padding}, ${this.padding})`'>
         <Piece v-for='(piece, i) in pieces'
@@ -62,13 +62,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.board {
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  background: rgb(166, 206, 227);
-  overflow: hidden;
-}
-</style>

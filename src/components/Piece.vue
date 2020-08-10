@@ -1,7 +1,7 @@
 <template>
   <g :transform='`translate(${this.padding}, ${this.padding})`'>
     <rect class='piece'
-          :x='x' :y='y' :fill='color' :width='innerSize' :height='innerSize' :opacity='0.4'/>
+          :x='x' :y='y' :fill='color' :width='innerSize' :height='innerSize' :opacity='0.35'/>
   </g>
 </template>
 
@@ -33,10 +33,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.piece {
-  rx: 6px;
-  ry: 6px;
-}
-</style>

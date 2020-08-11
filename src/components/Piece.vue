@@ -1,13 +1,12 @@
 <template>
   <g :transform='`translate(${this.padding}, ${this.padding})`'>
-    <rect class='piece'
-          :x='x' :y='y' :fill='color' :width='innerSize' :height='innerSize' :opacity='0.35'/>
+    <rect :class='`piece ${this.class}`'
+          :x='x' :y='y' :width='innerSize' :height='innerSize'/>
   </g>
 </template>
 
 <script>
-import * as d3 from 'd3';
-import Settings from '../settings';
+import Settings from '../settings/settings';
 
 export default {
   props: {
@@ -25,8 +24,8 @@ export default {
     innerSize() {
       return this.size - 2 * this.padding;
     },
-    color() {
-      return d3.schemePaired[this.value + 1];
+    class() {
+      return `piece-${this.value}`;
     },
   },
   created() {

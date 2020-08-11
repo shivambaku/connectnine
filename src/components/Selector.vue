@@ -16,7 +16,7 @@
 <script>
 import * as d3 from 'd3';
 import Piece from './Piece.vue';
-import Settings from '../settings';
+import Settings from '../settings/settings';
 
 export default {
   components: {

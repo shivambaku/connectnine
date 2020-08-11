@@ -25,9 +25,9 @@
   background: rgb(166, 206, 227);
 }
 
-.game .piece {
-  rx: 6px;
-  ry: 6px;
+.game .selector {
+  border-radius: 10px;
+  background: rgb(166, 206, 227);
 }
 
 .game .piece.piece-0 {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <svg class='board selector' :width='width' :height='height'>
+    <svg class='selector' :width='width' :height='height'>
       <g :transform='`translate(${this.padding}, ${this.padding})`'>
         <Piece v-for='(piece, i) in pieces'
               :key='i'
@@ -16,7 +16,8 @@
 <script>
 import * as d3 from 'd3';
 import Piece from './Piece.vue';
-import Settings from '../settings/settings';
+import Design from '../design/design';
+import Settings from '../settings';
 
 export default {
   components: {
@@ -24,9 +25,9 @@ export default {
   },
   data() {
     return {
-      width: Settings.selectorWidth,
+      width: Design.selectorWidth,
+      padding: Design.selectorPadding,
       selectorCount: Settings.selectorCount,
-      padding: Settings.selectorPadding,
       pieces: [],
     };
   },

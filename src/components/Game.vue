@@ -8,7 +8,7 @@
 <script>
 import Board from './Board.vue';
 import Selector from './Selector.vue';
-import Settings from '../settings/settings';
+import Settings from '../settings';
 
 export default {
   components: {

@@ -1,12 +1,13 @@
 <template>
   <g :transform='`translate(${this.padding}, ${this.padding})`'>
     <rect :class='`piece ${this.class}`'
+          :rx='rx' :ry='ry'
           :x='x' :y='y' :width='innerSize' :height='innerSize'/>
   </g>
 </template>
 
 <script>
-import Settings from '../settings/settings';
+import Design from '../design/design';
 
 export default {
   props: {
@@ -17,7 +18,9 @@ export default {
   },
   data() {
     return {
-      padding: Settings.piecePadding,
+      padding: Design.piecePadding,
+      rx: Design.pieceRx,
+      ry: Design.pieceRy,
     };
   },
   computed: {

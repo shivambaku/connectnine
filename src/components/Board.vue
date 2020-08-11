@@ -14,7 +14,8 @@
 <script>
 import * as d3 from 'd3';
 import Piece from './Piece.vue';
-import Settings from '../settings/settings';
+import Design from '../design/design';
+import Settings from '../settings';
 
 export default {
   props: {
@@ -25,9 +26,9 @@ export default {
   },
   data() {
     return {
-      size: Settings.boardWidth,
+      size: Design.boardWidth,
+      padding: Design.boardPadding,
       boardSize: Settings.boardSize,
-      padding: Settings.boardPadding,
     };
   },
   created() {

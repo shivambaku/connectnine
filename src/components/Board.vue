@@ -1,5 +1,5 @@
 <template>
-  <svg class='board' :width='size' :height='size'>
+  <svg class='board' :width='width' :height='width'>
     <g :transform='`translate(${this.padding}, ${this.padding})`'>
       <Piece v-for='(piece, i) in pieces'
             :key='i'
@@ -26,7 +26,7 @@ export default {
   },
   data() {
     return {
-      size: Design.boardWidth,
+      width: Design.boardWidth,
       padding: Design.boardPadding,
       boardSize: Settings.boardSize,
     };
@@ -34,17 +34,17 @@ export default {
   created() {
   },
   computed: {
-    innerSize() {
-      return this.size - 2 * this.padding;
+    innerWidth() {
+      return this.width - 2 * this.padding;
     },
     scale() {
       return d3.scaleLinear()
         .domain([0, this.boardSize])
-        .range([0, this.innerSize])
+        .range([0, this.innerWidth])
         .nice();
     },
     pieceSize() {
-      return this.innerSize / this.boardSize;
+      return this.innerWidth / this.boardSize;
     },
   },
   methods: {

@@ -18,9 +18,9 @@ export default {
   },
   data() {
     return {
-      padding: Design.piecePadding,
-      rx: Design.pieceRx,
-      ry: Design.pieceRy,
+      padding: Design.piece.padding,
+      rx: Design.piece.rx,
+      ry: Design.piece.ry,
     };
   },
   computed: {

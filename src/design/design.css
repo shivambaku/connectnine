@@ -22,12 +22,12 @@
 
 .game .board {
   border-radius: 10px;
-  background: rgb(166, 206, 227);
+  background: #A6CEE3;
 }
 
 .game .selector {
   border-radius: 10px;
-  background: rgb(166, 206, 227);
+  background: #A6CEE3;
 }
 
 .game .piece.piece-0 {

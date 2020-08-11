@@ -26,8 +26,8 @@ export default {
   },
   data() {
     return {
-      width: Design.boardWidth,
-      padding: Design.boardPadding,
+      width: Design.board.width,
+      padding: Design.board.padding,
       boardSize: Settings.boardSize,
     };
   },

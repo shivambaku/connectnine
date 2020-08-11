@@ -25,8 +25,8 @@ export default {
   },
   data() {
     return {
-      width: Design.selectorWidth,
-      padding: Design.selectorPadding,
+      width: Design.selector.width,
+      padding: Design.selector.padding,
       selectorCount: Settings.selectorCount,
       pieces: [],
     };

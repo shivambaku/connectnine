@@ -1,14 +1,17 @@
 export default {
-  // board settings
-  boardWidth: 400,
-  boardPadding: 10,
+  board: {
+    width: 400,
+    padding: 10,
+  },
 
-  // selector settings
-  selectorWidth: 200,
-  selectorPadding: 10,
+  selector: {
+    width: 200,
+    padding: 10,
+  },
 
-  // piece settings
-  piecePadding: 4,
-  pieceRx: 6,
-  pieceRy: 6,
+  piece: {
+    padding: 4,
+    rx: 6,
+    ry: 6,
+  },
 };

@@ -1,12 +1,15 @@
 <template>
   <svg class='board' :width='width' :height='width'>
     <g :transform='`translate(${this.padding}, ${this.padding})`'>
-      <Piece v-for='(piece, i) in pieces'
-            :key='i'
-            :value='piece.value'
-            :x='scale(itox(i))'
-            :y='scale(itoy(i))'
-            :size='pieceSize'/>
+      <Piece
+        v-for='(piece, i) in pieces'
+        :key='i'
+        :value='piece.value'
+        :x='scale(itox(i))'
+        :y='scale(itoy(i))'
+        :size='pieceSize'
+        v-on:click.native='placed(i)'
+      />
     </g>
   </svg>
 </template>
@@ -53,6 +56,11 @@ export default {
     },
     itoy(i) {
       return Math.floor(i / this.boardSize);
+    },
+    placed(i) {
+      if (this.pieces[i].value === 0) {
+        this.$emit('placed', i);
+      }
     },
   },
 };

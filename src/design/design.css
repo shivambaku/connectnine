@@ -11,6 +11,16 @@
   margin-top: 40px;
 }
 
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
 .header h1 {
   letter-spacing: 2px;
 }
@@ -34,9 +44,9 @@
   background: #A6CEE3;
 }
 
-.game .piece.piece-0 {
-  fill: #2679B2;
-  opacity: 0.35
+.game .selected .piece {
+  stroke: #1F78B4;
+  stroke-width: 5px;
 }
 
 .game .piece-text {
@@ -44,4 +54,33 @@
   font-weight: 900;
   font-size: 30px;
   font-family: Avenir;
+}
+
+.game .piece.piece-0 {
+  fill: #1F78B4;
+  opacity: 0.35;
+}
+
+.game .piece.piece-0:hover {
+  opacity: 1.0;
+}
+
+.game .piece.piece-1 {
+  fill: #B2DF8A;
+}
+
+.game .piece.piece-2 {
+  fill: #FB9A99;
+}
+
+.game .piece.piece-3 {
+  fill: #FDBF6F;
+}
+
+.game .piece.piece-4 {
+  fill: #CAB2D6;
+}
+
+.game .piece.piece-5 {
+  fill: #FFFF99;
 }

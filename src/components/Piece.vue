@@ -1,12 +1,25 @@
 <template>
   <g :transform='`translate(${this.padding}, ${this.padding})`'>
-    <rect :class='`piece ${this.class}`'
-          :rx='rx' :ry='ry'
-          :x='x' :y='y' :width='innerSize' :height='innerSize'/>
-    <text v-if='value !== 0' class='piece-text'
-          dominant-baseline="central" text-anchor="middle"
-          :x='x' :y='y' :dx='innerSize / 2' :dy='innerSize / 2'>
-          {{value}}
+    <rect
+      :class='`piece ${this.styleClass}`'
+      :rx='rx'
+      :ry='ry'
+      :x='x'
+      :y='y'
+      :width='innerSize'
+      :height='innerSize'
+    />
+    <text
+      v-if='value !== 0'
+      class='piece-text noselect'
+      dominant-baseline='central'
+      text-anchor='middle'
+      :x='x'
+      :y='y'
+      :dx='innerSize / 2'
+      :dy='innerSize / 2'
+    >
+      {{value}}
     </text>
   </g>
 </template>
@@ -32,7 +45,7 @@ export default {
     innerSize() {
       return this.size - 2 * this.padding;
     },
-    class() {
+    styleClass() {
       return `piece-${this.value}`;
     },
   },

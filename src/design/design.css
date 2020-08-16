@@ -121,7 +121,7 @@ hr {
 .game .board {
   border-radius: 10px;
   background: var(--background-color);
-  margin: 10px 0px;
+  margin: 10px 0px 5px;
 }
 
 .game .selector {

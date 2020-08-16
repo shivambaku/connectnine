@@ -133,7 +133,6 @@ hr {
   fill: var(--primary-color);
   font-weight: 900;
   font-size: 22px;
-  font-family: Avenir;
 }
 
 .game .selector .selected .piece {

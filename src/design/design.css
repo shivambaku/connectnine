@@ -139,6 +139,12 @@ hr {
   font-size: 22px;
 }
 
+@media(hover: hover) and (pointer: fine) {
+  .game .selector .piece-text {
+    cursor: pointer;
+  }
+}
+
 .game .selector .selected .piece {
   stroke: #1F78B4;
   stroke-width: 5px;

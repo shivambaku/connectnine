@@ -1,17 +1,22 @@
 <template>
   <div class='game'>
     <div class='header'>
-      <h1 class='title'>
-        Connect 9
-      </h1>
-      <div class='new'>
-        NEW game
-      </div>
-      <!-- <div class='score-container'>
-        <div class='score'>
-          50
+      <div style='float: left'>
+        <h1 class='title'>
+          Connect 9
+        </h1>
+        <div class='button'>
+          New Game
         </div>
-      </div> -->
+        <div class='button' style='margin-left: 10px'>
+          Undo
+        </div>
+      </div>
+      <div class='score-container'>
+        <div class='score'>
+          2342
+        </div>
+      </div>
     </div>
     <Board
       :pieces='boardPieces'

@@ -1,6 +1,7 @@
 :root {
   --primary-color: #2c3e50;
   --background-color: #8DD3C7;
+  --foreground-color: #2c3e50;
 }
 
 #app {
@@ -9,6 +10,12 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: var(--primary-color);
+}
+
+hr {
+  border: none;
+  border-bottom: 1px solid;
+  width: 400px;
 }
 
 .noselect {
@@ -22,70 +29,83 @@
 }
 
 .header {
-  margin: 30px 0;
-  display: block;
+  margin: 30px 0px 20px;
+  height: 120px;
 }
 
 .header .title {
   letter-spacing: 2px;
-  float: left;
-  font-size: 42px;
+  font-size: 48px;
+  margin: 5px 0px;
+  text-align: left;
 }
 
-.new {
-  background: #d0e6df;
-  box-shadow: 0 8px #b6d9d9;
-  font-style: italic;
-  height: 40px;
-  line-height: 40px;
-  left: -130px;
-  position: absolute;
-  text-align: center;
-  text-transform: lowercase;
-  top: 152px;
-  width: 108px;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
+.header .subtitle {
+  text-align: left;
+  margin: 2px 0;
 }
-/* 
+
+.button {
+  text-align: left;
+  background: var(--background-color);
+  padding: 8px 15px;
+  text-transform: lowercase;
+  float: left;
+  border-radius: 10px;
+  color: var(--foreground-color);
+  font-style: italic;
+}
+
+.button:hover {
+  background: var(--foreground-color);
+  color: var(--background-color);
+  cursor: pointer;
+}
+
 .header .score-container {
   float: right;
-  text-align: right;
+  height: 100%;
+  position: relative;
+  margin-top: 10px;
 }
 
-.header .score::after {
-  content: "Score";
+.header .score::before {
+  content: 'SCORE';
+  color: var(--foreground-color);
   position: absolute;
-  width: 100%;
-  top: 10px;
   left: 0;
-  font-size: 13px;
-  line-height: 13px;
+  line-height: 50px;
   text-align: center;
+  font-size: 14px;
+  width: 100%;
 }
 
 .header .score {
-  position: relative;
   background: var(--background-color);
-  padding: 15px 40px;
-  display: inline-block;
-  font-size: 25px;
-  height: 30px;
-  line-height: 47px;
-  font-weight: bold;
-  border-radius: 5px;
-  color: white;
-  text-align: center;
-} */
+  color: var(--foreground-color);
+  height: 105px;
+  width: 120px;
+  border-radius: 10px;
+  font-size: 34px;
+  line-height: 135px;
+  font-weight: 500;
+}
+
+.rules h4 {
+  margin-bottom: 0px;
+  font-size: 18px;
+}
 
 .rules p {
+  font-size: 17px;
+  margin-top: 5px;
   font-weight: 200;
 }
 
 .footer {
   font-weight: 300;
-  margin: 30px 0 20px;
+  font-style: italic;
+  margin: 20px 0 20px;
 }
 
 .game {
@@ -110,9 +130,13 @@
   font-family: Avenir;
 }
 
-.game .selected .piece {
+.game .selector .selected .piece {
   stroke: #1F78B4;
   stroke-width: 5px;
+}
+
+.game .selector .piece:hover {
+  cursor: pointer;
 }
 
 .game .piece.piece-0 {
@@ -122,6 +146,7 @@
 
 .game .piece.piece-0:hover {
   opacity: 1.0;
+  cursor: pointer;
 }
 
 .game .piece.piece-1 {

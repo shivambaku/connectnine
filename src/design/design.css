@@ -30,13 +30,13 @@ hr {
 
 .header {
   margin: 30px 0px 20px;
-  height: 120px;
+  height: 110px;
 }
 
 .header .title {
   letter-spacing: 2px;
-  font-size: 48px;
-  margin: 5px 0px;
+  font-size: 38px;
+  margin: 5px 0px 10px;
   text-align: left;
 }
 
@@ -56,6 +56,11 @@ hr {
   font-style: italic;
 }
 
+.button.disabled {
+  opacity: 0.7;
+  pointer-events:none;
+}
+
 .button:hover {
   background: var(--foreground-color);
   color: var(--background-color);
@@ -66,7 +71,8 @@ hr {
   float: right;
   height: 100%;
   position: relative;
-  margin-top: 10px;
+  margin-top: 5px;
+  height: 100px;
 }
 
 .header .score::before {
@@ -83,12 +89,12 @@ hr {
 .header .score {
   background: var(--background-color);
   color: var(--foreground-color);
-  height: 105px;
   width: 120px;
   border-radius: 10px;
   font-size: 34px;
   line-height: 135px;
   font-weight: 500;
+  height: 100%;
 }
 
 .rules h4 {

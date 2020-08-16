@@ -5,10 +5,12 @@
         <h1 class='title'>
           Connect 9
         </h1>
-        <div class='button'>
+        <div class='button' @click='newGame'>
           New Game
         </div>
-        <div class='button' style='margin-left: 10px'>
+        <div :class='`button ${this.canUndo ? "" : "disabled"}`'
+             style='margin-left: 10px'
+             @click='undo'>
           Undo
         </div>
       </div>
@@ -45,16 +47,17 @@ export default {
       boardPieces: [],
       selectorPieces: [],
       selectedIndex: 0,
+      savedState: {
+        boardPieces: [],
+        selectorPieces: [],
+        futureSelectorPieces: [],
+        selectedIndex: 0,
+      },
+      canUndo: false,
     };
   },
   created() {
-    for (let i = 0; i < Settings.boardSize * Settings.boardSize; i += 1) {
-      this.boardPieces.push({ value: 0 });
-    }
-
-    for (let i = 0; i < Settings.selectorCount; i += 1) {
-      this.selectorPieces.push({ value: this.getRandomPiece() });
-    }
+    this.newGame();
 
     window.addEventListener('keydown', (event) => {
       if (!event.defaultPrevented) {
@@ -89,6 +92,10 @@ export default {
   },
   methods: {
     getRandomPiece() {
+      if (this.savedState.futureSelectorPieces[this.selectedIndex] !== null) {
+        return this.savedState.futureSelectorPieces[this.selectedIndex];
+      }
+
       const rand = Math.random();
 
       let sum = 0;
@@ -107,8 +114,10 @@ export default {
       return y * Settings.boardSize + x;
     },
     placed(x, y) {
+      const nextValue = this.getRandomPiece();
+      this.saveState();
       this.place(x, y, this.selectedPiece.value);
-      this.selectedPiece.value = this.getRandomPiece();
+      this.selectedPiece.value = nextValue;
     },
     place(x, y, value) {
       // place the piece
@@ -148,6 +157,41 @@ export default {
     sameValue(x, y, value) {
       const index = this.xytoi(x, y);
       return this.boardPieces[index].value === value;
+    },
+    newGame() {
+      for (let i = 0; i < Settings.selectorCount; i += 1) {
+        this.savedState.futureSelectorPieces.push(null);
+      }
+
+      this.boardPieces = [];
+      for (let i = 0; i < Settings.boardSize * Settings.boardSize; i += 1) {
+        this.boardPieces.push({ value: 0 });
+      }
+
+      this.selectorPieces = [];
+      for (let i = 0; i < Settings.selectorCount; i += 1) {
+        this.selectorPieces.push({ value: this.getRandomPiece() });
+      }
+
+      this.selectedIndex = 0;
+
+      this.saveState();
+
+      this.canUndo = false;
+    },
+    undo() {
+      const nextPiece = this.selectorPieces[this.savedState.selectedIndex].value;
+      this.savedState.futureSelectorPieces[this.savedState.selectedIndex] = nextPiece;
+      this.boardPieces = JSON.parse(JSON.stringify(this.savedState.boardPieces));
+      this.selectorPieces = JSON.parse(JSON.stringify(this.savedState.selectorPieces));
+      this.canUndo = false;
+    },
+    saveState() {
+      this.savedState.boardPieces = JSON.parse(JSON.stringify(this.boardPieces));
+      this.savedState.selectorPieces = JSON.parse(JSON.stringify(this.selectorPieces));
+      this.savedState.selectedIndex = this.selectedIndex;
+      this.savedState.futureSelectorPieces[this.selectedIndex] = null;
+      this.canUndo = true;
     },
   },
 };

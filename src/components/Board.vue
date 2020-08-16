@@ -1,5 +1,5 @@
 <template>
-  <svg class='board' :width='width' :height='width'>
+  <svg class='board' :viewBox='`0 0 ${this.width} ${this.width}`'>
     <g :transform='`translate(${this.padding}, ${this.padding})`'>
       <Piece
         v-for='(piece, i) in pieces'

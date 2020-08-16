@@ -61,10 +61,12 @@ hr {
   pointer-events:none;
 }
 
-.button:hover {
-  background: var(--foreground-color);
-  color: var(--background-color);
-  cursor: pointer;
+@media(hover: hover) and (pointer: fine) {
+  .button:hover {
+    background: var(--foreground-color);
+    color: var(--background-color);
+    cursor: pointer;
+  }
 }
 
 .header .score-container {
@@ -142,8 +144,10 @@ hr {
   stroke-width: 5px;
 }
 
-.game .selector .piece:hover {
-  cursor: pointer;
+@media(hover: hover) and (pointer: fine) {
+  .game .selector .piece:hover {
+    cursor: pointer;
+  }
 }
 
 .game .piece.piece-0 {
@@ -151,9 +155,11 @@ hr {
   opacity: 0.20;
 }
 
-.game .piece.piece-0:hover {
-  opacity: 1.0;
-  cursor: pointer;
+@media(hover: hover) and (pointer: fine) {
+  .game .piece.piece-0:hover {
+    opacity: 1.0;
+    cursor: pointer;
+  }
 }
 
 .game .piece.piece-1 {

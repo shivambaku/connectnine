@@ -39,6 +39,27 @@ export default {
     for (let i = 0; i < Settings.selectorCount; i += 1) {
       this.selectorPieces.push({ value: this.getRandomPiece() });
     }
+
+    window.addEventListener('keydown', (event) => {
+      if (!event.defaultPrevented) {
+        switch (event.code) {
+          case 'Digit1':
+            this.selectedIndex = 0;
+            break;
+          case 'Digit2':
+            this.selectedIndex = 1;
+            break;
+          case 'Digit3':
+            this.selectedIndex = 2;
+            break;
+          default:
+            return;
+        }
+
+        // Consume the event so it doesn't get handled twice
+        event.preventDefault();
+      }
+    }, true);
   },
   computed: {
     selectedPiece: {

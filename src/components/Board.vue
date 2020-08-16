@@ -59,7 +59,7 @@ export default {
     },
     placed(i) {
       if (this.pieces[i].value === 0) {
-        this.$emit('placed', i);
+        this.$emit('placed', this.itox(i), this.itoy(i));
       }
     },
   },

@@ -1,5 +1,6 @@
 :root {
   --primary-color: #2c3e50;
+  --background-color: #8DD3C7;
 }
 
 #app {
@@ -36,12 +37,19 @@
 
 .game .board {
   border-radius: 10px;
-  background: #A6CEE3;
+  background: var(--background-color);
 }
 
 .game .selector {
   border-radius: 10px;
-  background: #A6CEE3;
+  background: var(--background-color);
+}
+
+.game .piece-text {
+  fill: var(--primary-color);
+  font-weight: 900;
+  font-size: 22px;
+  font-family: Avenir;
 }
 
 .game .selected .piece {
@@ -49,16 +57,9 @@
   stroke-width: 5px;
 }
 
-.game .piece-text {
-  fill: var(--primary-color);
-  font-weight: 900;
-  font-size: 30px;
-  font-family: Avenir;
-}
-
 .game .piece.piece-0 {
   fill: #1F78B4;
-  opacity: 0.35;
+  opacity: 0.20;
 }
 
 .game .piece.piece-0:hover {
@@ -66,21 +67,37 @@
 }
 
 .game .piece.piece-1 {
-  fill: #B2DF8A;
+  fill: #FFFFB3;
 }
 
 .game .piece.piece-2 {
-  fill: #FB9A99;
+  fill: #BEBADA;
 }
 
 .game .piece.piece-3 {
-  fill: #FDBF6F;
+  fill: #FB8072;
 }
 
 .game .piece.piece-4 {
-  fill: #CAB2D6;
+  fill: #80B1D3;
 }
 
 .game .piece.piece-5 {
-  fill: #FFFF99;
+  fill: #FDB462;
+}
+
+.game .piece.piece-6 {
+  fill: #B3DE69;
+}
+
+.game .piece.piece-7 {
+  fill: #FCCDE5;
+}
+
+.game .piece.piece-8 {
+  fill: #D9D9D9;
+}
+
+.game .piece.piece-9 {
+  fill: #BC80BD;
 }

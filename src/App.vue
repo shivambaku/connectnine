@@ -1,7 +1,10 @@
 <template>
   <div id="app">
-    <div class='header'>
+    <!-- <div class='header'>
       <h1>Connect 9</h1>
+    </div> -->
+    <Game/>
+    <div class='rules'>
       <p>
         Click on one of the empty spots to place the selected number.
         <br/>
@@ -10,7 +13,6 @@
         The selected one will be placed and a new random number (1-5) will replace it.
       </p>
     </div>
-    <Game/>
     <div class='footer'>
       Connect 9 is made by Shivam Kumar and Cody Harris.
     </div>

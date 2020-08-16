@@ -178,6 +178,7 @@ export default {
       }
 
       this.selectedIndex = 0;
+      this.score = 0;
 
       this.saveState();
 

@@ -16,7 +16,7 @@
       </div>
       <div class='score-container'>
         <div class='score'>
-          2342
+          {{score}}
         </div>
       </div>
     </div>
@@ -47,11 +47,13 @@ export default {
       boardPieces: [],
       selectorPieces: [],
       selectedIndex: 0,
+      score: 0,
       savedState: {
         boardPieces: [],
         selectorPieces: [],
         futureSelectorPieces: [],
         selectedIndex: 0,
+        score: 0,
       },
       canUndo: false,
     };
@@ -130,6 +132,8 @@ export default {
 
       // a connection was formed
       if (visited.size >= 3) {
+        this.score += visited.size * value;
+
         // besides the placed piece, set all visited pieces to empty
         visited.delete(index);
 
@@ -184,12 +188,14 @@ export default {
       this.savedState.futureSelectorPieces[this.savedState.selectedIndex] = nextPiece;
       this.boardPieces = JSON.parse(JSON.stringify(this.savedState.boardPieces));
       this.selectorPieces = JSON.parse(JSON.stringify(this.savedState.selectorPieces));
+      this.score = this.savedState.score;
       this.canUndo = false;
     },
     saveState() {
       this.savedState.boardPieces = JSON.parse(JSON.stringify(this.boardPieces));
       this.savedState.selectorPieces = JSON.parse(JSON.stringify(this.selectorPieces));
       this.savedState.selectedIndex = this.selectedIndex;
+      this.savedState.score = this.score;
       this.savedState.futureSelectorPieces[this.selectedIndex] = null;
       this.canUndo = true;
     },

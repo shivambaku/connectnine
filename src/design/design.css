@@ -9,7 +9,6 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: var(--primary-color);
-  margin-top: 40px;
 }
 
 .noselect {
@@ -20,6 +19,10 @@
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
+}
+
+.header {
+  margin: 30px 0;
 }
 
 .header h1 {

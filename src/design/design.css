@@ -71,8 +71,7 @@ hr {
   float: right;
   height: 100%;
   position: relative;
-  margin-top: 5px;
-  height: 100px;
+  height: 100%;
 }
 
 .header .score::before {

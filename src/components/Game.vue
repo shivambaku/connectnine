@@ -1,14 +1,16 @@
 <template>
   <div class='game'>
-    <Board
-      :pieces='boardPieces'
-      @placed='placed'
-    />
-    <Selector
-      :pieces='selectorPieces'
-      :selectedIndex='selectedIndex'
-      @selected='selected'
-    />
+    <div>
+      <Board
+        :pieces='boardPieces'
+        @placed='placed'
+      />
+      <Selector
+        :pieces='selectorPieces'
+        :selectedIndex='selectedIndex'
+        @selected='selected'
+      />
+    </div>
   </div>
 </template>
 

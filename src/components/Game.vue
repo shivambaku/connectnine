@@ -94,12 +94,13 @@ export default {
   },
   methods: {
     getRandomPiece() {
+      // if we already know what the future piece should be, then use that
       if (this.futureSelectorPieces[this.gameState.selectedIndex] !== null) {
         return this.futureSelectorPieces[this.gameState.selectedIndex];
       }
 
+      // otherwise get a random number for the next piece
       const rand = Math.random();
-
       let sum = 0;
       for (let i = 0; i < Settings.randomness.length; i += 1) {
         sum += Settings.randomness[i];
@@ -116,10 +117,19 @@ export default {
       return y * Settings.boardSize + x;
     },
     placed(x, y) {
+      // get next random piece now as save state may change future values
       const nextValue = this.getRandomPiece();
+
+      // save the state in case we want to undo this placement
       this.saveState();
+
+      // place the new piece
       this.place(x, y, this.selectedPiece.value);
+
+      // reroll the selected piece
       this.selectedPiece.value = nextValue;
+
+      // save the new state to local storage
       this.saveToLocalStorage();
     },
     place(x, y, value) {
@@ -137,7 +147,6 @@ export default {
 
         // besides the placed piece, set all visited pieces to empty
         visited.delete(index);
-
         visited.forEach((visitedIndex) => {
           this.gameState.boardPieces[visitedIndex].value = 0;
         });
@@ -164,35 +173,49 @@ export default {
       return this.gameState.boardPieces[index].value === value;
     },
     newGame() {
+      // initially we dont know what the next selector pieces will be
       this.futureSelectorPieces = [];
       for (let i = 0; i < Settings.selectorCount; i += 1) {
         this.futureSelectorPieces.push(null);
       }
 
+      // initially all board pieces are empty
       this.gameState.boardPieces = [];
       for (let i = 0; i < Settings.boardSize * Settings.boardSize; i += 1) {
         this.gameState.boardPieces.push({ value: 0 });
       }
 
+      // initially start with three random values for selector
       this.gameState.selectorPieces = [];
       for (let i = 0; i < Settings.selectorCount; i += 1) {
         this.gameState.selectorPieces.push({ value: this.getRandomPiece() });
       }
 
+      // start with the first item selected and score of 0
       this.gameState.selectedIndex = 0;
       this.gameState.score = 0;
 
+      // save state to be able to undo
       this.saveState();
+
+      // as new game started, clear the local storage of any data
       this.clearStorage();
 
+      // cannot undo on first move
       this.canUndo = false;
     },
     undo() {
+      // save what the future piece will be as we already know about it
       const nextPiece = this.gameState.selectorPieces[this.savedState.selectedIndex].value;
       this.futureSelectorPieces[this.savedState.selectedIndex] = nextPiece;
+
+      // can only undo once
       this.canUndo = false;
+
+      // load the previously saved state
       this.gameState = JSON.parse(JSON.stringify(this.savedState));
 
+      // save the undone state to local storage
       this.saveToLocalStorage();
     },
     saveState() {

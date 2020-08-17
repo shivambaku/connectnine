@@ -16,17 +16,17 @@
       </div>
       <div class='score-container'>
         <div class='score'>
-          {{score}}
+          {{gameState.score}}
         </div>
       </div>
     </div>
     <Board
-      :pieces='boardPieces'
+      :pieces='gameState.boardPieces'
       @placed='placed'
     />
     <Selector
-      :pieces='selectorPieces'
-      :selectedIndex='selectedIndex'
+      :pieces='gameState.selectorPieces'
+      :selectedIndex='gameState.selectedIndex'
       @selected='selected'
     />
   </div>
@@ -44,18 +44,16 @@ export default {
   },
   data() {
     return {
-      boardPieces: [],
-      selectorPieces: [],
-      selectedIndex: 0,
-      score: 0,
-      savedState: {
+      version: '1.0.0',
+      gameState: {
         boardPieces: [],
         selectorPieces: [],
-        futureSelectorPieces: [],
         selectedIndex: 0,
         score: 0,
       },
+      savedState: {},
       canUndo: false,
+      futureSelectorPieces: [],
     };
   },
   mounted() {
@@ -63,13 +61,13 @@ export default {
       if (!event.defaultPrevented) {
         switch (event.code) {
           case 'Digit1':
-            this.selectedIndex = 0;
+            this.gameState.selectedIndex = 0;
             break;
           case 'Digit2':
-            this.selectedIndex = 1;
+            this.gameState.selectedIndex = 1;
             break;
           case 'Digit3':
-            this.selectedIndex = 2;
+            this.gameState.selectedIndex = 2;
             break;
           default:
             return;
@@ -87,17 +85,17 @@ export default {
   computed: {
     selectedPiece: {
       get() {
-        return this.selectorPieces[this.selectedIndex];
+        return this.gameState.selectorPieces[this.gameState.selectedIndex];
       },
       set(value) {
-        this.selectorPieces[this.selectedIndex] = value;
+        this.gameState.selectorPieces[this.gameState.selectedIndex] = value;
       },
     },
   },
   methods: {
     getRandomPiece() {
-      if (this.savedState.futureSelectorPieces[this.selectedIndex] !== null) {
-        return this.savedState.futureSelectorPieces[this.selectedIndex];
+      if (this.futureSelectorPieces[this.gameState.selectedIndex] !== null) {
+        return this.futureSelectorPieces[this.gameState.selectedIndex];
       }
 
       const rand = Math.random();
@@ -112,7 +110,7 @@ export default {
       return 0;
     },
     selected(index) {
-      this.selectedIndex = index;
+      this.gameState.selectedIndex = index;
     },
     xytoi(x, y) {
       return y * Settings.boardSize + x;
@@ -127,7 +125,7 @@ export default {
     place(x, y, value) {
       // place the piece
       const index = this.xytoi(x, y);
-      this.boardPieces[index].value = value;
+      this.gameState.boardPieces[index].value = value;
 
       // check if connections were formed
       const visited = new Set();
@@ -135,13 +133,13 @@ export default {
 
       // a connection was formed
       if (visited.size >= 3) {
-        this.score += visited.size * value;
+        this.gameState.score += visited.size * value;
 
         // besides the placed piece, set all visited pieces to empty
         visited.delete(index);
 
         visited.forEach((visitedIndex) => {
-          this.boardPieces[visitedIndex].value = 0;
+          this.gameState.boardPieces[visitedIndex].value = 0;
         });
 
         this.place(x, y, value + 1);
@@ -163,131 +161,73 @@ export default {
     },
     sameValue(x, y, value) {
       const index = this.xytoi(x, y);
-      return this.boardPieces[index].value === value;
+      return this.gameState.boardPieces[index].value === value;
     },
     newGame() {
+      this.futureSelectorPieces = [];
       for (let i = 0; i < Settings.selectorCount; i += 1) {
-        this.savedState.futureSelectorPieces.push(null);
+        this.futureSelectorPieces.push(null);
       }
 
-      this.boardPieces = [];
+      this.gameState.boardPieces = [];
       for (let i = 0; i < Settings.boardSize * Settings.boardSize; i += 1) {
-        this.boardPieces.push({ value: 0 });
+        this.gameState.boardPieces.push({ value: 0 });
       }
 
-      this.selectorPieces = [];
+      this.gameState.selectorPieces = [];
       for (let i = 0; i < Settings.selectorCount; i += 1) {
-        this.selectorPieces.push({ value: this.getRandomPiece() });
+        this.gameState.selectorPieces.push({ value: this.getRandomPiece() });
       }
 
-      this.selectedIndex = 0;
-      this.score = 0;
+      this.gameState.selectedIndex = 0;
+      this.gameState.score = 0;
 
       this.saveState();
+      this.clearStorage();
 
       this.canUndo = false;
-
-      this.clearStorage();
     },
     undo() {
-      const nextPiece = this.selectorPieces[this.savedState.selectedIndex].value;
-      this.savedState.futureSelectorPieces[this.savedState.selectedIndex] = nextPiece;
-      this.boardPieces = JSON.parse(JSON.stringify(this.savedState.boardPieces));
-      this.selectorPieces = JSON.parse(JSON.stringify(this.savedState.selectorPieces));
-      this.score = this.savedState.score;
+      const nextPiece = this.gameState.selectorPieces[this.savedState.selectedIndex].value;
+      this.futureSelectorPieces[this.savedState.selectedIndex] = nextPiece;
       this.canUndo = false;
+      this.gameState = JSON.parse(JSON.stringify(this.savedState));
+
       this.saveToLocalStorage();
     },
     saveState() {
-      this.savedState.boardPieces = JSON.parse(JSON.stringify(this.boardPieces));
-      this.savedState.selectorPieces = JSON.parse(JSON.stringify(this.selectorPieces));
-      this.savedState.selectedIndex = this.selectedIndex;
-      this.savedState.score = this.score;
-      this.savedState.futureSelectorPieces[this.selectedIndex] = null;
+      this.savedState = JSON.parse(JSON.stringify(this.gameState));
+      this.futureSelectorPieces[this.gameState.selectedIndex] = null;
       this.canUndo = true;
     },
     saveToLocalStorage() {
       if (this.storageAvailable()) {
-        localStorage.setItem('boardPieces', JSON.stringify(this.boardPieces));
-        localStorage.setItem('selectorPieces', JSON.stringify(this.selectorPieces));
-        localStorage.setItem('savedState', JSON.stringify(this.savedState));
-        localStorage.setItem('selectedIndex', this.selectedIndex);
-        localStorage.setItem('score', this.score);
-        localStorage.setItem('canUndo', this.canUndo);
+        const store = {
+          version: this.version,
+          gameState: this.gameState,
+          savedState: this.savedState,
+          futureSelectorPieces: this.futureSelectorPieces,
+          canUndo: this.canUndo,
+        };
+        localStorage.setItem('gameStore', JSON.stringify(store));
       }
     },
     loadFromLocalStorage() {
-      if (!this.storageAvailable()) {
-        return false;
-      }
-
-      if (localStorage.getItem('boardPieces')) {
+      if (this.storageAvailable()) {
         try {
-          this.boardPieces = JSON.parse(localStorage.getItem('boardPieces'));
+          const store = JSON.parse(localStorage.getItem('gameStore'));
+          if (store !== null && store.version === this.version) {
+            this.gameState = store.gameState;
+            this.savedState = store.savedState;
+            this.futureSelectorPieces = store.futureSelectorPieces;
+            this.canUndo = store.canUndo;
+            return true;
+          }
         } catch {
-          localStorage.removeItem('boardPieces');
-          return false;
+          localStorage.removeItem('gameStore');
         }
-      } else {
-        return false;
       }
-
-      if (localStorage.getItem('selectorPieces')) {
-        try {
-          this.selectorPieces = JSON.parse(localStorage.getItem('selectorPieces'));
-        } catch {
-          localStorage.removeItem('selectorPieces');
-          return false;
-        }
-      } else {
-        return false;
-      }
-
-      if (localStorage.getItem('savedState')) {
-        try {
-          this.savedState = JSON.parse(localStorage.getItem('savedState'));
-        } catch {
-          localStorage.removeItem('savedState');
-          return false;
-        }
-      } else {
-        return false;
-      }
-
-      if (localStorage.getItem('selectedIndex')) {
-        try {
-          this.selectedIndex = parseInt(localStorage.getItem('selectedIndex'), 10);
-        } catch {
-          localStorage.removeItem('selectedIndex');
-          return false;
-        }
-      } else {
-        return false;
-      }
-
-      if (localStorage.getItem('score')) {
-        try {
-          this.score = parseInt(localStorage.getItem('score'), 10);
-        } catch {
-          localStorage.removeItem('score');
-          return false;
-        }
-      } else {
-        return false;
-      }
-
-      if (localStorage.getItem('canUndo')) {
-        try {
-          this.canUndo = localStorage.getItem('canUndo') === 'true';
-        } catch {
-          localStorage.removeItem('canUndo');
-          return false;
-        }
-      } else {
-        return false;
-      }
-
-      return true;
+      return false;
     },
     clearStorage() {
       if (this.storageAvailable()) {

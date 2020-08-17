@@ -58,9 +58,7 @@ export default {
       canUndo: false,
     };
   },
-  created() {
-    this.newGame();
-
+  mounted() {
     window.addEventListener('keydown', (event) => {
       if (!event.defaultPrevented) {
         switch (event.code) {
@@ -81,6 +79,10 @@ export default {
         event.preventDefault();
       }
     }, true);
+
+    if (!this.loadFromLocalStorage()) {
+      this.newGame();
+    }
   },
   computed: {
     selectedPiece: {
@@ -120,6 +122,7 @@ export default {
       this.saveState();
       this.place(x, y, this.selectedPiece.value);
       this.selectedPiece.value = nextValue;
+      this.saveToLocalStorage();
     },
     place(x, y, value) {
       // place the piece
@@ -183,6 +186,8 @@ export default {
       this.saveState();
 
       this.canUndo = false;
+
+      this.clearStorage();
     },
     undo() {
       const nextPiece = this.selectorPieces[this.savedState.selectedIndex].value;
@@ -191,6 +196,7 @@ export default {
       this.selectorPieces = JSON.parse(JSON.stringify(this.savedState.selectorPieces));
       this.score = this.savedState.score;
       this.canUndo = false;
+      this.saveToLocalStorage();
     },
     saveState() {
       this.savedState.boardPieces = JSON.parse(JSON.stringify(this.boardPieces));
@@ -199,6 +205,104 @@ export default {
       this.savedState.score = this.score;
       this.savedState.futureSelectorPieces[this.selectedIndex] = null;
       this.canUndo = true;
+    },
+    saveToLocalStorage() {
+      if (this.storageAvailable()) {
+        localStorage.setItem('boardPieces', JSON.stringify(this.boardPieces));
+        localStorage.setItem('selectorPieces', JSON.stringify(this.selectorPieces));
+        localStorage.setItem('savedState', JSON.stringify(this.savedState));
+        localStorage.setItem('selectedIndex', this.selectedIndex);
+        localStorage.setItem('score', this.score);
+        localStorage.setItem('canUndo', this.canUndo);
+      }
+    },
+    loadFromLocalStorage() {
+      if (!this.storageAvailable()) {
+        return false;
+      }
+
+      if (localStorage.getItem('boardPieces')) {
+        try {
+          this.boardPieces = JSON.parse(localStorage.getItem('boardPieces'));
+        } catch {
+          localStorage.removeItem('boardPieces');
+          return false;
+        }
+      } else {
+        return false;
+      }
+
+      if (localStorage.getItem('selectorPieces')) {
+        try {
+          this.selectorPieces = JSON.parse(localStorage.getItem('selectorPieces'));
+        } catch {
+          localStorage.removeItem('selectorPieces');
+          return false;
+        }
+      } else {
+        return false;
+      }
+
+      if (localStorage.getItem('savedState')) {
+        try {
+          this.savedState = JSON.parse(localStorage.getItem('savedState'));
+        } catch {
+          localStorage.removeItem('savedState');
+          return false;
+        }
+      } else {
+        return false;
+      }
+
+      if (localStorage.getItem('selectedIndex')) {
+        try {
+          this.selectedIndex = parseInt(localStorage.getItem('selectedIndex'), 10);
+        } catch {
+          localStorage.removeItem('selectedIndex');
+          return false;
+        }
+      } else {
+        return false;
+      }
+
+      if (localStorage.getItem('score')) {
+        try {
+          this.score = parseInt(localStorage.getItem('score'), 10);
+        } catch {
+          localStorage.removeItem('score');
+          return false;
+        }
+      } else {
+        return false;
+      }
+
+      if (localStorage.getItem('canUndo')) {
+        try {
+          this.canUndo = localStorage.getItem('canUndo') === 'true';
+        } catch {
+          localStorage.removeItem('canUndo');
+          return false;
+        }
+      } else {
+        return false;
+      }
+
+      return true;
+    },
+    clearStorage() {
+      if (this.storageAvailable()) {
+        localStorage.clear();
+      }
+    },
+    storageAvailable() {
+      try {
+        const storageTest = '__storage_test__';
+        localStorage.setItem(storageTest, storageTest);
+        localStorage.removeItem(storageTest);
+        return true;
+      } catch {
+        return false;
+      }
     },
   },
 };

@@ -15,7 +15,6 @@
 </template>
 
 <script>
-import * as d3 from 'd3';
 import Piece from './Piece.vue';
 import Design from '../design/design';
 import Settings from '../settings';
@@ -40,12 +39,6 @@ export default {
     innerWidth() {
       return this.width - 2 * this.padding;
     },
-    scale() {
-      return d3.scaleLinear()
-        .domain([0, this.boardSize])
-        .range([0, this.innerWidth])
-        .nice();
-    },
     pieceSize() {
       return this.innerWidth / this.boardSize;
     },
@@ -61,6 +54,10 @@ export default {
       if (this.pieces[i].value === 0) {
         this.$emit('placed', this.itox(i), this.itoy(i));
       }
+    },
+    scale(value) {
+      const t = value / this.boardSize;
+      return this.innerWidth * t;
     },
   },
 };

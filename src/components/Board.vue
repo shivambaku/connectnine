@@ -10,13 +10,14 @@
         :size='pieceSize'
         v-on:click.native='placed(i)'
       />
-      <g :transform='`translate(${151}, ${151})`'>
-      <path
-        class='svg-attributes-demo'
-        d='M4,4 4,148 148,148 148,80 74,80 74,4 z'
-        style="fill: #FFFFB3; pointer-events: none;"
-        opacity='0'
-      />
+      <g :transform='`translate(${scale(2)}, ${scale(2)})`'>
+        <path
+          class='svg-attributes-demo'
+          d='m4,4 v138 a6,6 0 0 0 6,6 h132 a6,6 0 0 0 6,-6 v-56
+          a6,6, 0 0 0 -6,-6 h-70 v-70 a6,6, 0 0 0 -6,-6 h-56 a6,6, 0 0 0 -6,6 z'
+          style="fill: #FFFFB3; pointer-events: none;"
+          opacity='0'
+        />
       </g>
     </g>
   </svg>
@@ -65,15 +66,16 @@ export default {
             targets: ['.svg-attributes-demo'],
             keyframes: [
               { opacity: 1.0, duration: 0 },
-              { d: 'M4,4 4,148 74,148 74,80 74,80 74,4z' },
-              { d: 'M4,4 4,74 74,74 74,74 74,74 74,4z' },
+              { d: 'm4,4 v138 a6,6 0 0 0 6,6 h56 a6,6 0 0 0 6,-6 v-56 a0,0, 0 0 0 0,0 h-0 v-70 a6,6, 0 0 0 -6,-6 h-56 a6,6, 0 0 0 -6,6 z' },
+              { d: 'm4,4 v62 a6,6 0 0 0 6,6 h56 a6,6 0 0 0 6,-6 v-0 a0,0, 0 0 0 0,0 h-0 v-56 a6,6, 0 0 0 -6,-6 h-56 a6,6, 0 0 0 -6,6 z' },
               { opacity: 0.0 },
+              { d: 'm4,4 v138 a6,6 0 0 0 6,6 h132 a6,6 0 0 0 6,-6 v-56 a6,6, 0 0 0 -6,-6 h-70 v-70 a6,6, 0 0 0 -6,-6 h-56 a6,6, 0 0 0 -6,6 z', duration: 0 },
             ],
             baseFrequency: 0,
             scale: 1,
             direction: 'normal',
             easing: 'linear',
-            duration: 500,
+            duration: 2000,
           });
         }
       }

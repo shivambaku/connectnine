@@ -4,13 +4,11 @@
     <div class='rules'>
       <h4>How to Play</h4>
       <p>
-        Click on one of the empty spots to place the selected number.
-        <br/>
-        You can select one of the three available numbers.
-        <br/>
-        The selected one will be placed and a new random number (1-5) will replace it.
+        Select one of the three available numbers and place it in an empty spot.
         <br/>
         Connect three or more of the same value to progress.
+        <br/>
+        Connections can be adjacent or even L shaped but not diagonal.
       </p>
     </div>
     <hr/>

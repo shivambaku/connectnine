@@ -73,7 +73,6 @@ hr {
   float: right;
   height: 100%;
   position: relative;
-  height: 100%;
 }
 
 .header .score::before {
@@ -107,7 +106,6 @@ hr {
   font-size: 17px;
   margin-top: 5px;
   font-weight: 200;
-  text-align: center;
 }
 
 .footer {
@@ -118,7 +116,7 @@ hr {
 
 .game {
   max-width: 400px;
-  min-width: 320px;
+  min-width: 325px;
   margin: 0 auto;
 }
 
@@ -202,4 +200,26 @@ hr {
 
 .game .piece.piece-9 {
   fill: #BC80BD;
+}
+
+@media only screen and (max-device-width: 350px) {
+  .game {
+    min-width: 300px;
+  }
+
+  .header .title {
+    letter-spacing: 1px;
+    font-size: 32px;
+    margin: 5px 0px 10px;
+    text-align: left;
+  }
+
+  .button {
+    padding: 8px 10px;
+  }
+
+  .header {
+    margin: 30px 0px 0px;
+    height: 100px;
+  }
 }

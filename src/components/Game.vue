@@ -37,6 +37,9 @@ import Board from './Board.vue';
 import Selector from './Selector.vue';
 import Settings from '../settings';
 
+const placingSoundWave = require('../assets/sounds/putting_a_book2.wav');
+const placedSoundWave = require('../assets/sounds/short_whoosh1.wav');
+
 export default {
   components: {
     Board,
@@ -54,6 +57,8 @@ export default {
       savedState: {},
       canUndo: false,
       futureSelectorPieces: [],
+      placingSound: null,
+      placedSound: null,
     };
   },
   mounted() {
@@ -77,6 +82,14 @@ export default {
         event.preventDefault();
       }
     }, true);
+
+    // hack to make safari version work
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    // eslint-disable-next-line no-unused-vars
+    const audioCtx = new AudioContext();
+
+    this.placingSound = new Audio(placingSoundWave);
+    this.placedSound = new Audio(placedSoundWave);
 
     if (!this.loadFromLocalStorage()) {
       this.newGame();
@@ -117,6 +130,8 @@ export default {
       return y * Settings.boardSize + x;
     },
     placed(x, y) {
+      this.placingSound.play();
+
       // get next random piece now as save state may change future values
       const nextValue = this.getRandomPiece();
 
@@ -152,6 +167,8 @@ export default {
         });
 
         this.place(x, y, value + 1);
+
+        this.placedSound.play();
       }
     },
     checkConnections(x, y, value, visited) {

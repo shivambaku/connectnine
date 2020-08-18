@@ -54,6 +54,7 @@ export default {
       savedState: {},
       canUndo: false,
       futureSelectorPieces: [],
+      points: '',
     };
   },
   mounted() {
@@ -143,6 +144,7 @@ export default {
 
       // a connection was formed
       if (visited.size >= 3) {
+        this.points = this.buildPolygonPoints(visited);
         this.gameState.score += visited.size * value;
 
         // besides the placed piece, set all visited pieces to empty
@@ -266,6 +268,35 @@ export default {
       } catch {
         return false;
       }
+    },
+    buildPolygonPoints(visited) {
+      return visited;
+      // const points = [];
+      // visited.forEach((index) => {
+      //   const x = 400 * (Settings.itox(index) / Settings.boardSize);
+      //   const y = 400 * (Settings.itoy(index) / Settings.boardSize);
+      //   points.push({ x, y });
+      // });
+
+      // const path = '';
+      // for (let i = 0; i < points.length - 1; i += 1) {
+      //   const x = points[i].x;
+      //   const y = points[i].y;
+      //   if (x == points[i + 1].x) {
+      //     if (points[i].y < points[i + 1].y) {
+      //       points[i].y - 40;
+      //       path += `${x - 40, points[i]}`
+      //     } else {
+
+      //     }
+      //   }
+      //   if (x < points[i + 1].x) {
+      //     points[i].x - 40;
+      //   } else {
+
+      //   }
+      // }
+      // console.log(points);
     },
   },
 };

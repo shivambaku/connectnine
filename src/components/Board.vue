@@ -5,16 +5,25 @@
         v-for='(piece, i) in pieces'
         :key='i'
         :value='piece.value'
-        :x='scale(itox(i))'
-        :y='scale(itoy(i))'
+        :x='scale(settings.itox(i))'
+        :y='scale(settings.itoy(i))'
         :size='pieceSize'
         v-on:click.native='placed(i)'
       />
+      <g :transform='`translate(${151}, ${151})`'>
+      <path
+        class='svg-attributes-demo'
+        d='M4,4 4,148 148,148 148,80 74,80 74,4 z'
+        style="fill: #FFFFB3; pointer-events: none;"
+        opacity='0'
+      />
+      </g>
     </g>
   </svg>
 </template>
 
 <script>
+import anime from 'animejs/lib/anime.es';
 import Piece from './Piece.vue';
 import Design from '../design/design';
 import Settings from '../settings';
@@ -31,7 +40,10 @@ export default {
       width: Design.board.width,
       padding: Design.board.padding,
       boardSize: Settings.boardSize,
+      settings: Settings,
     };
+  },
+  mounted() {
   },
   created() {
   },
@@ -44,15 +56,26 @@ export default {
     },
   },
   methods: {
-    itox(i) {
-      return i % this.boardSize;
-    },
-    itoy(i) {
-      return Math.floor(i / this.boardSize);
-    },
     placed(i) {
       if (this.pieces[i].value === 0) {
-        this.$emit('placed', this.itox(i), this.itoy(i));
+        this.$emit('placed', Settings.itox(i), Settings.itoy(i));
+
+        if (this.pieces[i].value === 2) {
+          anime({
+            targets: ['.svg-attributes-demo'],
+            keyframes: [
+              { opacity: 1.0, duration: 0 },
+              { d: 'M4,4 4,148 74,148 74,80 74,80 74,4z' },
+              { d: 'M4,4 4,74 74,74 74,74 74,74 74,4z' },
+              { opacity: 0.0 },
+            ],
+            baseFrequency: 0,
+            scale: 1,
+            direction: 'normal',
+            easing: 'linear',
+            duration: 500,
+          });
+        }
       }
     },
     scale(value) {

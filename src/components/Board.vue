@@ -10,12 +10,15 @@
         :size='pieceSize'
         v-on:click.native='placed(i)'
       />
-      <g :transform='`translate(${151}, ${151})`'>
+      <g :transform='`translate(${scale(2)}, ${scale(2)})`'>
       <path
         class='svg-attributes-demo'
-        d='M4,4 4,148 148,148 148,80 74,80 74,4 z'
+        d='M9,9 9,143 143,143 143,85 67,85 67,9 z'
         style="fill: #FFFFB3; pointer-events: none;"
         opacity='0'
+        stroke='#FFFFB3'
+        stroke-width='10'
+        stroke-linejoin="round"
       />
       </g>
     </g>
@@ -65,9 +68,10 @@ export default {
             targets: ['.svg-attributes-demo'],
             keyframes: [
               { opacity: 1.0, duration: 0 },
-              { d: 'M4,4 4,148 74,148 74,80 74,80 74,4z' },
-              { d: 'M4,4 4,74 74,74 74,74 74,74 74,4z' },
+              { d: 'M9,9 9,143 67,143 67,85 67,85 67,9z' },
+              { d: 'M9,9 9,67 67,67 67,67 67,67 67,9z' },
               { opacity: 0.0 },
+              { d: 'M9,9 9,143 143,143 143,85 67,85 67,9z' },
             ],
             baseFrequency: 0,
             scale: 1,

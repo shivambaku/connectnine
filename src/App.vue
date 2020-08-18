@@ -6,9 +6,7 @@
       <p>
         Select one of the three available numbers and place it in an empty spot.
         <br/>
-        Connect three or more of the same value to progress.
-        <br/>
-        Connections can be adjacent or even L shaped but not diagonal.
+        Connect three or more of the same adjacent numbers to get a higher number.
       </p>
     </div>
     <hr/>

@@ -28,75 +28,6 @@ hr {
                                   supported by Chrome and Opera */
 }
 
-.header {
-  margin: 30px 0px 0px;
-  height: 105px;
-}
-
-.header .title {
-  letter-spacing: 2px;
-  font-size: 38px;
-  margin: 5px 0px 10px;
-  text-align: left;
-}
-
-.header .subtitle {
-  text-align: left;
-  margin: 2px 0;
-}
-
-.button {
-  text-align: left;
-  background: var(--background-color);
-  padding: 8px 15px;
-  text-transform: lowercase;
-  float: left;
-  border-radius: 10px;
-  color: var(--foreground-color);
-  font-style: italic;
-}
-
-.button.disabled {
-  opacity: 0.7;
-  pointer-events:none;
-}
-
-@media(hover: hover) and (pointer: fine) {
-  .button:hover {
-    background: var(--foreground-color);
-    color: var(--background-color);
-    cursor: pointer;
-  }
-}
-
-.header .score-container {
-  float: right;
-  height: 100%;
-  position: relative;
-}
-
-.header .score::before {
-  content: 'SCORE';
-  color: var(--foreground-color);
-  position: absolute;
-  left: 0;
-  line-height: 50px;
-  text-align: center;
-  font-size: 14px;
-  width: 100%;
-}
-
-.header .score {
-  background: var(--background-color);
-  color: var(--foreground-color);
-  width: 120px;
-  border-radius: 10px;
-  font-size: 34px;
-  line-height: 135px;
-  font-weight: 500;
-  height: 100%;
-}
-
 .rules h4 {
   margin-bottom: 0px;
   font-size: 18px;
@@ -118,6 +49,70 @@ hr {
   max-width: 400px;
   min-width: 325px;
   margin: 0 auto;
+}
+
+.game .header {
+  margin: 30px 0px 0px;
+  width: 100%;
+  /* display: inline-block; */
+  display: flex;
+  justify-content: space-between;
+}
+
+.game .header .title {
+  letter-spacing: 2px;
+  font-size: 38px;
+  margin: 5px 0px 10px;
+}
+
+.game .header .button {
+  background: var(--background-color);
+  color: var(--foreground-color);
+  padding: 8px 15px;
+  border-radius: 10px;
+  text-transform: lowercase;
+  font-style: italic;
+  float: left;
+}
+
+.game .header .button.disabled {
+  opacity: 0.7;
+  pointer-events:none;
+}
+
+@media(hover: hover) and (pointer: fine) {
+  .game .header .button:hover {
+    background: var(--foreground-color);
+    color: var(--background-color);
+    cursor: pointer;
+  }
+}
+
+.game .header .score-container {
+  background: var(--background-color);
+  width: 30%;
+  border-radius: 10px;
+  position: relative;
+}
+
+.game .header .score::before {
+  content: 'SCORE';
+  color: var(--foreground-color);
+  font-size: 14px;
+  position: absolute;
+  top: -60%;
+  left: 0;
+  right: 0;
+}
+
+.game .header .score {
+  color: var(--foreground-color);
+  font-size: 34px;
+  font-weight: 500;
+  position: absolute;
+  top: 42%;
+  left: 0;
+  right: 0;
 }
 
 .game .board {
@@ -207,19 +202,19 @@ hr {
     min-width: 300px;
   }
 
-  .header .title {
+  .game .header {
+    margin: 30px 0px 0px;
+    height: 100px;
+  }
+
+  .game .header .title {
     letter-spacing: 1px;
     font-size: 32px;
     margin: 5px 0px 10px;
     text-align: left;
   }
 
-  .button {
+  .game .button {
     padding: 8px 10px;
-  }
-
-  .header {
-    margin: 30px 0px 0px;
-    height: 100px;
   }
 }

@@ -11,15 +11,15 @@
         v-on:click.native='placed(i)'
       />
       <g :transform='`translate(${scale(2)}, ${scale(2)})`'>
-      <path
-        ref='path'
-        style='pointer-events: none;'
-        fill='#FFFFb3'
-        opacity='0'
-        stroke='#FFFFB3'
-        stroke-width='10'
-        stroke-linejoin='round'
-      />
+        <path
+          ref='path'
+          style='pointer-events: none;'
+          fill='#FFFFb3'
+          opacity='0'
+          stroke='#FFFFB3'
+          stroke-width='10'
+          stroke-linejoin='round'
+        />
       </g>
     </g>
   </svg>

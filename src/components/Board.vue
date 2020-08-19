@@ -12,13 +12,13 @@
       />
       <g :transform='`translate(${scale(2)}, ${scale(2)})`'>
       <path
-        class='svg-attributes-demo'
-        d='M9,9 9,143 143,143 143,85 67,85 67,9 z'
-        style="fill: #FFFFB3; pointer-events: none;"
+        ref='path'
+        style='pointer-events: none;'
+        fill='#FFFFb3'
         opacity='0'
         stroke='#FFFFB3'
         stroke-width='10'
-        stroke-linejoin="round"
+        stroke-linejoin='round'
       />
       </g>
     </g>
@@ -64,20 +64,20 @@ export default {
         this.$emit('placed', Settings.itox(i), Settings.itoy(i));
 
         if (this.pieces[i].value === 2) {
+          this.$refs.path.setAttribute('d', 'M9,9 9,143 143,143 143,85 67,85 67,9 z');
+          this.$refs.path.setAttribute('opacity', '1.0');
           anime({
-            targets: ['.svg-attributes-demo'],
+            targets: [this.$refs.path],
             keyframes: [
-              { opacity: 1.0, duration: 0 },
-              { d: 'M9,9 9,143 67,143 67,85 67,85 67,9z' },
-              { d: 'M9,9 9,67 67,67 67,67 67,67 67,9z' },
+              { d: 'M9,9 9,143 67,143 67,85 67,85 67,9 z' },
+              { d: 'M9,9 9,67 67,67 67,67 67,67 67,9 z' },
               { opacity: 0.0 },
-              { d: 'M9,9 9,143 143,143 143,85 67,85 67,9z' },
             ],
             baseFrequency: 0,
             scale: 1,
             direction: 'normal',
             easing: 'linear',
-            duration: 500,
+            duration: 300,
           });
         }
       }

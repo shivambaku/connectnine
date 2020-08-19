@@ -34,6 +34,7 @@ import Settings from '../settings';
 export default {
   props: {
     pieces: Array,
+    animationData: Array,
   },
   components: {
     Piece,

@@ -23,6 +23,7 @@
     <Board
       :pieces='gameState.boardPieces'
       @placed='placed'
+      :animationData='animationData'
     />
     <Selector
       :pieces='gameState.selectorPieces'
@@ -54,6 +55,7 @@ export default {
       savedState: {},
       canUndo: false,
       futureSelectorPieces: [],
+      animationData: [],
     };
   },
   mounted() {
@@ -139,7 +141,7 @@ export default {
 
       // check if connections were formed
       const visited = new Set();
-      this.checkConnections(x, y, value, visited);
+      this.checkConnections(x, y, value, visited, index, 1);
 
       // a connection was formed
       if (visited.size >= 3) {
@@ -154,15 +156,25 @@ export default {
         this.place(x, y, value + 1);
       }
     },
-    checkConnections(x, y, value, visited) {
+    checkConnections(x, y, value, visited, parentIndex, level) {
       const index = this.xytoi(x, y);
       if (!this.outOfBounds(x, y) && this.sameValue(x, y, value) && !visited.has(index)) {
         visited.add(index);
 
-        this.checkConnections(x, y + 1, value, visited);
-        this.checkConnections(x + 1, y, value, visited);
-        this.checkConnections(x, y - 1, value, visited);
-        this.checkConnections(x - 1, y, value, visited);
+        this.animationData.push(
+          {
+            x,
+            y,
+            index,
+            parentIndex,
+            level,
+          },
+        );
+
+        this.checkConnections(x, y + 1, value, visited, parentIndex, level + 1);
+        this.checkConnections(x + 1, y, value, visited, parentIndex, level + 1);
+        this.checkConnections(x, y - 1, value, visited, parentIndex, level + 1);
+        this.checkConnections(x - 1, y, value, visited, parentIndex, level + 1);
       }
     },
     outOfBounds(x, y) {

@@ -183,6 +183,7 @@ export default {
               parentX: Settings.itox(parentIndex),
               parentY: Settings.itoy(parentIndex),
               level: visitedSize === visited.size ? level + 1 : level,
+              value,
             },
           );
         }

@@ -16,9 +16,8 @@
           v-for='(d, i) in animationData'
           :key='`animationData${i}`'
           :id='i'
-          :class='d.level === 1 ? "level1rect" : "level2rect"'
+          :class='`${d.level === 1 ? "level1rect" : "level2rect"} piece piece-${d.value}`'
           style='pointer-events: none;'
-          fill='#FFFFb3'
           rx='6'
           ry='6'
           :x='d.x < d.parentX ? animationScale(d.x) : animationScale(d.parentX)'
@@ -89,14 +88,14 @@ export default {
       this.animationData = animationData;
 
       this.$nextTick(() => {
-        console.log(this.$refs.test);
-
         const timeline = anime.timeline({
           easing: 'linear',
-          duration: 300,
+          duration: 200,
           complete: () => {
             this.animationData = [];
-            callback();
+            this.$nextTick(() => {
+              callback();
+            });
           },
         });
 

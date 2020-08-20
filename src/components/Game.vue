@@ -23,7 +23,7 @@
     <Board
       :pieces='gameState.boardPieces'
       @placed='placed'
-      :animationData='animationData'
+      :boardBus='boardBus'
     />
     <Selector
       :pieces='gameState.selectorPieces'
@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import Board from './Board.vue';
 import Selector from './Selector.vue';
 import Settings from '../settings';
@@ -55,7 +56,7 @@ export default {
       savedState: {},
       canUndo: false,
       futureSelectorPieces: [],
-      animationData: [],
+      boardBus: new Vue(),
     };
   },
   mounted() {
@@ -154,9 +155,11 @@ export default {
           this.gameState.boardPieces[visitedIndex].value = 0;
         });
 
-        this.animationData = animationData;
+        this.boardBus.$emit('animateConnections', animationData, () => {
+          this.place(x, y, value + 1);
+        });
 
-        this.place(x, y, value + 1);
+        // this.place(x, y, value + 1);
       }
     },
     checkConnections(x, y, value, visited, animationData, parentIndex, level) {

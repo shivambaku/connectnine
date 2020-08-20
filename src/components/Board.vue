@@ -10,8 +10,9 @@
         :size='pieceSize'
         v-on:click.native='placed(i)'
       />
-      <g ref='connectionAnimationGroup'>
+      <g>
         <rect
+          ref='test'
           v-for='(d, i) in animationData'
           :key='`animationData${i}`'
           :id='i'
@@ -39,7 +40,7 @@ import Settings from '../settings';
 export default {
   props: {
     pieces: Array,
-    animationData: Array,
+    boardBus: Object,
   },
   components: {
     Piece,
@@ -50,6 +51,7 @@ export default {
       padding: Design.board.padding,
       boardSize: Settings.boardSize,
       settings: Settings,
+      animationData: [],
     };
   },
   computed: {
@@ -66,8 +68,8 @@ export default {
       return 2 * (this.animationPieceSize + Design.piece.padding);
     },
   },
-  updated() {
-    this.animateConnections();
+  created() {
+    this.boardBus.$on('animateConnections', this.animateConnections);
   },
   methods: {
     placed(i) {
@@ -82,47 +84,58 @@ export default {
     animationScale(value) {
       return this.scale(value) + Design.piece.padding;
     },
-    animateConnections() {
-      const timeline = anime.timeline({
-        easing: 'linear',
-        duration: 300,
-      });
+    animateConnections(animationData, callback) {
+      console.log(animationData);
+      this.animationData = animationData;
 
-      const xAnimation = (el) => {
-        const d = this.animationData[el.id];
-        return this.animationScale(d.parentX);
-      };
+      this.$nextTick(() => {
+        console.log(this.$refs.test);
 
-      const yAnimation = (el) => {
-        const d = this.animationData[el.id];
-        return this.animationScale(d.parentY);
-      };
-
-      timeline
-        .add({
-          targets: '.level2rect',
-          keyframes: [
-            {
-              width: this.animationPieceSize,
-              height: this.animationPieceSize,
-              x: xAnimation,
-              y: yAnimation,
-            },
-            { opacity: 0.0, duration: 0 },
-          ],
-        })
-        .add({
-          targets: '.level1rect',
-          keyframes: [
-            {
-              width: this.animationPieceSize,
-              height: this.animationPieceSize,
-              x: xAnimation,
-              y: yAnimation,
-            },
-            { opacity: 0.0, duration: 0 },
-          ],
+        const timeline = anime.timeline({
+          easing: 'linear',
+          duration: 300,
+          complete: () => {
+            this.animationData = [];
+            callback();
+          },
         });
+
+        const xAnimation = (el) => {
+          const d = this.animationData[el.id];
+          return this.animationScale(d.parentX);
+        };
+
+        const yAnimation = (el) => {
+          const d = this.animationData[el.id];
+          return this.animationScale(d.parentY);
+        };
+
+        timeline
+          .add({
+            targets: '.level2rect',
+            keyframes: [
+              {
+                width: this.animationPieceSize,
+                height: this.animationPieceSize,
+                x: xAnimation,
+                y: yAnimation,
+              },
+              { opacity: 0.0, duration: 0 },
+            ],
+          })
+          .add({
+            targets: '.level1rect',
+            keyframes: [
+              {
+                width: this.animationPieceSize,
+                height: this.animationPieceSize,
+                x: xAnimation,
+                y: yAnimation,
+              },
+              { opacity: 0.0, duration: 0 },
+            ],
+          });
+      });
     },
   },
 };

@@ -89,7 +89,7 @@ export default {
       this.$nextTick(() => {
         const timeline = anime.timeline({
           easing: 'linear',
-          duration: 200,
+          duration: 150,
           complete: () => {
             this.animationData = [];
             this.$nextTick(() => {

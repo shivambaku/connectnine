@@ -10,15 +10,20 @@
         :size='pieceSize'
         v-on:click.native='placed(i)'
       />
-      <g :transform='`translate(${scale(2)}, ${scale(2)})`'>
-        <path
-          ref='path'
+      <g ref='connectionAnimationGroup'>
+        <rect
+          v-for='(d, i) in animationData'
+          :key='`animationData${i}`'
+          :id='i'
+          :class='d.level === 1 ? "level1rect" : "level2rect"'
           style='pointer-events: none;'
           fill='#FFFFb3'
-          opacity='0'
-          stroke='#FFFFB3'
-          stroke-width='10'
-          stroke-linejoin='round'
+          rx='6'
+          ry='6'
+          :x='d.x < d.parentX ? scale(d.x) : scale(d.parentX)'
+          :y='d.y < d.parentY ? scale(d.y) : scale(d.parentY)'
+          :width='d.x === d.parentX ? pieceSize : pieceSize * 2'
+          :height='d.y === d.parentY ? pieceSize : pieceSize * 2'
         />
       </g>
     </g>
@@ -47,10 +52,6 @@ export default {
       settings: Settings,
     };
   },
-  mounted() {
-  },
-  created() {
-  },
   computed: {
     innerWidth() {
       return this.width - 2 * this.padding;
@@ -59,33 +60,70 @@ export default {
       return this.innerWidth / this.boardSize;
     },
   },
+  updated() {
+    this.animateConnections();
+  },
   methods: {
     placed(i) {
       if (this.pieces[i].value === 0) {
         this.$emit('placed', Settings.itox(i), Settings.itoy(i));
-
-        if (this.pieces[i].value === 2) {
-          this.$refs.path.setAttribute('d', 'M9,9 9,143 143,143 143,85 67,85 67,9 z');
-          this.$refs.path.setAttribute('opacity', '1.0');
-          anime({
-            targets: [this.$refs.path],
-            keyframes: [
-              { d: 'M9,9 9,143 67,143 67,85 67,85 67,9 z' },
-              { d: 'M9,9 9,67 67,67 67,67 67,67 67,9 z' },
-              { opacity: 0.0 },
-            ],
-            baseFrequency: 0,
-            scale: 1,
-            direction: 'normal',
-            easing: 'linear',
-            duration: 300,
-          });
-        }
       }
     },
     scale(value) {
       const t = value / this.boardSize;
       return this.innerWidth * t;
+    },
+    animateConnections() {
+      const timeline = anime.timeline({
+        easing: 'linear',
+        duration: 300,
+      });
+
+      // const widthAnimation = (el) => {
+      //   const d = this.animationData[el.id];
+      //   return d.x == d.parentX ? this.pieceSize;
+      // };
+
+      // const heightAnimation = (el) => {
+      //   const d = this.animationData[el.id];
+      //   return d.y == d.parentY ? this.pieceSize;
+      // };
+
+      const xAnimation = (el) => {
+        const d = this.animationData[el.id];
+        return this.scale(d.parentX);
+      };
+
+      const yAnimation = (el) => {
+        const d = this.animationData[el.id];
+        return this.scale(d.parentY);
+      };
+
+      timeline
+        .add({
+          targets: '.level2rect',
+          keyframes: [
+            {
+              width: this.pieceSize,
+              height: this.pieceSize,
+              x: xAnimation,
+              y: yAnimation,
+            },
+            { opacity: 0.0, duration: 0 },
+          ],
+        })
+        .add({
+          targets: '.level1rect',
+          keyframes: [
+            {
+              width: this.pieceSize,
+              height: this.pieceSize,
+              x: xAnimation,
+              y: yAnimation,
+            },
+            { opacity: 0.0 },
+          ],
+        });
     },
   },
 };

@@ -141,7 +141,8 @@ export default {
 
       // check if connections were formed
       const visited = new Set();
-      this.checkConnections(x, y, value, visited, index, 1);
+      const animationData = [];
+      this.checkConnections(x, y, value, visited, animationData, index, 0);
 
       // a connection was formed
       if (visited.size >= 3) {
@@ -153,28 +154,35 @@ export default {
           this.gameState.boardPieces[visitedIndex].value = 0;
         });
 
+        this.animationData = animationData;
+
         this.place(x, y, value + 1);
       }
     },
-    checkConnections(x, y, value, visited, parentIndex, level) {
+    checkConnections(x, y, value, visited, animationData, parentIndex, level) {
       const index = this.xytoi(x, y);
       if (!this.outOfBounds(x, y) && this.sameValue(x, y, value) && !visited.has(index)) {
         visited.add(index);
 
-        this.animationData.push(
-          {
-            x,
-            y,
-            index,
-            parentIndex,
-            level,
-          },
-        );
+        const visitedSize = visited.size;
 
-        this.checkConnections(x, y + 1, value, visited, parentIndex, level + 1);
-        this.checkConnections(x + 1, y, value, visited, parentIndex, level + 1);
-        this.checkConnections(x, y - 1, value, visited, parentIndex, level + 1);
-        this.checkConnections(x - 1, y, value, visited, parentIndex, level + 1);
+        this.checkConnections(x, y + 1, value, visited, animationData, index, level + 1);
+        this.checkConnections(x + 1, y, value, visited, animationData, index, level + 1);
+        this.checkConnections(x, y - 1, value, visited, animationData, index, level + 1);
+        this.checkConnections(x - 1, y, value, visited, animationData, index, level + 1);
+
+        // only add animation data for pieces besides the placed one
+        if (level !== 0) {
+          animationData.push(
+            {
+              x,
+              y,
+              parentX: Settings.itox(parentIndex),
+              parentY: Settings.itoy(parentIndex),
+              level: visitedSize === visited.size ? level + 1 : level,
+            },
+          );
+        }
       }
     },
     outOfBounds(x, y) {
@@ -229,6 +237,8 @@ export default {
 
       // save the undone state to local storage
       this.saveToLocalStorage();
+
+      this.animationData = [];
     },
     saveState() {
       this.savedState = JSON.parse(JSON.stringify(this.gameState));

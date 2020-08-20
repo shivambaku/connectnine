@@ -20,10 +20,10 @@
           fill='#FFFFb3'
           rx='6'
           ry='6'
-          :x='d.x < d.parentX ? scale(d.x) : scale(d.parentX)'
-          :y='d.y < d.parentY ? scale(d.y) : scale(d.parentY)'
-          :width='d.x === d.parentX ? pieceSize : pieceSize * 2'
-          :height='d.y === d.parentY ? pieceSize : pieceSize * 2'
+          :x='d.x < d.parentX ? animationScale(d.x) : animationScale(d.parentX)'
+          :y='d.y < d.parentY ? animationScale(d.y) : animationScale(d.parentY)'
+          :width='d.x === d.parentX ? animationPieceSize : animationTwoPieceSize'
+          :height='d.y === d.parentY ? animationPieceSize : animationTwoPieceSize'
         />
       </g>
     </g>
@@ -59,6 +59,12 @@ export default {
     pieceSize() {
       return this.innerWidth / this.boardSize;
     },
+    animationPieceSize() {
+      return this.pieceSize - 2 * Design.piece.padding;
+    },
+    animationTwoPieceSize() {
+      return 2 * (this.animationPieceSize + Design.piece.padding);
+    },
   },
   updated() {
     this.animateConnections();
@@ -73,30 +79,23 @@ export default {
       const t = value / this.boardSize;
       return this.innerWidth * t;
     },
+    animationScale(value) {
+      return this.scale(value) + Design.piece.padding;
+    },
     animateConnections() {
       const timeline = anime.timeline({
         easing: 'linear',
         duration: 300,
       });
 
-      // const widthAnimation = (el) => {
-      //   const d = this.animationData[el.id];
-      //   return d.x == d.parentX ? this.pieceSize;
-      // };
-
-      // const heightAnimation = (el) => {
-      //   const d = this.animationData[el.id];
-      //   return d.y == d.parentY ? this.pieceSize;
-      // };
-
       const xAnimation = (el) => {
         const d = this.animationData[el.id];
-        return this.scale(d.parentX);
+        return this.animationScale(d.parentX);
       };
 
       const yAnimation = (el) => {
         const d = this.animationData[el.id];
-        return this.scale(d.parentY);
+        return this.animationScale(d.parentY);
       };
 
       timeline
@@ -104,8 +103,8 @@ export default {
           targets: '.level2rect',
           keyframes: [
             {
-              width: this.pieceSize,
-              height: this.pieceSize,
+              width: this.animationPieceSize,
+              height: this.animationPieceSize,
               x: xAnimation,
               y: yAnimation,
             },
@@ -116,12 +115,12 @@ export default {
           targets: '.level1rect',
           keyframes: [
             {
-              width: this.pieceSize,
-              height: this.pieceSize,
+              width: this.animationPieceSize,
+              height: this.animationPieceSize,
               x: xAnimation,
               y: yAnimation,
             },
-            { opacity: 0.0 },
+            { opacity: 0.0, duration: 0 },
           ],
         });
     },

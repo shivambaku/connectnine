@@ -84,7 +84,6 @@ export default {
       return this.scale(value) + Design.piece.padding;
     },
     animateConnections(animationData, callback) {
-      console.log(animationData);
       this.animationData = animationData;
 
       this.$nextTick(() => {
@@ -109,6 +108,8 @@ export default {
           return this.animationScale(d.parentY);
         };
 
+        const level1 = document.getElementsByClassName('level1rect');
+
         timeline
           .add({
             targets: '.level2rect',
@@ -119,7 +120,7 @@ export default {
                 x: xAnimation,
                 y: yAnimation,
               },
-              { opacity: 0.0, duration: 0 },
+              { opacity: 0.0, duration: level1.length === 0 ? 100 : 0 },
             ],
           })
           .add({
@@ -131,7 +132,7 @@ export default {
                 x: xAnimation,
                 y: yAnimation,
               },
-              { opacity: 0.0, duration: 0 },
+              { opacity: 0.0, duration: 100 },
             ],
           });
       });

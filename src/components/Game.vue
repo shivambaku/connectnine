@@ -155,6 +155,8 @@ export default {
           this.gameState.boardPieces[visitedIndex].value = 0;
         });
 
+        this.gameState.boardPieces[index].value = value + 1;
+
         this.boardBus.$emit('animateConnections', animationData, () => {
           this.place(x, y, value + 1);
         });

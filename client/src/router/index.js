@@ -11,22 +11,22 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Play',
+      name: 'play',
       component: Play,
     },
     {
       path: '/multiplayer',
-      name: 'Multiplayer',
+      name: 'multiplayer',
       component: Multiplayer,
     },
     {
-      path: '/MultiplayerGame',
-      name: 'MultiplayerGame',
+      path: '/multiplayer-game',
+      name: 'multiplayer-game',
       component: MultiplayerGame,
     },
     {
-      path: '/MultiplayerLobby/:id',
-      name: 'MultiplayerLobby',
+      path: '/multiplayer-lobby/:id',
+      name: 'multiplayer-lobby',
       props: true,
       component: MultiplayerLobby,
     },

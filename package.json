@@ -9,13 +9,9 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-<<<<<<< Updated upstream
-    "vue": "^2.6.11"
-=======
     "d3": "^5.16.0",
     "vue": "^2.6.11",
     "vue-router": "^3.4.3"
->>>>>>> Stashed changes
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.0",

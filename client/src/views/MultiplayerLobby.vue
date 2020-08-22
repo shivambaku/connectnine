@@ -9,16 +9,17 @@
 <script>
 export default {
   name: 'MultiplayerLobby',
-  props: [
-    'id',
-  ],
+  props: {
+    id: String,
+    socket: Object,
+  },
   data() {
     return {
       Players: [],
     };
   },
   created() {
-    this.$socket.on('users', (data) => {
+    this.socket.on('users', (data) => {
       this.Players = data;
     });
   },

@@ -22,7 +22,7 @@ export default {
   methods: {
     submit() {
       this.socket.emit('username', this.username);
-      this.$router.push({ name: 'multiplayer-lobby', params: { id: this.username } });
+      this.$router.push({ name: 'multiplayer-lobby', params: { id: this.username, socket: this.socket } });
     },
   },
 };

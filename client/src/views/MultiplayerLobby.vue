@@ -2,7 +2,7 @@
   <div>
     <h1> Welcome To The Multiplayer Lobby! </h1>
     {{id}}
-    <p> {{Players}} </p>
+    <p> {{players}} </p>
     <button v-on:click="submit"> Start </button>
   </div>
 </template>
@@ -15,12 +15,12 @@ export default {
   },
   data() {
     return {
-      Players: [],
+      players: [],
     };
   },
   created() {
     this.socket.on('users', (data) => {
-      this.Players = data;
+      this.players = data;
     });
   },
 };

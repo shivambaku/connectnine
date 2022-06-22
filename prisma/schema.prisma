@@ -1,0 +1,21 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+  // url      = env("DATABASE_URL") // Use the .env file instead
+}
+
+model GameState {
+  id              String        @id @default(uuid())
+  createdAt       DateTime      @default(now())
+  boardPieces     String
+  selectorPieces  String
+  selectedIndex   Int
+  score           Int
+}

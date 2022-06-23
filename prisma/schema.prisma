@@ -13,7 +13,7 @@ datasource db {
 
 model GameState {
   id              String        @id @default(uuid())
-  createdAt       DateTime      @default(now())
+  startedAt       DateTime      @default(now())
   boardPieces     String
   selectorPieces  String
   selectedIndex   Int

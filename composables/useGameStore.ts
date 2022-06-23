@@ -14,39 +14,29 @@ export const useGameStore = defineStore('gameStore', () => {
     score: 0,
   });
 
-  const undoState = ref({
-    canUndo: false,
-    futureSelectorPieces: [],
-  });
+  // const selectedPiece = computed(() => ({
+  //   get() {
+  //     return gameState.value.selectorPieces[gameState.value.selectedIndex];
+  //   },
+  //   set(value) {
+  //     gameState.value.selectorPieces[gameState.value.selectedIndex] = value;
+  //   },
+  // }));
 
-  const selectedPiece = computed(() => ({
-    get() {
-      return gameState.value.selectorPieces[gameState.value.selectedIndex];
-    },
-    set(value) {
-      gameState.value.selectorPieces[gameState.value.selectedIndex] = value;
-    },
-  }));
+  // const getRandomPiece = () => {
+  //   const rand = Math.random();
+  //   let sum = 0;
+  //   for (let i = 0; i < settings.value.randomness.length; i += 1) {
+  //     sum += settings.value.randomness[i];
+  //     if (rand <= sum)
+  //       return i + 1;
+  //   }
+  //   return 0;
+  // };
 
-  const getRandomPiece = () => {
-    // if we already know what the future piece should be, then use that
-    if (futureSelectorPieces.value[gameState.value.selectedIndex] !== null)
-      return futureSelectorPieces.value[gameState.value.selectedIndex];
+  // const select = (index) => {
+  //   gameState.value.selectedIndex = index;
+  // };
 
-    // otherwise get a random number for the next piece
-    const rand = Math.random();
-    let sum = 0;
-    for (let i = 0; i < settings.value.randomness.length; i += 1) {
-      sum += settings.value.randomness[i];
-      if (rand <= sum)
-        return i + 1;
-    }
-    return 0;
-  };
-
-  const select = (index) => {
-    gameState.value.selectedIndex = index;
-  };
-
-  return { gameState, canUndo, futureSelectorPieces };
+  return { gameState, settings };
 });

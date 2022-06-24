@@ -18,4 +18,18 @@
   text-align: center;
   color: var(--primary-color);
 }
+
+hr {
+  border: none;
+  border-bottom: 1px solid;
+  width: 20%;
+}
+
+svg {
+  vertical-align: top;
+}
+
+.noselect {
+  user-select: none;
+}
 </style>

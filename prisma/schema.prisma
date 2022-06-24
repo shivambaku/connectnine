@@ -6,16 +6,17 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
-  // url      = env("DATABASE_URL") // Use the .env file instead
+  provider = "postgresql"
+  url      = env("DATABASE_URL") 
 }
 
 model GameState {
-  id              String        @id @default(uuid())
-  startedAt       DateTime      @default(now())
-  boardPieces     String
-  selectorPieces  String
-  selectedIndex   Int
-  score           Int
+  id                    String        @id @default(uuid())
+  startedAt             DateTime      @default(now())
+  boardPieces           Int[]
+  selectorPieces        Int[]
+  futureSelectorPieces  Int[]
+  selectedIndex         Int           @default(0)
+  score                 Int           @default(0)
+  canUndo               Boolean       @default(false)
 }

@@ -10,6 +10,7 @@ export const useGameStore = defineStore('gameStore', () => {
   const gameState = ref({
     boardPieces: [],
     selectorPieces: [],
+    futureSelectorPieces: [],
     selectedIndex: 0,
     score: 0,
   });
@@ -40,3 +41,4 @@ export const useGameStore = defineStore('gameStore', () => {
 
   return { gameState, settings };
 });
+

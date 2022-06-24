@@ -32,6 +32,9 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
   const value = gameState.selectorPieces[selectedIndex];
 
   placeHelper(gameState, x, y, value);
+
+  gameState.selectorPieces[selectedIndex] = gameState.futureSelectorPieces[selectedIndex];
+  gameState.futureSelectorPieces[selectedIndex] = getRandomPiece();
 }
 
 function placeHelper(gameState: GameState, x: number, y: number, value: number) {

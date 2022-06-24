@@ -1,13 +1,6 @@
 <script setup lang="ts">
-import { newGame } from '~~/server/services/gameService';
-
 const { settings } = useGameStore();
-
-const boardPieces = ref(Array(settings.boardSize * settings.boardSize).fill(0));
-const selectorPieces = ref(Array(settings.selectorCount).fill(0));
-const selectedIndex = ref(0);
-
-newGame();
+const { data: gameState, refresh: gameStateRefresh, pending: gameStatePending } = await useFetch('/api/game/new', { method: 'post' });
 </script>
 
 <template>
@@ -17,7 +10,7 @@ newGame();
         <h1 class="title">
           Connect 9
         </h1>
-        <div class="button">
+        <div class="button" @click="() => gameStateRefresh()">
           New Game
         </div>
         <div
@@ -31,10 +24,10 @@ newGame();
         <div class="score" />
       </div>
     </div>
-    <Board :pieces="boardPieces" :padding="10" :width="400" :board-size="settings.boardSize" />
+    <Board :pieces="gameState.boardPieces" :padding="10" :width="400" :board-size="settings.boardSize" />
     <Selector
-      :pieces="selectorPieces"
-      :selected-index="selectedIndex"
+      :pieces="gameState.selectorPieces"
+      :selected-index="gameState.selectedIndex"
       :selector-count="settings.selectorCount"
       :padding="10"
       :width="200"

@@ -7,8 +7,6 @@ const props = defineProps({
   padding: Number,
 });
 
-console.log(props.selectedIndex);
-
 const innerWidth = computed(() => {
   return props.width - 2 * props.padding;
 });

@@ -37,7 +37,7 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
   // place the piece and connect the pieces if needed
   placeHelper(gameState, x, y, value);
 
-  // update the selectors of the gamestate
+  // update the selectors
   gameState.selectedIndex = selectedIndex;
   gameState.selectorPieces[selectedIndex] = gameState.futureSelectorPieces[selectedIndex];
   gameState.futureSelectorPieces[selectedIndex] = getRandomPiece();

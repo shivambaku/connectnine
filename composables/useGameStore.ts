@@ -5,7 +5,6 @@ export const useGameStore = defineStore('gameStore', () => {
   const settings = ref({
     boardSize: 5,
     selectorCount: 3,
-    randomness: [0.4, 0.33, 0.22, 0.04, 0.01],
   });
 
   const gameState = ref({} as GameState);

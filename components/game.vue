@@ -1,6 +1,11 @@
 <script setup lang="ts">
-const { settings } = useGameStore();
-const { data: gameState, refresh: gameStateRefresh, pending: gameStatePending } = await useFetch('/api/game/new', { method: 'post' });
+import { storeToRefs } from 'pinia';
+
+const gameStore = useGameStore();
+const { settings, gameState } = storeToRefs(gameStore);
+const { newGame, place, select } = gameStore;
+
+await newGame();
 </script>
 
 <template>
@@ -10,7 +15,7 @@ const { data: gameState, refresh: gameStateRefresh, pending: gameStatePending } 
         <h1 class="title">
           Connect 9
         </h1>
-        <div class="button" @click="() => gameStateRefresh()">
+        <div class="button" @click="newGame">
           New Game
         </div>
         <div
@@ -21,16 +26,25 @@ const { data: gameState, refresh: gameStateRefresh, pending: gameStatePending } 
         </div>
       </div>
       <div class="score-container">
-        <div class="score" />
+        <div class="score">
+          {{ gameState.score }}
+        </div>
       </div>
     </div>
-    <Board :pieces="gameState.boardPieces" :padding="10" :width="400" :board-size="settings.boardSize" />
+    <Board
+      :pieces="gameState.boardPieces"
+      :padding="10"
+      :width="400"
+      :board-size="settings.boardSize"
+      @place="place"
+    />
     <Selector
       :pieces="gameState.selectorPieces"
       :selected-index="gameState.selectedIndex"
       :selector-count="settings.selectorCount"
       :padding="10"
       :width="200"
+      @select="select"
     />
   </div>
 </template>

@@ -23,18 +23,34 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
   if (selectedIndex < 0 || selectedIndex >= Settings.selectorCount)
     throw new Error(`selectedIndex: ${selectedIndex} is invalid`);
 
-  const gameState = await prisma.gameState.findUnique({
+  let gameState = await prisma.gameState.findUnique({
     where: {
       id: gameId,
     },
   });
 
+  if (gameState === null)
+    throw new Error(`game id: ${gameId} is invalid`);
+
   const value = gameState.selectorPieces[selectedIndex];
 
+  // place the piece and connect the pieces if needed
   placeHelper(gameState, x, y, value);
 
+  // update the selectors of the gamestate
+  gameState.selectedIndex = selectedIndex;
   gameState.selectorPieces[selectedIndex] = gameState.futureSelectorPieces[selectedIndex];
   gameState.futureSelectorPieces[selectedIndex] = getRandomPiece();
+
+  // update the gamestate in the database
+  gameState = await prisma.gameState.update({
+    data: gameState,
+    where: {
+      id: gameId,
+    },
+  });
+
+  return gameState;
 }
 
 function placeHelper(gameState: GameState, x: number, y: number, value: number) {
@@ -62,7 +78,7 @@ function placeHelper(gameState: GameState, x: number, y: number, value: number) 
 
 function checkConnections(gameState: GameState, x: number, y: number, value: number, visited: Set<number>) {
   const index = xytoi(x, y);
-  if (outOfBounds(x, y) && sameValue(gameState, index, value) && !visited.has(index)) {
+  if (!outOfBounds(x, y) && sameValue(gameState, index, value) && !visited.has(index)) {
     visited.add(index);
 
     checkConnections(gameState, x, y + 1, value, visited);

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-const props = defineProps({
-  value: Number,
-  x: Number,
-  y: Number,
-  width: Number,
-  padding: Number,
-  radius: Number,
-});
+const props = defineProps<{
+  value: number
+  x: number
+  y: number
+  width: number
+  padding: number
+  radius: number
+}>();
 
 const innerWidth = computed(() => {
   return props.width - 2 * props.padding;

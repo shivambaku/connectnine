@@ -1,3 +1,4 @@
+import type { GameState } from '@prisma/client';
 import { defineStore } from 'pinia';
 
 export const useGameStore = defineStore('gameStore', () => {
@@ -7,38 +8,21 @@ export const useGameStore = defineStore('gameStore', () => {
     randomness: [0.4, 0.33, 0.22, 0.04, 0.01],
   });
 
-  const gameState = ref({
-    boardPieces: [],
-    selectorPieces: [],
-    futureSelectorPieces: [],
-    selectedIndex: 0,
-    score: 0,
-  });
+  const gameState = ref({} as GameState);
 
-  // const selectedPiece = computed(() => ({
-  //   get() {
-  //     return gameState.value.selectorPieces[gameState.value.selectedIndex];
-  //   },
-  //   set(value) {
-  //     gameState.value.selectorPieces[gameState.value.selectedIndex] = value;
-  //   },
-  // }));
+  const newGame = async () => {
+    gameState.value = await $fetch('/api/game/new', { method: 'post' });
+  };
 
-  // const getRandomPiece = () => {
-  //   const rand = Math.random();
-  //   let sum = 0;
-  //   for (let i = 0; i < settings.value.randomness.length; i += 1) {
-  //     sum += settings.value.randomness[i];
-  //     if (rand <= sum)
-  //       return i + 1;
-  //   }
-  //   return 0;
-  // };
+  const place = async (x: number, y: number) => {
+    gameState.value
+      = await $fetch('/api/game/place', { method: 'post', body: { gameId: gameState.value.id, x, y, selectedIndex: gameState.value.selectedIndex } });
+  };
 
-  // const select = (index) => {
-  //   gameState.value.selectedIndex = index;
-  // };
+  const select = async (i: number) => {
+    gameState.value.selectedIndex = i;
+  };
 
-  return { gameState, settings };
+  return { settings, gameState, newGame, place, select };
 });
 

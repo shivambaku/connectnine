@@ -1,11 +1,15 @@
 <script setup lang="ts">
-const props = defineProps({
-  selectorCount: Number,
-  pieces: Array<number>,
-  selectedIndex: Number,
-  width: Number,
-  padding: Number,
-});
+const props = defineProps<{
+  selectorCount: number
+  pieces: Array<number>
+  selectedIndex: number
+  width: number
+  padding: number
+}>();
+
+defineEmits<{
+  (e: 'select', i: number)
+}>();
 
 const innerWidth = computed(() => {
   return props.width - 2 * props.padding;
@@ -38,6 +42,7 @@ const scale = (value: number) => {
         :width="pieceWidth"
         :padding="4"
         :radius="6"
+        @click="() => $emit('select', i)"
       />
     </g>
   </svg>

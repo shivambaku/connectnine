@@ -3,25 +3,28 @@ const props = defineProps<{
   pieces: Array<number>
   width: number
   padding: number
-  boardSize: number
 }>();
 
 const emit = defineEmits<{
   (e: 'place', x: number, y: number)
 }>();
 
+const boardSize = computed(() => {
+  return Math.sqrt(props.pieces.length);
+});
+
 const innerWidth = computed(() => {
   return props.width - 2 * props.padding;
 });
 
 const pieceWidth = computed(() => {
-  return innerWidth.value / props.boardSize;
+  return innerWidth.value / boardSize.value;
 });
 
-const itox = (i: number) => i % props.boardSize;
-const itoy = (i: number) => Math.floor(i / props.boardSize);
-const scale = (value: number) => {
-  const t = value / props.boardSize;
+const itox = (i: number) => i % boardSize.value;
+const itoy = (i: number) => Math.floor(i / boardSize.value);
+const scale = (x: number) => {
+  const t = x / boardSize.value;
   return innerWidth.value * t;
 };
 
@@ -49,7 +52,7 @@ const place = (i: number, value: number) => {
   </svg>
 </template>
 
-<style>
+<style scoped>
 .board {
   border-radius: 10px;
   background: var(--background-color);

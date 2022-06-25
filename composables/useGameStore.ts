@@ -2,11 +2,6 @@ import type { GameState } from '@prisma/client';
 import { defineStore } from 'pinia';
 
 export const useGameStore = defineStore('gameStore', () => {
-  const settings = ref({
-    boardSize: 5,
-    selectorCount: 3,
-  });
-
   const gameState = ref({} as GameState);
 
   const newGame = async () => {
@@ -22,6 +17,6 @@ export const useGameStore = defineStore('gameStore', () => {
     gameState.value.selectedIndex = i;
   };
 
-  return { settings, gameState, newGame, place, select };
+  return { gameState, newGame, place, select };
 });
 

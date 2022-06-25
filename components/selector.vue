@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const props = defineProps<{
-  selectorCount: number
   pieces: Array<number>
   selectedIndex: number
   width: number
@@ -11,12 +10,16 @@ defineEmits<{
   (e: 'select', i: number)
 }>();
 
+const selectorCount = computed(() => {
+  return props.pieces.length;
+});
+
 const innerWidth = computed(() => {
   return props.width - 2 * props.padding;
 });
 
 const pieceWidth = computed(() => {
-  return innerWidth.value / props.selectorCount;
+  return innerWidth.value / selectorCount.value;
 });
 
 const height = computed(() => {
@@ -24,7 +27,7 @@ const height = computed(() => {
 });
 
 const scale = (value: number) => {
-  const t = value / props.selectorCount;
+  const t = value / selectorCount.value;
   return innerWidth.value * t;
 };
 </script>
@@ -48,7 +51,7 @@ const scale = (value: number) => {
   </svg>
 </template>
 
-<style>
+<style scoped>
 .selector {
   border-radius: 10px;
   background: var(--background-color);

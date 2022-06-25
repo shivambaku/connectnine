@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
-const { settings, gameState } = storeToRefs(gameStore);
+const { gameState } = storeToRefs(gameStore);
 const { newGame, place, select } = gameStore;
 
 await newGame();
@@ -35,13 +35,11 @@ await newGame();
       :pieces="gameState.boardPieces"
       :padding="10"
       :width="400"
-      :board-size="settings.boardSize"
       @place="place"
     />
     <Selector
       :pieces="gameState.selectorPieces"
       :selected-index="gameState.selectedIndex"
-      :selector-count="settings.selectorCount"
       :padding="10"
       :width="200"
       @select="select"

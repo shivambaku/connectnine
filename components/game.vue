@@ -19,7 +19,7 @@ await loadGame();
           New Game
         </div>
         <div
-          :class="`button ${gameState.canUndo ? '' : 'disabled'}`"
+          :class="`button ${gameState.previousState !== null ? '' : 'disabled'}`"
           style="margin-left: 10px"
           @click="undo"
         >

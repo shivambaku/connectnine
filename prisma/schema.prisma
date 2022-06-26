@@ -18,6 +18,5 @@ model GameState {
   futureSelectorPieces  Int[]
   selectedIndex         Int           @default(0)
   score                 Int           @default(0)
-  canUndo               Boolean       @default(false)
   previousState         String?
 }

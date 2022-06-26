@@ -52,8 +52,8 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
   gameState.selectedIndex = selectedIndex;
 
   // save the previous state so that we can undo later
+  gameState.previousState = null;
   gameState.previousState = JSON.stringify(gameState);
-  gameState.canUndo = true;
 
   // the value that we will be placing
   const value = gameState.selectorPieces[selectedIndex];
@@ -86,10 +86,9 @@ export async function undo(gameId: string) {
   if (gameState === null)
     throw new Error(`game id: ${gameId} is invalid`);
 
-  if (gameState.canUndo) {
+  if (gameState.previousState != null) {
     // undo the state
     gameState = JSON.parse(gameState.previousState);
-    gameState.canUndo = false;
 
     // update the gamestate in the database
     gameState = await prisma.gameState.update({

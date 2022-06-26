@@ -29,6 +29,10 @@ export const useGameStore = defineStore('gameStore', () => {
     select(parseInt(e.key) - 1);
   });
 
-  return { gameState, newGame, loadGame, place, select };
+  const undo = async () => {
+    gameState.value = await $fetch('/api/game/undo', { method: 'post', body: { gameId: gameState.value.id } });
+  };
+
+  return { gameState, newGame, loadGame, place, select, undo };
 });
 

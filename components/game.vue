@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
 const { gameState } = storeToRefs(gameStore);
-const { newGame, loadGame, place, select } = gameStore;
+const { newGame, loadGame, place, select, undo } = gameStore;
 
 await loadGame();
 </script>
@@ -19,8 +19,9 @@ await loadGame();
           New Game
         </div>
         <div
-          class="button"
+          :class="`button ${gameState.canUndo ? '' : 'disabled'}`"
           style="margin-left: 10px"
+          @click="undo"
         >
           Undo
         </div>

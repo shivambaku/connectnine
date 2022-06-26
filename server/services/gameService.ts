@@ -48,13 +48,18 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
   if (gameState === null)
     throw new Error(`game id: ${gameId} is invalid`);
 
+  // save the previous state so that we can undo later
+  gameState.selectedIndex = selectedIndex;
+  gameState.previousState = JSON.stringify(gameState);
+  gameState.canUndo = true;
+
+  // the value that we will be placing
   const value = gameState.selectorPieces[selectedIndex];
 
   // place the piece and connect the pieces if needed
   placeHelper(gameState, x, y, value);
 
-  // update the selectors
-  gameState.selectedIndex = selectedIndex;
+  // get new random value for the selector from the predifned future selectors
   gameState.selectorPieces[selectedIndex] = gameState.futureSelectorPieces[selectedIndex];
   gameState.futureSelectorPieces[selectedIndex] = getRandomPiece();
 
@@ -65,6 +70,33 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
       id: gameId,
     },
   });
+
+  return gameState;
+}
+
+export async function undo(gameId: string) {
+  let gameState = await prisma.gameState.findUnique({
+    where: {
+      id: gameId,
+    },
+  });
+
+  if (gameState === null)
+    throw new Error(`game id: ${gameId} is invalid`);
+
+  if (gameState.canUndo) {
+    // undo the state
+    gameState = JSON.parse(gameState.previousState);
+    gameState.canUndo = false;
+
+    // update the gamestate in the database
+    gameState = await prisma.gameState.update({
+      data: gameState,
+      where: {
+        id: gameId,
+      },
+    });
+  }
 
   return gameState;
 }

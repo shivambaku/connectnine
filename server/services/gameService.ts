@@ -16,6 +16,22 @@ export async function newGame() {
   return gameState;
 }
 
+export async function loadGame(gameId: string) {
+  if (gameId === null)
+    return await newGame();
+
+  const gameState = await prisma.gameState.findUnique({
+    where: {
+      id: gameId,
+    },
+  });
+
+  if (gameState === null)
+    return await newGame();
+
+  return gameState;
+}
+
 export async function place(gameId: string, x: number, y: number, selectedIndex: number) {
   if (outOfBounds(x, y))
     throw new Error(`x: ${x}, y: ${y} is invalid`);

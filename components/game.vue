@@ -3,9 +3,9 @@ import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
 const { gameState } = storeToRefs(gameStore);
-const { newGame, place, select } = gameStore;
+const { newGame, loadGame, place, select } = gameStore;
 
-await newGame();
+await loadGame();
 </script>
 
 <template>

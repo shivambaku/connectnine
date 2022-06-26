@@ -1,5 +1,5 @@
 import type { GameState } from '@prisma/client';
-import { useStorage } from '@vueuse/core';
+import { onKeyDown, useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 
 export const useGameStore = defineStore('gameStore', () => {
@@ -25,25 +25,9 @@ export const useGameStore = defineStore('gameStore', () => {
     gameState.value.selectedIndex = i;
   };
 
-  window.addEventListener('keydown', (event) => {
-    if (!event.defaultPrevented) {
-      switch (event.code) {
-        case 'Digit1':
-          gameState.value.selectedIndex = 0;
-          break;
-        case 'Digit2':
-          gameState.value.selectedIndex = 1;
-          break;
-        case 'Digit3':
-          gameState.value.selectedIndex = 2;
-          break;
-        default:
-          return;
-      }
-      // consume the event so it doesn't get handled twice
-      event.preventDefault();
-    }
-  }, true);
+  onKeyDown(['1', '2', '3'], (e) => {
+    select(parseInt(e.key) - 1);
+  });
 
   return { gameState, newGame, loadGame, place, select };
 });

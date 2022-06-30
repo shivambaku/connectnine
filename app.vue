@@ -1,5 +1,11 @@
 <template>
   <div>
+    <Head>
+      <Meta name="viewport" content="width=device-width,initial-scale=1.0" />
+      <Link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+      <Link href="https://fonts.googleapis.com/css?family=Nunito Sans" rel="stylesheet" />
+      <Title>Connect 9</Title>
+    </Head>
     <NuxtPage />
   </div>
 </template>

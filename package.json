@@ -2,10 +2,10 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
+    "migrate": "DATABASE_URL=$MIGRATE_DATABASE prisma generate && prisma migrate deploy",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "vercel-build": "prisma generate && prisma migrate deploy && nuxt build"
+    "preview": "nuxt preview"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.25.2",

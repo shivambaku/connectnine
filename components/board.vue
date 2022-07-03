@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AnimationData } from '~~/interfaces';
+import type { AnimationData, ConnectionAnimationDataPart } from '~~/interfaces';
 
 const props = defineProps<{
   pieces: Array<number>
@@ -7,7 +7,7 @@ const props = defineProps<{
   padding: number
   piecePadding: number
   pieceRadius: number
-  animatedPiecesData: Array<AnimationData>
+  connectionsAnimationData: Array<Array<ConnectionAnimationDataPart>>
 }>();
 
 const emit = defineEmits<{
@@ -51,6 +51,10 @@ const place = (i: number, value: number) => {
   if (value === 0)
     emit('place', itox(i), itoy(i));
 };
+
+watch(props.connectionsAnimationData, async () => {
+  console.log(props.connectionsAnimationData);
+});
 </script>
 
 <template>
@@ -69,14 +73,14 @@ const place = (i: number, value: number) => {
       />
       <g>
         <rect
-          v-for="(animatedPieceData, i) in animatedPiecesData"
-          :key="`animationData${i}`"
+          v-for="(connectionAnimationDataPart, i) in connectionsAnimationData[0]"
+          :key="`connectionAnimationDataPart${i}`"
           :rx="pieceRadius"
           :ry="pieceRadius"
-          :width="animatedPieceData.x === animatedPieceData.parentX ? animatedPieceWidth : twoAnimatedPiecesWidth"
-          :height="animatedPieceData.y === animatedPieceData.parentY ? animatedPieceWidth : twoAnimatedPiecesWidth"
+          :width="connectionAnimationDataPart.x === connectionAnimationDataPart.parentX ? animatedPieceWidth : twoAnimatedPiecesWidth"
+          :height="connectionAnimationDataPart.y === connectionAnimationDataPart.parentY ? animatedPieceWidth : twoAnimatedPiecesWidth"
         />
-      </g/>
+      </g>
     </g></svg>
 </template>
 

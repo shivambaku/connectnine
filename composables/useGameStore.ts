@@ -5,7 +5,7 @@ import { defineStore } from 'pinia';
 export const useGameStore = defineStore('gameStore', () => {
   const gameState = ref({} as GameState);
   const savedGameId = useStorage('gameId', null);
-  const animatedPiecesData = ref([]);
+  const connectionsAnimationData = ref([]);
 
   const newGame = async () => {
     gameState.value = await $fetch('/api/game/new', { method: 'post' });
@@ -18,8 +18,10 @@ export const useGameStore = defineStore('gameStore', () => {
   };
 
   const place = async (x: number, y: number) => {
-    gameState.value
+    const response
       = await $fetch('/api/game/place', { method: 'post', body: { gameId: gameState.value.id, x, y, selectedIndex: gameState.value.selectedIndex } });
+    gameState.value = response.gameState;
+    connectionsAnimationData.value = response.connectionsAnimationData;
   };
 
   const select = async (i: number) => {
@@ -34,6 +36,6 @@ export const useGameStore = defineStore('gameStore', () => {
     gameState.value = await $fetch('/api/game/undo', { method: 'post', body: { gameId: gameState.value.id } });
   };
 
-  return { gameState, animatedPiecesData, newGame, loadGame, place, select, undo };
+  return { gameState, connectionsAnimationData, newGame, loadGame, place, select, undo };
 });
 

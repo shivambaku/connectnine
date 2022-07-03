@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import type { AnimationData } from '~~/interfaces';
+
 const props = defineProps<{
   pieces: Array<number>
   width: number
   padding: number
+  piecePadding: number
+  pieceRadius: number
+  animatedPiecesData: Array<AnimationData>
 }>();
 
 const emit = defineEmits<{
@@ -21,11 +26,25 @@ const pieceWidth = computed(() => {
   return innerWidth.value / boardSize.value;
 });
 
+const animatedPieceWidth = computed(() => {
+  return pieceWidth.value - 2 * props.piecePadding;
+});
+
+const twoAnimatedPiecesWidth = computed(() => {
+  return 2 * (animatedPieceWidth.value * props.piecePadding);
+});
+
 const itox = (i: number) => i % boardSize.value;
+
 const itoy = (i: number) => Math.floor(i / boardSize.value);
+
 const scale = (x: number) => {
   const t = x / boardSize.value;
   return innerWidth.value * t;
+};
+
+const animtedPieceScale = (x: number) => {
+  return scale(x) + props.piecePadding;
 };
 
 const place = (i: number, value: number) => {
@@ -44,12 +63,21 @@ const place = (i: number, value: number) => {
         :value="piece"
         :x="scale(itox(i))" :y="scale(itoy(i))"
         :width="pieceWidth"
-        :padding="4"
-        :radius="6"
+        :padding="piecePadding"
+        :radius="pieceRadius"
         @click="place(i, piece)"
       />
-    </g>
-  </svg>
+      <g>
+        <rect
+          v-for="(animatedPieceData, i) in animatedPiecesData"
+          :key="`animationData${i}`"
+          :rx="pieceRadius"
+          :ry="pieceRadius"
+          :width="animatedPieceData.x === animatedPieceData.parentX ? animatedPieceWidth : twoAnimatedPiecesWidth"
+          :height="animatedPieceData.y === animatedPieceData.parentY ? animatedPieceWidth : twoAnimatedPiecesWidth"
+        />
+      </g/>
+    </g></svg>
 </template>
 
 <style scoped>
@@ -57,6 +85,10 @@ const place = (i: number, value: number) => {
   border-radius: 10px;
   background: var(--background-color);
   margin: 10px 0px;
+}
+
+.aniamted-piece {
+  pointer-events: none;
 }
 </style>
 

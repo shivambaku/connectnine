@@ -5,6 +5,7 @@ import { defineStore } from 'pinia';
 export const useGameStore = defineStore('gameStore', () => {
   const gameState = ref({} as GameState);
   const savedGameId = useStorage('gameId', null);
+  const animatedPiecesData = ref([]);
 
   const newGame = async () => {
     gameState.value = await $fetch('/api/game/new', { method: 'post' });
@@ -33,6 +34,6 @@ export const useGameStore = defineStore('gameStore', () => {
     gameState.value = await $fetch('/api/game/undo', { method: 'post', body: { gameId: gameState.value.id } });
   };
 
-  return { gameState, newGame, loadGame, place, select, undo };
+  return { gameState, animatedPiecesData, newGame, loadGame, place, select, undo };
 });
 

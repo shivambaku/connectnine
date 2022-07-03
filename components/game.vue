@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
-const { gameState } = storeToRefs(gameStore);
+const { gameState, animatedPiecesData } = storeToRefs(gameStore);
 const { newGame, loadGame, place, select, undo } = gameStore;
 
 await loadGame();
@@ -36,6 +36,9 @@ await loadGame();
       :pieces="gameState.boardPieces"
       :padding="10"
       :width="400"
+      :piece-padding="4"
+      :piece-radius="6"
+      :animated-pieces-data="animatedPiecesData"
       @place="place"
     />
     <Selector

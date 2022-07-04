@@ -8,11 +8,14 @@ const props = defineProps<{
   padding: number
   piecePadding: number
   pieceRadius: number
+  pieces: Array<number>
+  boardSize: number
 }>();
 
-const gameStore = useGameStore();
-const { gameState, boardSize } = storeToRefs(gameStore);
-const { place, animatedPlace } = gameStore;
+const emit = defineEmits<{
+  (e: 'place', x: number, y: number)
+  (e: 'animatedPlace', x: number, y: number, animationCallback)
+}>();
 
 const connectionAnimationData = ref(new Array<ConnectionAnimationDataPart>());
 
@@ -21,7 +24,7 @@ const innerWidth = computed(() => {
 });
 
 const pieceWidth = computed(() => {
-  return innerWidth.value / boardSize.value;
+  return innerWidth.value / props.boardSize;
 });
 
 const animatedPieceWidth = computed(() => {
@@ -32,12 +35,12 @@ const twoAnimatedPiecesWidth = computed(() => {
   return 2 * (animatedPieceWidth.value + props.piecePadding);
 });
 
-const itox = (i: number) => i % boardSize.value;
+const itox = (i: number) => i % props.boardSize;
 
-const itoy = (i: number) => Math.floor(i / boardSize.value);
+const itoy = (i: number) => Math.floor(i / props.boardSize);
 
 const scale = (x: number) => {
-  const t = x / boardSize.value;
+  const t = x / props.boardSize;
   return innerWidth.value * t;
 };
 
@@ -92,11 +95,10 @@ const animateConnection = async (connectionAnimationDataArg: Array<ConnectionAni
     });
 };
 
-const placeClick = (i: number, value: number) => {
+const place = (i: number, value: number) => {
   // only place if the spot is empty
   if (value === 0)
-    animatedPlace(itox(i), itoy(i), animateConnection);
-    // place(itox(i), itoy(i));
+    emit('animatedPlace', itox(i), itoy(i), animateConnection);
 };
 </script>
 
@@ -106,13 +108,13 @@ const placeClick = (i: number, value: number) => {
   >
     <g :transform="`translate(${props.padding}, ${props.padding})`">
       <Piece
-        v-for="(piece, i) in gameState.boardPieces" :key="i"
+        v-for="(piece, i) in pieces" :key="i"
         :value="piece"
         :x="scale(itox(i))" :y="scale(itoy(i))"
         :width="pieceWidth"
         :padding="piecePadding"
         :radius="pieceRadius"
-        @click="placeClick(i, piece)"
+        @click="place(i, piece)"
       />
       <g>
         <rect
@@ -128,7 +130,8 @@ const placeClick = (i: number, value: number) => {
           :height="d.y === d.parentY ? animatedPieceWidth : twoAnimatedPiecesWidth"
         />
       </g>
-    </g></svg>
+    </g>
+  </svg>
 </template>
 
 <style scoped>

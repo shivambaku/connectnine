@@ -4,14 +4,16 @@ import { storeToRefs } from 'pinia';
 const props = defineProps<{
   width: number
   padding: number
+  pieces: Array<number>
+  selectedIndex: number
 }>();
 
-const gameStore = useGameStore();
-const { gameState, selectedIndex } = storeToRefs(gameStore);
-const { select } = gameStore;
+defineEmits<{
+  (e: 'select', i: number)
+}>();
 
 const selectorCount = computed(() => {
-  return gameState.value.selectorPieces.length;
+  return props.pieces.length;
 });
 
 const innerWidth = computed(() => {
@@ -36,7 +38,7 @@ const scale = (value: number) => {
   <svg class="selector" :width="width" :height="height">
     <g :transform="`translate(${padding}, ${padding})`">
       <Piece
-        v-for="(piece, i) in gameState.selectorPieces"
+        v-for="(piece, i) in pieces"
         :key="i"
         :class="i === selectedIndex ? 'selected' : ''"
         :value="piece"
@@ -45,7 +47,7 @@ const scale = (value: number) => {
         :width="pieceWidth"
         :padding="4"
         :radius="6"
-        @click="() => select(i)"
+        @click="() => $emit('select', i)"
       />
     </g>
   </svg>

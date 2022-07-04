@@ -44,6 +44,14 @@ await loadGame();
       :width="200"
     />
   </div>
+  <div class="rules">
+    <h4>How to Play</h4>
+    <p>
+      Select one of the three available numbers and place it in an empty spot.
+      <br>
+      Connect three or more of the same adjacent numbers to get a higher number.
+    </p>
+  </div>
 </template>
 
 <style scoped>
@@ -54,7 +62,6 @@ await loadGame();
 }
 
 .game .header {
-  margin: 30px 0px 0px;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -114,5 +121,17 @@ await loadGame();
   top: 42%;
   left: 0;
   right: 0;
+}
+
+.rules h4 {
+  margin-top: 30px;
+  margin-bottom: 0px;
+  font-size: 18px;
+}
+
+.rules p {
+  font-size: 14px;
+  margin-top: 5px;
+  font-weight: 200;
 }
 </style>

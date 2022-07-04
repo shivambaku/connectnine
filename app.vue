@@ -11,19 +11,11 @@ const mode = useColorMode();
     <Title>Connect 9</Title>
   </Head>
   <div>
-    <NuxtPage />
-    <div class="rules">
-      <h4>How to Play</h4>
-      <p>
-        Select one of the three available numbers and place it in an empty spot.
-        <br>
-        Connect three or more of the same adjacent numbers to get a higher number.
-      </p>
-    </div>
+    <NuxtPage style="margin-top: 30px" />
     <hr>
     <div class="footer-navigation">
       <NuxtLink i-ic:outline-videogame-asset to="/" />
-      <NuxtLink i-ic:outline-leaderboard to="/" />
+      <NuxtLink i-ic:outline-leaderboard to="/leaderboard" />
       <div
         class="dark:i-ic:outline-dark-mode i-ic:outline-light-mode"
         style="cursor: pointer;"
@@ -59,16 +51,22 @@ html {
 
 html.dark {
   background-color: #222;
+  opacity: 87%;
 }
 
 hr {
   border: none;
   border-bottom: 1px solid;
   width: 20%;
+  padding-top: 5px;
 }
 
 svg {
   vertical-align: top;
+}
+
+a {
+  color: var(--primary-color);
 }
 
 .router-link-active {
@@ -79,23 +77,13 @@ svg {
   user-select: none;
 }
 
-.rules h4 {
-  margin-bottom: 0px;
-  font-size: 18px;
-}
-
-.rules p {
-  font-size: 14px;
-  margin-top: 5px;
-  font-weight: 200;
-}
-
 .footer-navigation {
   font-size: 24px;
   display: flex;
   justify-content: center;
   grid-gap: 0.8rem;
   gap: 0.8rem;
+  margin-top: 10px;
 }
 
 .footer {

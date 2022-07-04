@@ -88,6 +88,11 @@ await loadGame();
   pointer-events:none;
 }
 
+.dark .game .header .button.disabled {
+  opacity: 0.5;
+  pointer-events:none;
+}
+
 @media(hover: hover) and (pointer: fine) {
   .game .header .button:hover {
     background: var(--game-foreground-color);

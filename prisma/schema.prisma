@@ -16,7 +16,6 @@ model GameState {
   boardPieces           Int[]
   selectorPieces        Int[]
   futureSelectorPieces  Int[]
-  selectedIndex         Int           @default(0)
   score                 Int           @default(0)
   previousState         String?
 }

@@ -5,8 +5,9 @@ import type { ConnectionAnimationDataPart } from '~~/interfaces';
 
 export const useGameStore = defineStore('gameStore', () => {
   const gameState = ref({} as GameState);
+  const selectedIndex = ref(0);
   const savedGameId = useStorage('gameId', null);
-  const pendingPlacement = ref(false);
+  const awaitingServer = ref(false);
   let animating = false;
   let placedCachedGameState: string = null;
 
@@ -21,23 +22,26 @@ export const useGameStore = defineStore('gameStore', () => {
   };
 
   const place = async (x: number, y: number) => {
-    if (pendingPlacement)
+    if (awaitingServer)
       return;
 
-    pendingPlacement.value = true;
+    awaitingServer.value = true;
     gameState.value
-      = await $fetch('/api/game/place', { method: 'post', body: { gameId: gameState.value.id, x, y, selectedIndex: gameState.value.selectedIndex } });
-    pendingPlacement.value = false;
+      = await $fetch('/api/game/place', { method: 'post', body: { gameId: gameState.value.id, x, y, selectedIndex: selectedIndex.value } });
+    awaitingServer.value = false;
   };
 
   const placeInCacheIfAnimating = async (x: number, y: number) => {
-    pendingPlacement.value = true;
-    const response = await $fetch('/api/game/place', { method: 'post', body: { gameId: gameState.value.id, x, y, selectedIndex: gameState.value.selectedIndex } });
+    awaitingServer.value = true;
+    const response = await $fetch('/api/game/place', { method: 'post', body: { gameId: gameState.value.id, x, y, selectedIndex: selectedIndex.value } });
+
+    // if animating then save the response and set it after animation is done
+    // if done after animation then directly set the gameState
     if (animating)
       placedCachedGameState = JSON.stringify(response);
     else
       gameState.value = response;
-    pendingPlacement.value = false;
+    awaitingServer.value = false;
   };
 
   const setPlacedCacheToGameState = () => {
@@ -48,7 +52,7 @@ export const useGameStore = defineStore('gameStore', () => {
   };
 
   const select = async (i: number) => {
-    gameState.value.selectedIndex = i;
+    selectedIndex.value = i;
   };
 
   onKeyDown(['1', '2', '3'], (e) => {
@@ -56,7 +60,13 @@ export const useGameStore = defineStore('gameStore', () => {
   });
 
   const undo = async () => {
+    if (animating || awaitingServer.value)
+      return;
+
+    awaitingServer.value = true;
+    gameState.value = JSON.parse(gameState.value.previousState);
     gameState.value = await $fetch('/api/game/undo', { method: 'post', body: { gameId: gameState.value.id } });
+    awaitingServer.value = false;
   };
 
   const boardSize = computed(() => {
@@ -132,18 +142,20 @@ export const useGameStore = defineStore('gameStore', () => {
   };
 
   const animatedPlace = (x: number, y: number, animateConnection) => {
-    if (animating || pendingPlacement.value)
+    if (animating || awaitingServer.value)
       return;
 
     animating = true;
+
     placeInCacheIfAnimating(x, y);
 
-    animatedPlaceHelper(x, y, gameState.value.selectorPieces[gameState.value.selectedIndex], animateConnection);
+    // run the game logic on the client as well while waiting for the real response
+    animatedPlaceHelper(x, y, gameState.value.selectorPieces[selectedIndex.value], animateConnection);
 
     // set the selected piece to the next piece
-    gameState.value.selectorPieces[gameState.value.selectedIndex] = gameState.value.futureSelectorPieces[gameState.value.selectedIndex];
+    gameState.value.selectorPieces[selectedIndex.value] = gameState.value.futureSelectorPieces[selectedIndex.value];
   };
 
-  return { gameState, boardSize, newGame, loadGame, place, select, undo, animatedPlace };
+  return { gameState, selectedIndex, boardSize, newGame, loadGame, place, select, undo, animatedPlace };
 });
 

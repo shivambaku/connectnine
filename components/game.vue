@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
-const { gameState } = storeToRefs(gameStore);
+const { gameState, selectedIndex } = storeToRefs(gameStore);
 const { newGame, loadGame, undo } = gameStore;
 
 await loadGame();
@@ -39,7 +39,7 @@ await loadGame();
       :piece-radius="6"
     />
     <Selector
-      :selected-index="gameState.selectedIndex"
+      :selected-index="selectedIndex"
       :padding="10"
       :width="200"
     />

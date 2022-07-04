@@ -7,7 +7,7 @@ const props = defineProps<{
 }>();
 
 const gameStore = useGameStore();
-const { gameState } = storeToRefs(gameStore);
+const { gameState, selectedIndex } = storeToRefs(gameStore);
 const { select } = gameStore;
 
 const selectorCount = computed(() => {
@@ -38,7 +38,7 @@ const scale = (value: number) => {
       <Piece
         v-for="(piece, i) in gameState.selectorPieces"
         :key="i"
-        :class="i === gameState.selectedIndex ? 'selected' : ''"
+        :class="i === selectedIndex ? 'selected' : ''"
         :value="piece"
         :x="scale(i)"
         :y="0"

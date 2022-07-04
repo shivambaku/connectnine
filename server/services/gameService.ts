@@ -48,9 +48,6 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
   if (gameState === null)
     throw new Error(`game id: ${gameId} is invalid`);
 
-  // mark the selected to the currently selected
-  gameState.selectedIndex = selectedIndex;
-
   // save the previous state so that we can undo later
   gameState.previousState = null;
   gameState.previousState = JSON.stringify(gameState);

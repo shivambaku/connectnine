@@ -130,7 +130,7 @@ await loadGame();
 }
 
 .rules p {
-  font-size: 14px;
+  font-size: 15px;
   margin-top: 5px;
   font-weight: 200;
 }

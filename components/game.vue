@@ -129,9 +129,17 @@ await loadGame();
   font-size: 18px;
 }
 
+@media screen and (max-width: 550px) {
+  .rules br {
+    display: none;
+  }
+}
+
 .rules p {
   font-size: 15px;
   margin-top: 5px;
   font-weight: 200;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 </style>

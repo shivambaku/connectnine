@@ -1,7 +1,6 @@
 import type { GameState } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 import Settings from '../utils/settings';
-import type { ConnectionAnimationDataPart } from '~~/interfaces';
 
 const prisma = new PrismaClient();
 
@@ -59,11 +58,8 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
   // the value that we will be placing
   const value = gameState.selectorPieces[selectedIndex];
 
-  // stores all the connections formed in one placement
-  const connectionsAnimationData = new Array<Array<ConnectionAnimationDataPart>>();
-
   // place the piece and connect the pieces if needed
-  placeHelper(gameState, x, y, value, connectionsAnimationData);
+  placeHelper(gameState, x, y, value);
 
   // get new random value for the selector from the predifned future selectors
   gameState.selectorPieces[selectedIndex] = gameState.futureSelectorPieces[selectedIndex];
@@ -77,7 +73,7 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
     },
   });
 
-  return { gameState, connectionsAnimationData };
+  return gameState;
 }
 
 export async function undo(gameId: string) {
@@ -106,18 +102,15 @@ export async function undo(gameId: string) {
   return gameState;
 }
 
-function placeHelper(gameState: GameState, x: number, y: number, value: number, connectionsAnimationData: Array<Array<ConnectionAnimationDataPart>>) {
+function placeHelper(gameState: GameState, x: number, y: number, value: number) {
   const index = xytoi(x, y);
 
   // place the piece
   gameState.boardPieces[index] = value;
 
-  // stores the animation data for one connection
-  const connectionAnimationData = new Array<ConnectionAnimationDataPart>();
-
   // check if connections were formed
   const visited = new Set<number>();
-  checkConnections(gameState, x, y, value, visited, connectionAnimationData, x, y, 0);
+  checkConnections(gameState, x, y, value, visited);
 
   // a connection was formed
   if (visited.size >= 3) {
@@ -128,32 +121,19 @@ function placeHelper(gameState: GameState, x: number, y: number, value: number, 
     for (const visitedIndex of visited)
       gameState.boardPieces[visitedIndex] = 0;
 
-    // animation data of all connections
-    connectionsAnimationData.push(connectionAnimationData);
-
-    placeHelper(gameState, x, y, value + 1, connectionsAnimationData);
+    placeHelper(gameState, x, y, value + 1);
   }
 }
 
-function checkConnections(gameState: GameState, x: number, y: number, value: number, visited: Set<number>, connectionAnimationDataPart: Array<ConnectionAnimationDataPart>, parentX: number, parentY: number, level: number) {
+function checkConnections(gameState: GameState, x: number, y: number, value: number, visited: Set<number>) {
   const index = xytoi(x, y);
   if (!outOfBounds(x, y) && sameValue(gameState, index, value) && !visited.has(index)) {
     visited.add(index);
 
-    if (level !== 0) {
-      connectionAnimationDataPart.push({
-        x,
-        y,
-        parentX,
-        parentY,
-        level,
-      });
-    }
-
-    checkConnections(gameState, x, y + 1, value, visited, connectionAnimationDataPart, x, y, level + 1);
-    checkConnections(gameState, x + 1, y, value, visited, connectionAnimationDataPart, x, y, level + 1);
-    checkConnections(gameState, x, y - 1, value, visited, connectionAnimationDataPart, x, y, level + 1);
-    checkConnections(gameState, x - 1, y, value, visited, connectionAnimationDataPart, x, y, level + 1);
+    checkConnections(gameState, x, y + 1, value, visited);
+    checkConnections(gameState, x + 1, y, value, visited);
+    checkConnections(gameState, x, y - 1, value, visited);
+    checkConnections(gameState, x - 1, y, value, visited);
   }
 }
 

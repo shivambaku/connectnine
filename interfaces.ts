@@ -4,11 +4,5 @@ export interface ConnectionAnimationDataPart {
   parentX: number
   parentY: number
   level: number
-  // pieces: Array<PieceData>
+  value: number
 }
-
-// export interface PieceData {
-//   x: number
-//   y: number
-//   value: number
-// }

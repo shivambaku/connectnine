@@ -2,8 +2,8 @@
 import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
-const { gameState, connectionsAnimationData } = storeToRefs(gameStore);
-const { newGame, loadGame, place, select, undo } = gameStore;
+const { gameState } = storeToRefs(gameStore);
+const { newGame, loadGame, undo } = gameStore;
 
 await loadGame();
 </script>
@@ -33,20 +33,15 @@ await loadGame();
       </div>
     </div>
     <Board
-      :pieces="gameState.boardPieces"
       :padding="10"
       :width="400"
       :piece-padding="4"
       :piece-radius="6"
-      :connections-animation-data="connectionsAnimationData"
-      @place="place"
     />
     <Selector
-      :pieces="gameState.selectorPieces"
       :selected-index="gameState.selectedIndex"
       :padding="10"
       :width="200"
-      @select="select"
     />
   </div>
 </template>

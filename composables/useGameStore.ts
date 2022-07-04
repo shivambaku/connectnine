@@ -12,8 +12,13 @@ export const useGameStore = defineStore('gameStore', () => {
   let placedCachedGameState: string = null;
 
   const newGame = async () => {
+    if (animating || awaitingServer.value)
+      return;
+
+    awaitingServer.value = true;
     gameState.value = await $fetch('/api/game/new', { method: 'post' });
     savedGameId.value = gameState.value.id;
+    awaitingServer.value = false;
   };
 
   const loadGame = async () => {

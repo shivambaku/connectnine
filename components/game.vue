@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 const gameStore = useGameStore();
 const { gameState, selectedIndex, boardSize } = storeToRefs(gameStore);
 const { newGame, loadGame, animatedPlace, select, undo } = gameStore;
+const showNewGameConfirmation = ref(false);
 
 await loadGame();
 </script>
@@ -15,7 +16,7 @@ await loadGame();
         <h1 class="title">
           Connect 9
         </h1>
-        <div class="button" @click="newGame">
+        <div class="button" @click="showNewGameConfirmation = true">
           New Game
         </div>
         <div
@@ -40,7 +41,19 @@ await loadGame();
       :board-size="boardSize"
       :pieces="gameState.boardPieces"
       @animated-place="animatedPlace"
-    />
+    >
+      <template #overlay>
+        <Confirmation
+          :x="100"
+          :y="100"
+          :width="200"
+          :padding="50"
+          text="Are you sure?"
+          @yes="newGame"
+          @no="showNewGameConfirmation = false"
+        />
+      </template>
+    </Board>
     <Selector
       :padding="10"
       :width="200"
@@ -66,6 +79,19 @@ await loadGame();
   margin: 0 auto;
 }
 
+@media(hover: hover) and (pointer: fine) {
+  .game .button:hover {
+    background: var(--game-foreground-color);
+    color: var(--game-background-color);
+    cursor: pointer;
+  }
+}
+
+.game .button {
+  background: var(--game-background-color);
+  color: var(--game-foreground-color);
+}
+
 .game .header {
   width: 100%;
   display: flex;
@@ -76,34 +102,6 @@ await loadGame();
   letter-spacing: 2px;
   font-size: 38px;
   margin: 5px 0px 10px;
-}
-
-.game .header .button {
-  background: var(--game-background-color);
-  color: var(--game-foreground-color);
-  padding: 8px 15px;
-  border-radius: 10px;
-  text-transform: lowercase;
-  font-style: italic;
-  float: left;
-}
-
-.game .header .button.disabled {
-  opacity: 0.7;
-  pointer-events:none;
-}
-
-.dark .game .header .button.disabled {
-  opacity: 0.5;
-  pointer-events:none;
-}
-
-@media(hover: hover) and (pointer: fine) {
-  .game .header .button:hover {
-    background: var(--game-foreground-color);
-    color: var(--game-background-color);
-    cursor: pointer;
-  }
 }
 
 .game .header .score-container {

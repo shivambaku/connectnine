@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import anime from 'animejs/lib/anime.es';
-import { storeToRefs } from 'pinia';
 import type { ConnectionAnimationDataPart } from '~~/interfaces';
 
 const props = defineProps<{
@@ -16,6 +15,13 @@ const emit = defineEmits<{
   (e: 'place', x: number, y: number)
   (e: 'animatedPlace', x: number, y: number, animationCallback)
 }>();
+
+const slots = useSlots();
+console.log(slots.overlay);
+
+// watch(slots, () => {
+//   console.log(slots.value);
+// });
 
 const connectionAnimationData = ref(new Array<ConnectionAnimationDataPart>());
 
@@ -131,6 +137,7 @@ const place = (i: number, value: number) => {
         />
       </g>
     </g>
+    <slot name="overlay" />
   </svg>
 </template>
 

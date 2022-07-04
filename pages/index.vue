@@ -26,12 +26,13 @@
 }
 
 .rules p {
-  font-size: 17px;
+  font-size: 14px;
   margin-top: 5px;
   font-weight: 200;
 }
 
 .footer {
+  font-size: 14px;
   font-weight: 300;
   font-style: italic;
   margin: 20px 0 20px;

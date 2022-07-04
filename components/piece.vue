@@ -45,7 +45,7 @@ const styleClass = computed(() => {
 
 <style>
 .piece-text {
-  fill: var(--primary-color);
+  fill: var(--game-foreground-color);
   font-weight: 900;
   font-size: 22px;
 }

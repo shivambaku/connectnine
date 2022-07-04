@@ -4,7 +4,13 @@ import { defineNuxtConfig } from 'nuxt';
 export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
+    '@unocss/nuxt',
     '@vueuse/nuxt',
   ],
+  unocss: {
+    uno: true,
+    icons: true,
+    attributify: true,
+  },
   ssr: false,
 });

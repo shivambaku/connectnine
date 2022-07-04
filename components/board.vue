@@ -134,7 +134,7 @@ const placeClick = (i: number, value: number) => {
 <style scoped>
 .board {
   border-radius: 10px;
-  background: var(--background-color);
+  background: var(--game-background-color);
   margin: 10px 0px;
 }
 

@@ -67,8 +67,8 @@ await loadGame();
 }
 
 .game .header .button {
-  background: var(--background-color);
-  color: var(--foreground-color);
+  background: var(--game-background-color);
+  color: var(--game-foreground-color);
   padding: 8px 15px;
   border-radius: 10px;
   text-transform: lowercase;
@@ -83,14 +83,14 @@ await loadGame();
 
 @media(hover: hover) and (pointer: fine) {
   .game .header .button:hover {
-    background: var(--foreground-color);
-    color: var(--background-color);
+    background: var(--game-foreground-color);
+    color: var(--game-background-color);
     cursor: pointer;
   }
 }
 
 .game .header .score-container {
-  background: var(--background-color);
+  background: var(--game-background-color);
   width: 30%;
   border-radius: 10px;
   position: relative;
@@ -98,7 +98,7 @@ await loadGame();
 
 .game .header .score::before {
   content: 'SCORE';
-  color: var(--foreground-color);
+  color: var(--game-foreground-color);
   font-size: 14px;
   position: absolute;
   top: -60%;
@@ -107,7 +107,7 @@ await loadGame();
 }
 
 .game .header .score {
-  color: var(--foreground-color);
+  color: var(--game-foreground-color);
   font-size: 34px;
   font-weight: 500;
   position: absolute;

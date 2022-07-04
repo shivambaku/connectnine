@@ -54,6 +54,6 @@ const scale = (value: number) => {
 <style scoped>
 .selector {
   border-radius: 10px;
-  background: var(--background-color);
+  background: var(--game-background-color);
 }
 </style>

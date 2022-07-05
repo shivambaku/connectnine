@@ -35,7 +35,7 @@ await loadGame();
         <h1 class="title">
           Connect 9
         </h1>
-        <Button @click="newGameClick">
+        <Button @click="newGame">
           New Game
         </Button>
         <Button ml-10px :disabled="gameState.previousState === null" @click="undo">
@@ -60,7 +60,7 @@ await loadGame();
     >
       <template #overlay>
         <foreignObject
-          v-show="showNewGameConfirmation"
+          v-if="showNewGameConfirmation"
           x="75" y="125" height="200" width="250"
         >
           <Confirmation

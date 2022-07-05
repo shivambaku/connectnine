@@ -2,29 +2,45 @@
 import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
-const { gameState, selectedIndex } = storeToRefs(gameStore);
-const { newGame, loadGame, undo } = gameStore;
+const { gameState, selectedIndex, paused, boardSize } = storeToRefs(gameStore);
+const { newGame, loadGame, animatedPlace, select, undo } = gameStore;
+const showNewGameConfirmation = ref(false);
+
+onMounted(() => {
+  paused.value = false;
+});
+
+const newGameClick = () => {
+  paused.value = true;
+  showNewGameConfirmation.value = true;
+};
+
+const closeConfirmation = () => {
+  paused.value = false;
+  showNewGameConfirmation.value = false;
+};
+
+const newGameConfirmationClick = () => {
+  closeConfirmation();
+  newGame();
+};
 
 await loadGame();
 </script>
 
 <template>
-  <div class="game">
+  <div :class="`game ${paused ? 'paused' : ''}`">
     <div class="header">
       <div style="float: left">
         <h1 class="title">
           Connect 9
         </h1>
-        <div class="button" @click="newGame">
+        <Button @click="newGameClick">
           New Game
-        </div>
-        <div
-          :class="`button ${gameState.previousState !== null ? '' : 'disabled'}`"
-          style="margin-left: 10px"
-          @click="undo"
-        >
+        </Button>
+        <Button ml-10px :disabled="gameState.previousState === null" @click="undo">
           Undo
-        </div>
+        </Button>
       </div>
       <div class="score-container">
         <div class="score">
@@ -37,11 +53,32 @@ await loadGame();
       :width="400"
       :piece-padding="4"
       :piece-radius="6"
-    />
+      :board-size="boardSize"
+      :pieces="gameState.boardPieces"
+      :unclickable="paused"
+      @animated-place="animatedPlace"
+    >
+      <template #overlay>
+        <foreignObject
+          v-show="showNewGameConfirmation"
+          x="75" y="125" height="200" width="250"
+        >
+          <Confirmation
+            :width="250"
+            text="Start new game?"
+            @yes="newGameConfirmationClick"
+            @no="closeConfirmation"
+          />
+        </foreignObject>
+      </template>
+    </Board>
     <Selector
-      :selected-index="selectedIndex"
       :padding="10"
       :width="200"
+      :selected-index="selectedIndex"
+      :pieces="gameState.selectorPieces"
+      :unclickable="paused"
+      @select="select"
     />
   </div>
   <div class="rules">
@@ -61,6 +98,23 @@ await loadGame();
   margin: 0 auto;
 }
 
+.game .button {
+  background: var(--game-background-color);
+  color: var(--game-foreground-color);
+}
+
+@media(hover: hover) and (pointer: fine) {
+  .game:not(.paused) .button:hover {
+    background: var(--game-foreground-color);
+    color: var(--game-background-color);
+    cursor: pointer;
+  }
+
+  .game.paused .button:hover {
+    cursor: default;
+  }
+}
+
 .game .header {
   width: 100%;
   display: flex;
@@ -71,34 +125,6 @@ await loadGame();
   letter-spacing: 2px;
   font-size: 38px;
   margin: 5px 0px 10px;
-}
-
-.game .header .button {
-  background: var(--game-background-color);
-  color: var(--game-foreground-color);
-  padding: 8px 15px;
-  border-radius: 10px;
-  text-transform: lowercase;
-  font-style: italic;
-  float: left;
-}
-
-.game .header .button.disabled {
-  opacity: 0.7;
-  pointer-events:none;
-}
-
-.dark .game .header .button.disabled {
-  opacity: 0.5;
-  pointer-events:none;
-}
-
-@media(hover: hover) and (pointer: fine) {
-  .game .header .button:hover {
-    background: var(--game-foreground-color);
-    color: var(--game-background-color);
-    cursor: pointer;
-  }
 }
 
 .game .header .score-container {

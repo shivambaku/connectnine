@@ -35,7 +35,7 @@ await loadGame();
         <h1 class="title">
           Connect 9
         </h1>
-        <Button @click="newGame">
+        <Button @click="newGameClick">
           New Game
         </Button>
         <Button ml-10px :disabled="gameState.previousState === null" @click="undo">

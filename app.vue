@@ -17,8 +17,7 @@ const mode = useColorMode();
       <NuxtLink i-ic:outline-videogame-asset to="/" />
       <NuxtLink i-ic:outline-leaderboard to="/leaderboard" />
       <div
-        class="dark:i-ic:outline-dark-mode i-ic:outline-light-mode"
-        style="cursor: pointer;"
+        class="footer-navigation-button dark:i-ic:outline-dark-mode i-ic:outline-light-mode"
         @click="mode = mode === 'dark' ? 'light' : 'dark'"
       />
     </div>
@@ -73,8 +72,8 @@ a {
   color: var(--primary-color);
 }
 
-.router-link-active {
-  color: var(--primary-color);
+a:hover {
+  color: var(--accent-color);
 }
 
 .noselect {
@@ -88,6 +87,14 @@ a {
   grid-gap: 0.8rem;
   gap: 0.8rem;
   margin-top: 10px;
+}
+
+.footer-navigation-button {
+  cursor: pointer;
+}
+
+.footer-navigation-button:hover {
+  color: var(--accent-color);
 }
 
 .footer {

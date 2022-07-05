@@ -131,7 +131,6 @@ const place = (i: number, value: number) => {
         />
       </g>
     </g>
-    <slot name="overlay" />
   </svg>
 </template>
 

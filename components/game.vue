@@ -48,30 +48,28 @@ await loadGame();
         </div>
       </div>
     </div>
-    <Board
-      :padding="10"
-      :width="400"
-      :piece-padding="4"
-      :piece-radius="6"
-      :board-size="boardSize"
-      :pieces="gameState.boardPieces"
-      :unclickable="paused"
-      @animated-place="animatedPlace"
-    >
-      <template #overlay>
-        <foreignObject
-          v-if="showNewGameConfirmation"
-          x="75" y="125" height="200" width="250"
-        >
-          <Confirmation
-            :width="250"
-            text="Start new game?"
-            @yes="newGameConfirmationClick"
-            @no="closeConfirmation"
-          />
-        </foreignObject>
-      </template>
-    </Board>
+    <div position="relative">
+      <Board
+        :padding="10"
+        :width="400"
+        :piece-padding="4"
+        :piece-radius="6"
+        :board-size="boardSize"
+        :pieces="gameState.boardPieces"
+        :unclickable="paused"
+        @animated-place="animatedPlace"
+      />
+      <div
+        v-show="showNewGameConfirmation"
+        class="confirmation-overlay"
+      >
+        <Confirmation
+          text="Start new game?"
+          @yes="newGameConfirmationClick"
+          @no="closeConfirmation"
+        />
+      </div>
+    </div>
     <Selector
       :padding="10"
       :width="200"
@@ -92,6 +90,14 @@ await loadGame();
 </template>
 
 <style scoped>
+.confirmation-overlay {
+  position: absolute;
+  width: 62.5%;
+  height: 36%;
+  top: 32%;
+  left: 18.75%;
+}
+
 .game {
   max-width: 400px;
   min-width: 300px;

@@ -29,7 +29,7 @@ defineEmits<{
 @media(hover: hover) and (pointer: fine) {
   .button:hover {
     background: var(--background-color);
-    color: var(--foreground-color);
+    color: var(--accent-color);
     cursor: pointer;
   }
 }

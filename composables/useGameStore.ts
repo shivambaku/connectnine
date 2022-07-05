@@ -6,6 +6,7 @@ import type { ConnectionAnimationDataPart } from '~~/interfaces';
 export const useGameStore = defineStore('gameStore', () => {
   const gameState = ref({} as GameState);
   const selectedIndex = ref(0);
+  const paused = ref(false);
   const savedGameId = useStorage('gameId', null);
   const awaitingServer = ref(false);
   let animating = false;
@@ -61,11 +62,13 @@ export const useGameStore = defineStore('gameStore', () => {
   };
 
   onKeyDown(['1', '2', '3'], (e) => {
+    if (paused.value)
+      return;
     select(parseInt(e.key) - 1);
   });
 
   const undo = async () => {
-    if (animating || awaitingServer.value)
+    if (animating || awaitingServer.value || paused.value)
       return;
 
     awaitingServer.value = true;
@@ -161,6 +164,6 @@ export const useGameStore = defineStore('gameStore', () => {
     gameState.value.selectorPieces[selectedIndex.value] = gameState.value.futureSelectorPieces[selectedIndex.value];
   };
 
-  return { gameState, selectedIndex, boardSize, newGame, loadGame, place, select, undo, animatedPlace };
+  return { gameState, selectedIndex, paused, boardSize, newGame, loadGame, place, select, undo, animatedPlace };
 });
 

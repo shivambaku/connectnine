@@ -56,7 +56,7 @@ const styleClass = computed(() => {
 }
 
 @media(hover: hover) and (pointer: fine) {
-  .piece.piece-0:hover {
+  .game:not(.paused) .piece.piece-0:hover {
     opacity: 1.0;
     cursor: pointer;
   }
@@ -98,19 +98,19 @@ const styleClass = computed(() => {
   fill: #BC80BD;
 }
 
-@media(hover: hover) and (pointer: fine) {
-  .selector .piece-text {
-    cursor: pointer;
-  }
-}
-
 .selector .selected .piece {
   stroke: #1F78B4;
   stroke-width: 5px;
 }
 
 @media(hover: hover) and (pointer: fine) {
-  .selector .piece:hover {
+  .game:not(.paused) .selector .piece-text {
+    cursor: pointer;
+  }
+}
+
+@media(hover: hover) and (pointer: fine) {
+  .game:not(.paused) .selector .piece:hover {
     cursor: pointer;
   }
 }

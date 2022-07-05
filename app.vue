@@ -31,13 +31,15 @@ const mode = useColorMode();
 <style>
 :root {
   --primary-color: #2c3e50;
-  --background-color: #fafafa;
+  --accent-color: #63948C;
+  --background-color: #dadada;
   --game-background-color: #8DD3C7;
   --game-foreground-color: #2c3e50;
 }
 
 :root.dark {
   --primary-color: white;
+  --accent-color: #8DD3C7;
   --background-color: #222;
   --game-background-color: #8DD3C7;
   --game-foreground-color: #2c3e50;

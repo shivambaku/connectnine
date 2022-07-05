@@ -4,9 +4,10 @@ const props = defineProps<{
   padding: number
   pieces: Array<number>
   selectedIndex: number
+  unclickable?: boolean
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'select', i: number)
 }>();
 
@@ -30,6 +31,11 @@ const scale = (value: number) => {
   const t = value / selectorCount.value;
   return innerWidth.value * t;
 };
+
+const select = (i: number) => {
+  if (!props.unclickable)
+    emit('select', i);
+};
 </script>
 
 <template>
@@ -45,7 +51,7 @@ const scale = (value: number) => {
         :width="pieceWidth"
         :padding="4"
         :radius="6"
-        @click="() => $emit('select', i)"
+        @click="select(i)"
       />
     </g>
   </svg>

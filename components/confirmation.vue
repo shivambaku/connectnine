@@ -11,7 +11,7 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="confirmation" relative :style="{ width: `${width}px`, height: `${width}px` }">
+  <div class="confirmation" relative :style="{ width: `${width}px`, height: `${150}px` }">
     <div class="confirmation-text">
       {{ text }}
     </div>
@@ -20,7 +20,7 @@ defineEmits<{
         <Button @click="(e) => $emit('yes', e)">
           Yes
         </Button>
-        <Button ml-10px @click="(e) => $emit('no', e)">
+        <Button ml-20px @click="(e) => $emit('no', e)">
           No
         </Button>
       </div>
@@ -32,6 +32,7 @@ defineEmits<{
 .confirmation {
   border-radius: 10px;
   background: var(--background-color);
+  opacity: 95%;
 }
 
 .confirmation-text {
@@ -46,7 +47,7 @@ defineEmits<{
 
 .confirmation-buttons {
   position: absolute;
-  top: 60%;
+  top: 55%;
   width: 100%;
   display: flex;
 }

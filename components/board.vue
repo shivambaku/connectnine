@@ -9,19 +9,13 @@ const props = defineProps<{
   pieceRadius: number
   pieces: Array<number>
   boardSize: number
+  unclickable?: boolean
 }>();
 
 const emit = defineEmits<{
   (e: 'place', x: number, y: number)
   (e: 'animatedPlace', x: number, y: number, animationCallback)
 }>();
-
-const slots = useSlots();
-console.log(slots.overlay);
-
-// watch(slots, () => {
-//   console.log(slots.value);
-// });
 
 const connectionAnimationData = ref(new Array<ConnectionAnimationDataPart>());
 
@@ -103,7 +97,7 @@ const animateConnection = async (connectionAnimationDataArg: Array<ConnectionAni
 
 const place = (i: number, value: number) => {
   // only place if the spot is empty
-  if (value === 0)
+  if (value === 0 && !props.unclickable)
     emit('animatedPlace', itox(i), itoy(i), animateConnection);
 };
 </script>

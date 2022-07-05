@@ -2,12 +2,26 @@
 import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
-const { gameState, selectedIndex, boardSize } = storeToRefs(gameStore);
+const { gameState, selectedIndex, paused, boardSize } = storeToRefs(gameStore);
 const { newGame, loadGame, animatedPlace, select, undo } = gameStore;
 const showNewGameConfirmation = ref(false);
 
+onMounted(() => {
+  paused.value = false;
+});
+
 const newGameClick = () => {
+  paused.value = true;
+  showNewGameConfirmation.value = true;
+};
+
+const closeConfirmation = () => {
+  paused.value = false;
   showNewGameConfirmation.value = false;
+};
+
+const newGameConfirmationClick = () => {
+  closeConfirmation();
   newGame();
 };
 
@@ -15,13 +29,13 @@ await loadGame();
 </script>
 
 <template>
-  <div class="game">
+  <div :class="`game ${paused ? 'paused' : ''}`">
     <div class="header">
       <div style="float: left">
         <h1 class="title">
           Connect 9
         </h1>
-        <Button @click="showNewGameConfirmation = true">
+        <Button @click="newGameClick">
           New Game
         </Button>
         <Button ml-10px :disabled="gameState.previousState === null" @click="undo">
@@ -41,18 +55,19 @@ await loadGame();
       :piece-radius="6"
       :board-size="boardSize"
       :pieces="gameState.boardPieces"
+      :unclickable="paused"
       @animated-place="animatedPlace"
     >
       <template #overlay>
         <foreignObject
           v-show="showNewGameConfirmation"
-          x="100" y="100" height="200" width="200"
+          x="75" y="125" height="200" width="250"
         >
           <Confirmation
-            :width="200"
-            text="Are you sure?"
-            @yes="newGameClick"
-            @no="showNewGameConfirmation = false"
+            :width="250"
+            text="Start new game?"
+            @yes="newGameConfirmationClick"
+            @no="closeConfirmation"
           />
         </foreignObject>
       </template>
@@ -62,6 +77,7 @@ await loadGame();
       :width="200"
       :selected-index="selectedIndex"
       :pieces="gameState.selectorPieces"
+      :unclickable="paused"
       @select="select"
     />
   </div>
@@ -88,10 +104,14 @@ await loadGame();
 }
 
 @media(hover: hover) and (pointer: fine) {
-  .game .button:hover {
+  .game:not(.paused) .button:hover {
     background: var(--game-foreground-color);
     color: var(--game-background-color);
     cursor: pointer;
+  }
+
+  .game.paused .button:hover {
+    cursor: default;
   }
 }
 

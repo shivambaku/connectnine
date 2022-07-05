@@ -48,30 +48,36 @@ await loadGame();
         </div>
       </div>
     </div>
-    <Board
-      :padding="10"
-      :width="400"
-      :piece-padding="4"
-      :piece-radius="6"
-      :board-size="boardSize"
-      :pieces="gameState.boardPieces"
-      :unclickable="paused"
-      @animated-place="animatedPlace"
-    >
-      <template #overlay>
-        <foreignObject
+    <div position="relative">
+      <Board
+        :padding="10"
+        :width="400"
+        :piece-padding="4"
+        :piece-radius="6"
+        :board-size="boardSize"
+        :pieces="gameState.boardPieces"
+        :unclickable="paused"
+        @animated-place="animatedPlace"
+      >
+        <template #overlay>
+        <!-- <foreignObject
           v-show="showNewGameConfirmation"
-          x="75" y="125" height="200" width="250"
-        >
-          <Confirmation
-            :width="250"
-            text="Start new game?"
-            @yes="newGameConfirmationClick"
-            @no="closeConfirmation"
-          />
-        </foreignObject>
-      </template>
-    </Board>
+          x="0%" y="0%" height="100%" width="100%"
+        > -->
+
+        <!-- </foreignObject> -->
+        </template>
+      </Board>
+      <div class="overlay">
+        <Confirmation
+          width="250"
+          height="150"
+          text="Start new game?"
+          @yes="newGameConfirmationClick"
+          @no="closeConfirmation"
+        />
+      </div>
+    </div>
     <Selector
       :padding="10"
       :width="200"
@@ -92,6 +98,20 @@ await loadGame();
 </template>
 
 <style scoped>
+.overlay {
+  position: absolute;
+  border-radius: 10px;
+  background: var(--background-color);
+  opacity: 95%;
+  width: 250px;
+  height: 150px;
+  top: 125px;
+  bottom: 0px;
+  left: 10vw;
+  right: 0px;
+  transform: scale(0.9);
+}
+
 .game {
   max-width: 400px;
   min-width: 300px;

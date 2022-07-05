@@ -1,6 +1,7 @@
 <script setup lang="ts">
 defineProps<{
-  width: number
+  width: string
+  height: string
   text: string
 }>();
 
@@ -11,7 +12,7 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="confirmation" relative :style="{ width: `${width}px`, height: `${150}px` }">
+  <div class="confirmation" :style="{ width: `${width}`, height: `${height}` }">
     <div class="confirmation-text">
       {{ text }}
     </div>

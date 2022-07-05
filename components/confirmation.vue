@@ -1,7 +1,5 @@
 <script setup lang="ts">
 defineProps<{
-  width: string
-  height: string
   text: string
 }>();
 
@@ -12,7 +10,7 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="confirmation" :style="{ width: `${width}`, height: `${height}` }">
+  <div class="confirmation">
     <div class="confirmation-text">
       {{ text }}
     </div>
@@ -34,6 +32,8 @@ defineEmits<{
   border-radius: 10px;
   background: var(--background-color);
   opacity: 95%;
+  width: 100%;
+  height: 100%;
 }
 
 .confirmation-text {
@@ -44,6 +44,12 @@ defineEmits<{
   top: 30%;
   width: 100%;
   user-select: none;
+}
+
+@media screen and (max-width: 400px) {
+  .confirmation-text {
+    font-size: 18px;
+  }
 }
 
 .confirmation-buttons {

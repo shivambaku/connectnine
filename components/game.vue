@@ -58,20 +58,12 @@ await loadGame();
         :pieces="gameState.boardPieces"
         :unclickable="paused"
         @animated-place="animatedPlace"
+      />
+      <div
+        v-show="showNewGameConfirmation"
+        class="confirmation-overlay"
       >
-        <template #overlay>
-        <!-- <foreignObject
-          v-show="showNewGameConfirmation"
-          x="0%" y="0%" height="100%" width="100%"
-        > -->
-
-        <!-- </foreignObject> -->
-        </template>
-      </Board>
-      <div class="overlay">
         <Confirmation
-          width="250"
-          height="150"
           text="Start new game?"
           @yes="newGameConfirmationClick"
           @no="closeConfirmation"
@@ -98,18 +90,12 @@ await loadGame();
 </template>
 
 <style scoped>
-.overlay {
+.confirmation-overlay {
   position: absolute;
-  border-radius: 10px;
-  background: var(--background-color);
-  opacity: 95%;
-  width: 250px;
-  height: 150px;
-  top: 125px;
-  bottom: 0px;
-  left: 10vw;
-  right: 0px;
-  transform: scale(0.9);
+  width: 62.5%;
+  height: 36%;
+  top: 32%;
+  left: 18.75%;
 }
 
 .game {

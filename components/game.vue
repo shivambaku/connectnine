@@ -6,6 +6,11 @@ const { gameState, selectedIndex, boardSize } = storeToRefs(gameStore);
 const { newGame, loadGame, animatedPlace, select, undo } = gameStore;
 const showNewGameConfirmation = ref(false);
 
+const newGameClick = () => {
+  showNewGameConfirmation.value = false;
+  newGame();
+};
+
 await loadGame();
 </script>
 
@@ -16,16 +21,12 @@ await loadGame();
         <h1 class="title">
           Connect 9
         </h1>
-        <div class="button" @click="showNewGameConfirmation = true">
+        <Button @click="showNewGameConfirmation = true">
           New Game
-        </div>
-        <div
-          :class="`button ${gameState.previousState !== null ? '' : 'disabled'}`"
-          style="margin-left: 10px"
-          @click="undo"
-        >
+        </Button>
+        <Button ml-10px :disabled="gameState.previousState === null" @click="undo">
           Undo
-        </div>
+        </Button>
       </div>
       <div class="score-container">
         <div class="score">
@@ -43,15 +44,17 @@ await loadGame();
       @animated-place="animatedPlace"
     >
       <template #overlay>
-        <Confirmation
-          :x="100"
-          :y="100"
-          :width="200"
-          :padding="50"
-          text="Are you sure?"
-          @yes="newGame"
-          @no="showNewGameConfirmation = false"
-        />
+        <foreignObject
+          v-show="showNewGameConfirmation"
+          x="100" y="100" height="200" width="200"
+        >
+          <Confirmation
+            :width="200"
+            text="Are you sure?"
+            @yes="newGameClick"
+            @no="showNewGameConfirmation = false"
+          />
+        </foreignObject>
       </template>
     </Board>
     <Selector
@@ -79,17 +82,17 @@ await loadGame();
   margin: 0 auto;
 }
 
+.game .button {
+  background: var(--game-background-color);
+  color: var(--game-foreground-color);
+}
+
 @media(hover: hover) and (pointer: fine) {
   .game .button:hover {
     background: var(--game-foreground-color);
     color: var(--game-background-color);
     cursor: pointer;
   }
-}
-
-.game .button {
-  background: var(--game-background-color);
-  color: var(--game-foreground-color);
 }
 
 .game .header {

@@ -27,7 +27,7 @@ export const useGameStore = defineStore('gameStore', () => {
   };
 
   const place = async (x: number, y: number) => {
-    if (awaitingServer)
+    if (awaitingServer.value)
       return;
 
     awaitingServer.value = true;

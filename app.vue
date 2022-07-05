@@ -31,6 +31,7 @@ const mode = useColorMode();
 <style>
 :root {
   --primary-color: #2c3e50;
+  --background-color: #fafafa;
   --game-background-color: #8DD3C7;
   --game-foreground-color: #2c3e50;
 }
@@ -48,10 +49,10 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: var(--primary-color);
+  background-color: var(--background-color);
 }
 
 html.dark {
-  background-color: var(--background-color);
   opacity: 87%;
 }
 
@@ -92,33 +93,5 @@ a {
   font-weight: 300;
   font-style: italic;
   margin: 10px 0 20px;
-}
-
-.button {
-  background: var(--background-color);
-  color: var(--foreground-color);
-  padding: 8px 15px;
-  border-radius: 10px;
-  text-transform: lowercase;
-  font-style: italic;
-  float: left;
-}
-
-.button.disabled {
-  opacity: 0.7;
-  pointer-events:none;
-}
-
-.dark .button.disabled {
-  opacity: 0.5;
-  pointer-events:none;
-}
-
-@media(hover: hover) and (pointer: fine) {
-  .button:hover {
-    background: var(--foreground-color);
-    color: var(--background-color);
-    cursor: pointer;
-  }
 }
 </style>

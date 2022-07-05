@@ -1,46 +1,53 @@
 <script setup lang="ts">
-const props = defineProps<{
-  x: number
-  y: number
+defineProps<{
   width: number
-  padding: number
   text: string
+}>();
+
+defineEmits<{
+  (e: 'yes', payload: MouseEvent)
+  (e: 'no', payload: MouseEvent)
 }>();
 </script>
 
 <template>
-  <svg
-    class="confirmation"
-    :x="x"
-    :y="y"
-    :width="width"
-    :height="width"
-  >
-    <g>
-      <rect :width="width" :height="width" />
-      <text
-        class="confirmation-text noselect"
-        dominant-baseline="central"
-        text-anchor="middle"
-        :x="width / 2"
-        :y="width / 3"
-      >
-        {{ text }}
-      </text>
-    </g>
-  </svg>
+  <div class="confirmation" relative :style="{ width: `${width}px`, height: `${width}px` }">
+    <div class="confirmation-text">
+      {{ text }}
+    </div>
+    <div class="confirmation-buttons">
+      <div m-auto>
+        <Button @click="(e) => $emit('yes', e)">
+          Yes
+        </Button>
+        <Button ml-10px @click="(e) => $emit('no', e)">
+          No
+        </Button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
 .confirmation {
   border-radius: 10px;
-  fill: var(--game-background-color);
-  margin: 10px 0px;
+  background: var(--background-color);
 }
 
 .confirmation-text {
-  fill: var(--game-foreground-color);
+  position: absolute;
+  color: var(--foreground-color);
   font-weight: 900;
   font-size: 22px;
+  top: 30%;
+  width: 100%;
+  user-select: none;
+}
+
+.confirmation-buttons {
+  position: absolute;
+  top: 60%;
+  width: 100%;
+  display: flex;
 }
 </style>

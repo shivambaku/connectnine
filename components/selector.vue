@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-
 const props = defineProps<{
   width: number
   padding: number

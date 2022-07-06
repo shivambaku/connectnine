@@ -71,18 +71,6 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
     },
   });
 
-  const values = [];
-  for (let i = 0; i < 100000; ++i)
-    values.push(getRandomPiece(largestOnBoard));
-
-  console.log('random numbers:');
-  console.log(values.filter(x => x === 0).length);
-  console.log(values.filter(x => x === 1).length);
-  console.log(values.filter(x => x === 2).length);
-  console.log(values.filter(x => x === 3).length);
-  console.log(values.filter(x => x === 4).length);
-  console.log(values.filter(x => x === 5).length);
-
   return gameState;
 }
 

@@ -144,12 +144,24 @@ await loadGame();
 
 .game .header .score {
   color: var(--game-foreground-color);
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 500;
   position: absolute;
   top: 42%;
   left: 0;
   right: 0;
+}
+
+@media screen and (max-width: 400px) {
+  .game .header .score {
+    font-size: 28px;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .game .header .score {
+    font-size: 24px;
+  }
 }
 
 .game .confirmation-overlay {

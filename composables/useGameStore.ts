@@ -129,7 +129,7 @@ export const useGameStore = defineStore('gameStore', () => {
 
     // a connection was formed
     if (visited.size >= 3) {
-      gameState.value.score += visited.size * value;
+      gameState.value.score += visited.size * value * 10;
 
       // besides the placed piece set all visited pieces to empty
       visited.delete(index);

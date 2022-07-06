@@ -112,7 +112,7 @@ function placeHelper(gameState: GameState, x: number, y: number, value: number) 
 
   // a connection was formed
   if (visited.size >= 3) {
-    gameState.score += visited.size * value;
+    gameState.score += visited.size * value * 10;
 
     // besides the placed piece set all visited pieces to empty
     visited.delete(index);

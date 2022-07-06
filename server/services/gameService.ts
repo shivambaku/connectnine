@@ -13,17 +13,6 @@ export async function newGame() {
     },
   });
 
-  const values = [];
-  for (let i = 0; i < 100000; ++i)
-    values.push(getRandomPiece());
-
-  console.log(values.filter(x => x === 0).length);
-  console.log(values.filter(x => x === 1).length);
-  console.log(values.filter(x => x === 2).length);
-  console.log(values.filter(x => x === 3).length);
-  console.log(values.filter(x => x === 4).length);
-  console.log(values.filter(x => x === 5).length);
-
   return gameState;
 }
 
@@ -70,8 +59,9 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
   placeHelper(gameState, x, y, value);
 
   // get new random value for the selector from the predifned future selectors
+  const largestOnBoard = Math.max(...gameState.boardPieces);
   gameState.selectorPieces[selectedIndex] = gameState.futureSelectorPieces[selectedIndex];
-  gameState.futureSelectorPieces[selectedIndex] = getRandomPiece();
+  gameState.futureSelectorPieces[selectedIndex] = getRandomPiece(largestOnBoard);
 
   // update the gamestate in the database
   gameState = await prisma.gameState.update({
@@ -80,6 +70,18 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
       id: gameId,
     },
   });
+
+  const values = [];
+  for (let i = 0; i < 100000; ++i)
+    values.push(getRandomPiece(largestOnBoard));
+
+  console.log('random numbers:');
+  console.log(values.filter(x => x === 0).length);
+  console.log(values.filter(x => x === 1).length);
+  console.log(values.filter(x => x === 2).length);
+  console.log(values.filter(x => x === 3).length);
+  console.log(values.filter(x => x === 4).length);
+  console.log(values.filter(x => x === 5).length);
 
   return gameState;
 }
@@ -157,11 +159,21 @@ function xytoi(x: number, y: number) {
   return y * Settings.boardSize + x;
 }
 
-function getRandomPiece() {
+function getRandomPiece(largestOnBoard = 0) {
+  let specIndex = 0;
+  if (largestOnBoard === 3)
+    specIndex = 1;
+  else if (largestOnBoard === 4)
+    specIndex = 2;
+  else if (largestOnBoard >= 5)
+    specIndex = 3;
+
+  const spec = Settings.randomness[specIndex];
+
   const rand = Math.random();
   let sum = 0;
-  for (let i = 0; i < Settings.randomness.length; i += 1) {
-    sum += Settings.randomness[i];
+  for (let i = 0; i < spec.length; i += 1) {
+    sum += spec[i];
     if (rand <= sum)
       return i + 1;
   }

@@ -90,14 +90,6 @@ await loadGame();
 </template>
 
 <style scoped>
-.confirmation-overlay {
-  position: absolute;
-  width: 62.5%;
-  height: 36%;
-  top: 32%;
-  left: 18.75%;
-}
-
 .game {
   max-width: 400px;
   min-width: 300px;
@@ -160,6 +152,14 @@ await loadGame();
   right: 0;
 }
 
+.game .confirmation-overlay {
+  position: absolute;
+  width: 62.5%;
+  height: 36%;
+  top: 32%;
+  left: 18.75%;
+}
+
 .rules h4 {
   margin-top: 30px;
   margin-bottom: 0px;
@@ -174,9 +174,7 @@ await loadGame();
 
 .rules p {
   font-size: 15px;
-  margin-top: 5px;
   font-weight: 200;
-  margin-left: 5px;
-  margin-right: 5px;
+  margin: 5px;
 }
 </style>

@@ -18,4 +18,7 @@ model GameState {
   futureSelectorPieces  Int[]
   score                 Int           @default(0)
   previousState         String?
+  name                  String?
+
+  @@index(score(sort: Desc))
 }

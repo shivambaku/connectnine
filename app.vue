@@ -12,7 +12,7 @@ const mode = useColorMode();
   </Head>
   <div>
     <NuxtPage style="margin-top: 30px" />
-    <hr>
+    <hr class="footer-separator">
     <div class="footer-navigation">
       <NuxtLink i-ic:outline-videogame-asset to="/" />
       <NuxtLink i-ic:outline-leaderboard to="/leaderboard" />
@@ -21,7 +21,7 @@ const mode = useColorMode();
         @click="mode = mode === 'dark' ? 'light' : 'dark'"
       />
     </div>
-    <div class="footer">
+    <div class="footer-text">
       Connect 9 is made by Shivam Kumar and Cody Harris.
     </div>
   </div>
@@ -57,13 +57,6 @@ html.dark {
   opacity: 87%;
 }
 
-hr {
-  border: none;
-  border-bottom: 1px solid;
-  width: 20%;
-  padding-top: 5px;
-}
-
 svg {
   vertical-align: top;
 }
@@ -78,6 +71,13 @@ a:hover {
 
 .noselect {
   user-select: none;
+}
+
+.footer-separator {
+  border: none;
+  border-bottom: 1px solid;
+  width: 20%;
+  padding-top: 10px;
 }
 
 .footer-navigation {
@@ -97,7 +97,7 @@ a:hover {
   color: var(--accent-color);
 }
 
-.footer {
+.footer-text {
   font-size: 13px;
   font-weight: 300;
   font-style: italic;

@@ -7,7 +7,7 @@ const mode = useColorMode();
   <Head>
     <Meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <Link rel="icon" href="/favicon.ico" />
-    <Link href="https://fonts.googleapis.com/css?family=Nunito Sans" rel="stylesheet" />
+    <Link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet" />
     <Title>Connect 9</Title>
   </Head>
   <div>
@@ -45,7 +45,7 @@ const mode = useColorMode();
 }
 
 html {
-  font-family: Avenir, Nunito Sans, Helvetica, Arial, sans-serif;
+  font-family: Avenir, Prompt, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

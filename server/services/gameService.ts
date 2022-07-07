@@ -4,12 +4,13 @@ import Settings from '../utils/settings';
 
 const prisma = new PrismaClient();
 
-export async function newGame() {
+export async function newGame(name: string) {
   const gameState = await prisma.gameState.create({
     data: {
       boardPieces: Array(Settings.boardSize * Settings.boardSize).fill(0),
       selectorPieces: [...Array(Settings.selectorCount)].map(_ => getRandomPiece()),
       futureSelectorPieces: [...Array(Settings.selectorCount)].map(_ => getRandomPiece()),
+      name,
     },
   });
 
@@ -18,7 +19,7 @@ export async function newGame() {
 
 export async function loadGame(gameId: string) {
   if (gameId === null)
-    return await newGame();
+    return await newGame(null);
 
   const gameState = await prisma.gameState.findUnique({
     where: {
@@ -27,7 +28,7 @@ export async function loadGame(gameId: string) {
   });
 
   if (gameState === null)
-    return await newGame();
+    return await newGame(null);
 
   return gameState;
 }
@@ -98,6 +99,30 @@ export async function undo(gameId: string) {
   }
 
   return gameState;
+}
+
+export async function changeName(gameId: string, name: string) {
+  const gameState = await prisma.gameState.findUnique({
+    where: {
+      id: gameId,
+    },
+  });
+
+  if (gameState === null)
+    throw new Error(`game id: ${gameId} is invalid`);
+
+  // TODO check for bad input
+  // if (false)
+  //   throw new Error(`game id: ${gameId} had bad registered name ${name}`);
+  gameState.name = name;
+
+  // update the gamestate in the database
+  await prisma.gameState.update({
+    data: gameState,
+    where: {
+      id: gameId,
+    },
+  });
 }
 
 function placeHelper(gameState: GameState, x: number, y: number, value: number) {

@@ -18,7 +18,7 @@ export const useGameStore = defineStore('gameStore', () => {
       return;
 
     awaitingServer.value = true;
-    gameState.value = await $fetch('/api/game/new', { method: 'post' });
+    gameState.value = await $fetch('/api/game/new', { method: 'post', body: { name: registeredName.value } });
     savedGameId.value = gameState.value.id;
     awaitingServer.value = false;
   };
@@ -166,7 +166,9 @@ export const useGameStore = defineStore('gameStore', () => {
   };
 
   const registerName = async (name: string) => {
+    // TODO check for bad input
     registeredName.value = name;
+    await $fetch('/api/game/registername', { method: 'post', body: { gameId: gameState.value.id, name: registeredName.value } });
   };
 
   return { gameState, selectedIndex, paused, boardSize, registeredName, newGame, loadGame, place, select, undo, animatedPlace, registerName };

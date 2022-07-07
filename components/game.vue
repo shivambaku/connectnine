@@ -102,6 +102,7 @@ await loadGame();
         v-model="inputRegisteredName"
         class="name-registeration-input" :placeholder="registeredName"
         maxlength="16"
+        @keydown="e => e.stopPropagation()"
       >
       <Button @click="registerNameClick">
         Register
@@ -228,6 +229,7 @@ await loadGame();
 .name-registeration-input {
   all: unset;
   border-radius: 6px;
+  margin-left:15px;
   border: 1px solid var(--primary-color);
   height: 70%;
 }

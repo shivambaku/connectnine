@@ -1,6 +1,7 @@
 import type { GameState } from '@prisma/client';
 import { onKeyDown, useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
+import Filter from 'bad-words';
 import type { ConnectionAnimationDataPart } from '~~/interfaces';
 
 export const useGameStore = defineStore('gameStore', () => {
@@ -10,6 +11,7 @@ export const useGameStore = defineStore('gameStore', () => {
   const savedGameId = useStorage('gameId', null);
   const registeredName = useStorage('registeredName', 'guest');
   const awaitingServer = ref(false);
+  const filter = new Filter();
   let animating = false;
   let placedCachedGameState: string = null;
 
@@ -166,9 +168,12 @@ export const useGameStore = defineStore('gameStore', () => {
   };
 
   const registerName = async (name: string) => {
-    // TODO check for bad input
+    if (filter.isProfane(name))
+      return false;
+
     registeredName.value = name;
     await $fetch('/api/game/registername', { method: 'post', body: { gameId: gameState.value.id, name: registeredName.value } });
+    return true;
   };
 
   return { gameState, selectedIndex, paused, boardSize, registeredName, newGame, loadGame, place, select, undo, animatedPlace, registerName };

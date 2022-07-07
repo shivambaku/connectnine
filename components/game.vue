@@ -6,6 +6,7 @@ const { gameState, selectedIndex, paused, boardSize, registeredName } = storeToR
 const { newGame, loadGame, animatedPlace, select, undo, registerName } = gameStore;
 const showNewGameConfirmation = ref(false);
 const inputRegisteredName = ref('');
+const inputRegisteredNameValid = ref(true);
 
 onMounted(() => {
   paused.value = false;
@@ -21,16 +22,27 @@ const closeConfirmation = () => {
   showNewGameConfirmation.value = false;
 };
 
-const newGameConfirmationClick = () => {
+const newGameConfirmationClick = async () => {
   closeConfirmation();
-  newGame();
+  await newGame();
 };
 
-const registerNameClick = () => {
+const registerNameClick = async () => {
+  inputRegisteredNameValid.value = true;
   if (inputRegisteredName.value === '')
     return;
-  registerName(inputRegisteredName.value);
-  inputRegisteredName.value = '';
+
+  if (await registerName(inputRegisteredName.value))
+    inputRegisteredName.value = '';
+  else
+    inputRegisteredNameValid.value = false;
+};
+
+const inputRegisteredNameKeyDown = (event) => {
+  if (event.key === 'Enter')
+    registerNameClick();
+
+  event.stopPropagation();
 };
 
 await loadGame();
@@ -100,9 +112,9 @@ await loadGame();
     <div class="name-registeration-row">
       <input
         v-model="inputRegisteredName"
-        class="name-registeration-input" :placeholder="registeredName"
+        :class="`name-registeration-input ${inputRegisteredNameValid ? '' : 'invalid'}`" :placeholder="registeredName"
         maxlength="16"
-        @keydown="e => e.stopPropagation()"
+        @keydown="inputRegisteredNameKeyDown"
       >
       <Button @click="registerNameClick">
         Register
@@ -232,5 +244,9 @@ await loadGame();
   margin-left:15px;
   border: 1px solid var(--primary-color);
   height: 70%;
+}
+
+.name-registeration-input.invalid {
+  border: 1px solid red;
 }
 </style>

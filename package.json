@@ -21,6 +21,7 @@
     "@prisma/client": "^4.0.0",
     "@vueuse/core": "^8.7.5",
     "animejs": "^3.2.1",
+    "bad-words": "^3.0.4",
     "pinia": "^2.0.14"
   }
 }

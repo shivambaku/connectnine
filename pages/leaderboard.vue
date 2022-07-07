@@ -5,6 +5,20 @@ const leaderboardStore = useLeaderboardStore();
 const { leaderboard } = storeToRefs(leaderboardStore);
 const { getTopTen } = leaderboardStore;
 
+const names = [
+  'Shivam',
+  'guest',
+  'leaderboardInfo',
+  'myNameIsShivam123',
+  'guest',
+  'Kanako',
+  'Teacher',
+  'Penguin',
+  'veryveryLongName',
+  'notVeryFast',
+  'QQ',
+];
+
 await getTopTen();
 </script>
 
@@ -16,7 +30,7 @@ await getTopTen();
     <div class="leaderboard">
       <div class="leaderboard-row">
         <div class="leaderboard-header">
-          <div>
+          <div style="text-align: left;">
             Name
           </div>
           <div>
@@ -33,8 +47,8 @@ await getTopTen();
           {{ i + 1 }}
         </div>
         <div class="leaderboard-info">
-          <div>
-            {{ leaderboardInfo.name === null ? 'Anonymous' : leaderboard.name }}
+          <div style="text-align: left;">
+            {{ leaderboardInfo.name === null ? 'guest' : leaderboardInfo.name }}
           </div>
           <div>
             {{ leaderboardInfo.score }}
@@ -53,7 +67,7 @@ await getTopTen();
 }
 
 .leaderboard {
-  max-width: 300px;
+  max-width: 400px;
   min-width: 300px;
   padding: 20px 0px;
   height: auto;
@@ -65,8 +79,14 @@ await getTopTen();
   border-radius: 10px;
 }
 
+@media screen and (max-width: 400px) {
+  .leaderboard {
+    font-size: 12px;
+  }
+}
+
 .leaderboard-row {
-  margin: 5px 20px;
+  margin: 5px 15px;
   display: grid;
   gap: 10px;
   grid-template-columns: 42px auto;
@@ -77,7 +97,7 @@ await getTopTen();
   padding: 0px 20px;
   font-weight: 800;
   display: grid;
-  grid-template-columns: 60% auto;
+  grid-template-columns: 80% auto;
 }
 
 .leaderboard-rank {
@@ -92,6 +112,6 @@ await getTopTen();
   border-radius: 6px;
   background: rgba(31, 120, 180, 0.2);
   display: grid;
-  grid-template-columns: 60% auto;
+  grid-template-columns: 80% auto;
 }
 </style>

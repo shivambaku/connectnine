@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-
+import { useStorage } from '@vueuse/core';
 interface LeaderbaordInfo {
   score: number
   name: string

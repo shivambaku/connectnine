@@ -2,9 +2,10 @@
 import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
-const { gameState, selectedIndex, paused, boardSize } = storeToRefs(gameStore);
-const { newGame, loadGame, animatedPlace, select, undo } = gameStore;
+const { gameState, selectedIndex, paused, boardSize, registeredName } = storeToRefs(gameStore);
+const { newGame, loadGame, animatedPlace, select, undo, registerName } = gameStore;
 const showNewGameConfirmation = ref(false);
+const inputRegisteredName = ref('');
 
 onMounted(() => {
   paused.value = false;
@@ -23,6 +24,13 @@ const closeConfirmation = () => {
 const newGameConfirmationClick = () => {
   closeConfirmation();
   newGame();
+};
+
+const registerNameClick = () => {
+  if (inputRegisteredName.value === '')
+    return;
+  registerName(inputRegisteredName.value);
+  inputRegisteredName.value = '';
 };
 
 await loadGame();
@@ -86,6 +94,19 @@ await loadGame();
       <br>
       Connect three or more of the same adjacent numbers to get a higher number.
     </p>
+  </div>
+  <div class="name-registeration">
+    <h5>Register name to show up on the leaderboard.</h5>
+    <div class="name-registeration-row">
+      <input
+        v-model="inputRegisteredName"
+        class="name-registeration-input" :placeholder="registeredName"
+        maxlength="16"
+      >
+      <Button @click="registerNameClick">
+        Register
+      </Button>
+    </div>
   </div>
 </template>
 
@@ -188,5 +209,26 @@ await loadGame();
   font-size: 15px;
   font-weight: 200;
   margin: 5px;
+}
+
+.name-registeration h5 {
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.name-registeration-row {
+  max-width: 300px;
+  min-width: 300px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 70% 30%;
+  align-items: center;
+}
+
+.name-registeration-input {
+  all: unset;
+  border-radius: 6px;
+  border: 1px solid var(--primary-color);
+  height: 70%;
 }
 </style>

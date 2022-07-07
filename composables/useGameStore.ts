@@ -8,6 +8,7 @@ export const useGameStore = defineStore('gameStore', () => {
   const selectedIndex = ref(0);
   const paused = ref(false);
   const savedGameId = useStorage('gameId', null);
+  const registeredName = useStorage('registeredName', 'guest');
   const awaitingServer = ref(false);
   let animating = false;
   let placedCachedGameState: string = null;
@@ -164,6 +165,10 @@ export const useGameStore = defineStore('gameStore', () => {
     gameState.value.selectorPieces[selectedIndex.value] = gameState.value.futureSelectorPieces[selectedIndex.value];
   };
 
-  return { gameState, selectedIndex, paused, boardSize, newGame, loadGame, place, select, undo, animatedPlace };
+  const registerName = async (name: string) => {
+    registeredName.value = name;
+  };
+
+  return { gameState, selectedIndex, paused, boardSize, registeredName, newGame, loadGame, place, select, undo, animatedPlace, registerName };
 });
 

@@ -72,10 +72,10 @@ const animateConnection = async (connectionAnimationDataArg: Array<ConnectionAni
       targets: '.level2ConnectionAnimationDataPart',
       keyframes: [
         {
-          width: animatedPieceWidth.value,
-          height: animatedPieceWidth.value,
-          x: el => animatedPieceScale(connectionAnimationData.value[el.id].parentX),
-          y: el => animatedPieceScale(connectionAnimationData.value[el.id].parentY),
+          width: `${animatedPieceWidth.value}px`,
+          height: `${animatedPieceWidth.value}px`,
+          x: el => `${animatedPieceScale(connectionAnimationData.value[el.id].parentX)}px`,
+          y: el => `${animatedPieceScale(connectionAnimationData.value[el.id].parentY)}px`,
         },
         { opacity: 0.0, duration: 0 },
       ],
@@ -84,10 +84,10 @@ const animateConnection = async (connectionAnimationDataArg: Array<ConnectionAni
       targets: '.level1ConnectionAnimationDataPart',
       keyframes: [
         {
-          width: animatedPieceWidth.value,
-          height: animatedPieceWidth.value,
-          x: el => animatedPieceScale(connectionAnimationData.value[el.id].parentX),
-          y: el => animatedPieceScale(connectionAnimationData.value[el.id].parentY),
+          width: `${animatedPieceWidth.value}px`,
+          height: `${animatedPieceWidth.value}px`,
+          x: el => `${animatedPieceScale(connectionAnimationData.value[el.id].parentX)}px`,
+          y: el => `${animatedPieceScale(connectionAnimationData.value[el.id].parentY)}px`,
         },
         { opacity: 0.0, duration: 50 },
       ],

@@ -1,10 +1,15 @@
 import type { GameState } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
+import Filter from 'bad-words';
 import Settings from '../utils/settings';
 
 const prisma = new PrismaClient();
 
 export async function newGame(name: string) {
+  const filter = new Filter();
+  if (filter.isProfane(name))
+    throw new Error(`new game failed due to bad name ${name}`);
+
   const gameState = await prisma.gameState.create({
     data: {
       boardPieces: Array(Settings.boardSize * Settings.boardSize).fill(0),
@@ -86,8 +91,12 @@ export async function undo(gameId: string) {
     throw new Error(`game id: ${gameId} is invalid`);
 
   if (gameState.previousState != null) {
+    // do not undo the name
+    const name = gameState.name;
+
     // undo the state
     gameState = JSON.parse(gameState.previousState);
+    gameState.name = name;
 
     // update the gamestate in the database
     gameState = await prisma.gameState.update({
@@ -102,6 +111,10 @@ export async function undo(gameId: string) {
 }
 
 export async function changeName(gameId: string, name: string) {
+  const filter = new Filter();
+  if (filter.isProfane(name))
+    throw new Error(`change name for game id: ${gameId} failed due to bad name ${name}`);
+
   const gameState = await prisma.gameState.findUnique({
     where: {
       id: gameId,
@@ -111,9 +124,6 @@ export async function changeName(gameId: string, name: string) {
   if (gameState === null)
     throw new Error(`game id: ${gameId} is invalid`);
 
-  // TODO check for bad input
-  // if (false)
-  //   throw new Error(`game id: ${gameId} had bad registered name ${name}`);
   gameState.name = name;
 
   // update the gamestate in the database

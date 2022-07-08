@@ -202,8 +202,12 @@ function getRandomPiece(largestOnBoard = 0) {
 }
 
 function isValidName(name: string) {
+  if (name === null)
+    return true;
+
   const filter = new Filter();
   if (filter.isProfane(name) || name.length > 16)
     return false;
+
   return true;
 }

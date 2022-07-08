@@ -16,6 +16,10 @@ const mode = useColorMode();
     <div class="footer-navigation">
       <NuxtLink i-ic:outline-videogame-asset to="/" />
       <NuxtLink i-ic:outline-leaderboard to="/leaderboard" />
+      <a
+        i-ic:outline-attach-money
+        href="https://www.paypal.com/donate/?business=VG72YMC5HF2EG&no_recurring=0&item_name=Connect+9&currency_code=USD"
+      />
       <div
         class="footer-navigation-button dark:i-ic:outline-dark-mode i-ic:outline-light-mode"
         @click="mode = mode === 'dark' ? 'light' : 'dark'"

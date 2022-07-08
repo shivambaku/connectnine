@@ -6,8 +6,7 @@ import Settings from '../utils/settings';
 const prisma = new PrismaClient();
 
 export async function newGame(name: string) {
-  const filter = new Filter();
-  if (filter.isProfane(name))
+  if (!isValidName(name))
     throw new Error(`new game failed due to bad name ${name}`);
 
   const gameState = await prisma.gameState.create({
@@ -111,8 +110,7 @@ export async function undo(gameId: string) {
 }
 
 export async function changeName(gameId: string, name: string) {
-  const filter = new Filter();
-  if (filter.isProfane(name))
+  if (!isValidName(name))
     throw new Error(`change name for game id: ${gameId} failed due to bad name ${name}`);
 
   const gameState = await prisma.gameState.findUnique({
@@ -201,4 +199,11 @@ function getRandomPiece(largestOnBoard = 0) {
       return i + 1;
   }
   return 0;
+}
+
+function isValidName(name: string) {
+  const filter = new Filter();
+  if (filter.isProfane(name) || name.length > 16)
+    return false;
+  return true;
 }

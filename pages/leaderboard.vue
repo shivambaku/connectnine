@@ -4,20 +4,14 @@ import { storeToRefs } from 'pinia';
 const leaderboardStore = useLeaderboardStore();
 const { leaderboard } = storeToRefs(leaderboardStore);
 const { getTopTen } = leaderboardStore;
+const expandedLeaderboardInfo = ref(-1);
 
-const names = [
-  'Shivam',
-  'guest',
-  'leaderboardInfo',
-  'myNameIsShivam123',
-  'guest',
-  'Kanako',
-  'Teacher',
-  'Penguin',
-  'veryveryLongName',
-  'notVeryFast',
-  'QQ',
-];
+const expand = (i: number) => {
+  if (expandedLeaderboardInfo.value === i)
+    expandedLeaderboardInfo.value = -1;
+  else
+    expandedLeaderboardInfo.value = i;
+};
 
 await getTopTen();
 </script>
@@ -46,12 +40,26 @@ await getTopTen();
         <div class="leaderboard-rank">
           {{ i + 1 }}
         </div>
-        <div class="leaderboard-info">
+        <div class="leaderboard-info" @click="expand(i)">
           <div style="text-align: left;">
             {{ leaderboardInfo.name === null ? 'guest' : leaderboardInfo.name }}
           </div>
           <div>
             {{ leaderboardInfo.score }}
+          </div>
+          <div
+            v-if="expandedLeaderboardInfo === i"
+            class="leaderboard-info-board"
+          >
+            <Board
+              :padding="10"
+              :width="400"
+              :piece-padding="4"
+              :piece-radius="6"
+              :board-size="5"
+              :unclickable="true"
+              :pieces="leaderboardInfo.boardPieces"
+            />
           </div>
         </div>
       </div>
@@ -105,6 +113,7 @@ await getTopTen();
   background: rgba(31, 120, 180, 0.2);
   padding: 10px;
   width: 22px;
+  height: 22px;
 }
 
 .leaderboard-info {
@@ -113,5 +122,19 @@ await getTopTen();
   background: rgba(31, 120, 180, 0.2);
   display: grid;
   grid-template-columns: 80% auto;
+}
+
+@media(hover: hover) and (pointer: fine) {
+  .leaderboard-info:hover {
+    background: rgba(31, 120, 180, 0.5);
+    cursor: pointer;
+  }
+}
+
+.leaderboard-info-board {
+  grid-column: 1 / 3;
+  min-width: 175px;
+  max-width: 200px;
+  margin: 0 auto;
 }
 </style>

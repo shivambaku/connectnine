@@ -84,6 +84,7 @@ await getTopTen();
   color: var(--game-foreground-color);
   font-weight: 400;
   font-size: 14px;
+  text-anchor: middle;
   border-radius: 10px;
 }
 
@@ -114,6 +115,7 @@ await getTopTen();
   padding: 10px;
   width: 22px;
   height: 22px;
+  line-height: 22px;
 }
 
 .leaderboard-info {
@@ -122,6 +124,7 @@ await getTopTen();
   background: rgba(31, 120, 180, 0.2);
   display: grid;
   grid-template-columns: 80% auto;
+  align-items: center;
 }
 
 @media(hover: hover) and (pointer: fine) {

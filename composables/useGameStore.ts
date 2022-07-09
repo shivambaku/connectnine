@@ -1,33 +1,33 @@
-import type { GameState } from '@prisma/client';
 import { onKeyDown, useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import Filter from 'bad-words';
-import type { ConnectionAnimationDataPart } from '~~/interfaces';
+import type { ClientGameState, ConnectionAnimationDataPart } from '~~/interfaces';
 
 export const useGameStore = defineStore('gameStore', () => {
-  const gameState = ref({} as GameState);
+  const gameState = ref({} as ClientGameState);
   const selectedIndex = ref(0);
   const paused = ref(false);
-  const savedGameId = useStorage('gameId', null);
-  const registeredName = useStorage('registeredName', 'guest');
+  const playerId = useStorage('playerId', null);
+  const currentName = ref('guest');
   const awaitingServer = ref(false);
   const filter = new Filter();
   let animating = false;
   let placedCachedGameState: string = null;
+
+  const load = async () => {
+    const clientPlayer = await $fetch('/api/game/load', { method: 'post', body: { playerId: playerId.value } });
+    playerId.value = clientPlayer.id;
+    currentName.value = clientPlayer.currentName;
+    gameState.value = clientPlayer.currentGameState;
+  };
 
   const newGame = async () => {
     if (animating || awaitingServer.value)
       return;
 
     awaitingServer.value = true;
-    gameState.value = await $fetch('/api/game/new', { method: 'post', body: { name: registeredName.value } });
-    savedGameId.value = gameState.value.id;
+    gameState.value = await $fetch('/api/game/new', { method: 'post', body: { playerId: playerId.value } });
     awaitingServer.value = false;
-  };
-
-  const loadGame = async () => {
-    gameState.value = await $fetch('/api/game/load', { method: 'post', body: { gameId: savedGameId.value } });
-    savedGameId.value = gameState.value.id;
   };
 
   const place = async (x: number, y: number) => {
@@ -36,13 +36,13 @@ export const useGameStore = defineStore('gameStore', () => {
 
     awaitingServer.value = true;
     gameState.value
-      = await $fetch('/api/game/place', { method: 'post', body: { gameId: gameState.value.id, x, y, selectedIndex: selectedIndex.value } });
+      = await $fetch('/api/game/place', { method: 'post', body: { playerId: playerId.value, x, y, selectedIndex: selectedIndex.value } });
     awaitingServer.value = false;
   };
 
   const placeInCacheIfAnimating = async (x: number, y: number) => {
     awaitingServer.value = true;
-    const response = await $fetch('/api/game/place', { method: 'post', body: { gameId: gameState.value.id, x, y, selectedIndex: selectedIndex.value } });
+    const response = await $fetch('/api/game/place', { method: 'post', body: { playerId: playerId.value, x, y, selectedIndex: selectedIndex.value } });
 
     // if animating then save the response and set it after animation is done
     // if done after animation then directly set the gameState
@@ -76,7 +76,7 @@ export const useGameStore = defineStore('gameStore', () => {
 
     awaitingServer.value = true;
     gameState.value = JSON.parse(gameState.value.previousState);
-    gameState.value = await $fetch('/api/game/undo', { method: 'post', body: { gameId: gameState.value.id } });
+    gameState.value = await $fetch('/api/game/undo', { method: 'post', body: { playerId: playerId.value } });
     awaitingServer.value = false;
   };
 
@@ -171,11 +171,11 @@ export const useGameStore = defineStore('gameStore', () => {
     if (filter.isProfane(name))
       return false;
 
-    registeredName.value = name;
-    await $fetch('/api/game/registername', { method: 'post', body: { gameId: gameState.value.id, name: registeredName.value } });
+    currentName.value = name;
+    await $fetch('/api/game/registername', { method: 'post', body: { playerId: playerId.value, name: currentName.value } });
     return true;
   };
 
-  return { gameState, selectedIndex, paused, boardSize, registeredName, newGame, loadGame, place, select, undo, animatedPlace, registerName };
+  return { gameState, selectedIndex, paused, boardSize, registeredName: currentName, load, newGame, place, select, undo, animatedPlace, registerName };
 });
 

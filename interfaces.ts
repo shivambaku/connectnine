@@ -6,3 +6,17 @@ export interface ConnectionAnimationDataPart {
   level: number
   value: number
 }
+
+export interface ClientGameState {
+  boardPieces: number[]
+  selectorPieces: number[]
+  futureSelectorPieces: number[]
+  score: number
+  previousState: string
+}
+
+export interface ClientPlayer {
+  id: string
+  currentGameState: ClientGameState
+  currentName: string
+}

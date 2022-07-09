@@ -1,59 +1,160 @@
-import type { GameState } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 import Filter from 'bad-words';
 import Settings from '../utils/settings';
+import type { ClientGameState, ClientPlayer } from '~~/interfaces';
 
 const prisma = new PrismaClient();
 
+export async function load(playerId: string) {
+  // create a player id if it does not exist
+  if (playerId === null) {
+    const player = await prisma.player.create({
+      data: {
+        achievement: {
+          create: {
+          },
+        },
+      },
+      select: {
+        id: true,
+        currentName: true,
+      },
+    });
+
+    const clientGameState = await newGame(player.id);
+    const clientPlayer: ClientPlayer = {
+      id: player.id,
+      currentName: player.currentName,
+      currentGameState: clientGameState,
+    };
+    return clientPlayer;
+  }
+  // otherwise load the game
+  else {
+    const player = await prisma.player.findUnique({
+      where: {
+        id: playerId,
+      },
+      select: {
+        id: true,
+        currentName: true,
+        currentGameStateId: true,
+      },
+    });
+
+    if (player === null)
+      throw new Error(`player id: ${playerId} is invalid`);
+
+    const clientGameState = await prisma.gameState.findUnique({
+      where: {
+        id: player.currentGameStateId,
+      },
+      select: {
+        boardPieces: true,
+        selectorPieces: true,
+        futureSelectorPieces: true,
+        score: true,
+        previousState: true,
+      },
+    });
+
+    const clientPlayer: ClientPlayer = {
+      id: player.id,
+      currentName: player.currentName,
+      currentGameState: clientGameState,
+    };
+    return clientPlayer;
+  }
+}
+
 export async function newGame(playerId: string) {
-  if (!isValidName(name))
-    throw new Error(`new game failed due to bad name ${name}`);
+  if (playerId === null)
+    throw new Error(`player id: ${playerId} is invalid`);
+
+  const player = await prisma.player.findUnique({
+    where: {
+      id: playerId,
+    },
+    select: {
+      id: true,
+      currentName: true,
+    },
+  });
 
   const gameState = await prisma.gameState.create({
     data: {
       boardPieces: Array(Settings.boardSize * Settings.boardSize).fill(0),
       selectorPieces: [...Array(Settings.selectorCount)].map(_ => getRandomPiece()),
       futureSelectorPieces: [...Array(Settings.selectorCount)].map(_ => getRandomPiece()),
-      name,
+      name: player.currentName,
+      playerId: player.id,
+    },
+    select: {
+      id: true,
+      boardPieces: true,
+      selectorPieces: true,
+      futureSelectorPieces: true,
+      score: true,
+      previousState: true,
     },
   });
 
-  return gameState;
-}
-
-export async function loadGame(playerId: string) {
-  if (playerId === null)
-    return await newGame(null);
-
-  const gameState = await prisma.gameState.findUnique({
+  await prisma.player.update({
+    data: {
+      currentGameStateId: gameState.id,
+    },
     where: {
-      id: gameId,
+      id: playerId,
+    },
+    select: {
+      id: true,
     },
   });
 
-  if (gameState === null)
-    return await newGame(null);
-
-  return gameState;
+  const clientGameState: ClientGameState = {
+    boardPieces: gameState.boardPieces,
+    selectorPieces: gameState.selectorPieces,
+    futureSelectorPieces: gameState.futureSelectorPieces,
+    score: gameState.score,
+    previousState: gameState.previousState,
+  };
+  return clientGameState;
 }
 
-export async function place(gameId: string, x: number, y: number, selectedIndex: number) {
+export async function place(playerId: string, x: number, y: number, selectedIndex: number) {
   if (outOfBounds(x, y))
     throw new Error(`x: ${x}, y: ${y} is invalid`);
 
   if (selectedIndex < 0 || selectedIndex >= Settings.selectorCount)
     throw new Error(`selectedIndex: ${selectedIndex} is invalid`);
 
-  let gameState = await prisma.gameState.findUnique({
+  const player = await prisma.player.findUnique({
     where: {
-      id: gameId,
+      id: playerId,
+    },
+    select: {
+      currentGameStateId: true,
     },
   });
 
-  if (gameState === null)
-    throw new Error(`game id: ${gameId} is invalid`);
+  if (player === null)
+    throw new Error(`player id: ${playerId} is invalid`);
 
-  // save the previous state so that we can undo later
+  const gameState = await prisma.gameState.findUnique({
+    where: {
+      id: player.currentGameStateId,
+    },
+    select: {
+      boardPieces: true,
+      selectorPieces: true,
+      futureSelectorPieces: true,
+      score: true,
+      previousState: true,
+    },
+  });
+
+  // save the current state in the previous state before making changes
+  // set previous state to null to not have previous state reference previous previous state
   gameState.previousState = null;
   gameState.previousState = JSON.stringify(gameState);
 
@@ -69,25 +170,49 @@ export async function place(gameId: string, x: number, y: number, selectedIndex:
   gameState.futureSelectorPieces[selectedIndex] = getRandomPiece(largestOnBoard);
 
   // update the gamestate in the database
-  gameState = await prisma.gameState.update({
+  const clientGameState = await prisma.gameState.update({
     data: gameState,
     where: {
-      id: gameId,
+      id: player.currentGameStateId,
+    },
+    select: {
+      boardPieces: true,
+      selectorPieces: true,
+      futureSelectorPieces: true,
+      score: true,
+      previousState: true,
     },
   });
 
-  return gameState;
+  return clientGameState;
 }
 
-export async function undo(gameId: string) {
-  let gameState = await prisma.gameState.findUnique({
+export async function undo(playerId: string) {
+  const player = await prisma.player.findUnique({
     where: {
-      id: gameId,
+      id: playerId,
+    },
+    select: {
+      currentGameStateId: true,
     },
   });
 
-  if (gameState === null)
-    throw new Error(`game id: ${gameId} is invalid`);
+  if (player === null)
+    throw new Error(`player id: ${playerId} is invalid`);
+
+  let gameState = await prisma.gameState.findUnique({
+    where: {
+      id: player.currentGameStateId,
+    },
+    select: {
+      name: true,
+      boardPieces: true,
+      selectorPieces: true,
+      futureSelectorPieces: true,
+      score: true,
+      previousState: true,
+    },
+  });
 
   if (gameState.previousState != null) {
     // do not undo the name
@@ -98,42 +223,78 @@ export async function undo(gameId: string) {
     gameState.name = name;
 
     // update the gamestate in the database
-    gameState = await prisma.gameState.update({
+    const clientGameState = await prisma.gameState.update({
       data: gameState,
       where: {
-        id: gameId,
+        id: player.currentGameStateId,
+      },
+      select: {
+        boardPieces: true,
+        selectorPieces: true,
+        futureSelectorPieces: true,
+        score: true,
+        previousState: true,
       },
     });
-  }
 
-  return gameState;
+    return clientGameState;
+  }
+  else {
+    const clientGameState: ClientGameState = {
+      boardPieces: gameState.boardPieces,
+      selectorPieces: gameState.selectorPieces,
+      futureSelectorPieces: gameState.futureSelectorPieces,
+      score: gameState.score,
+      previousState: gameState.previousState,
+    };
+    return clientGameState;
+  }
 }
 
-export async function changeName(gameId: string, name: string) {
+export async function changeName(playerId: string, name: string) {
   if (!isValidName(name))
-    throw new Error(`change name for game id: ${gameId} failed due to bad name ${name}`);
+    throw new Error(`change name for player id: ${playerId} failed due to bad name ${name}`);
 
-  const gameState = await prisma.gameState.findUnique({
+  const player = await prisma.player.findUnique({
     where: {
-      id: gameId,
+      id: playerId,
+    },
+    select: {
+      currentGameStateId: true,
     },
   });
 
-  if (gameState === null)
-    throw new Error(`game id: ${gameId} is invalid`);
+  if (player === null)
+    throw new Error(`player id: ${playerId} is invalid`);
 
-  gameState.name = name;
+  // update the player in the database
+  await prisma.player.update({
+    data: {
+      currentName: name,
+    },
+    where: {
+      id: playerId,
+    },
+    select: {
+      id: true,
+    },
+  });
 
   // update the gamestate in the database
   await prisma.gameState.update({
-    data: gameState,
+    data: {
+      name,
+    },
     where: {
-      id: gameId,
+      id: player.currentGameStateId,
+    },
+    select: {
+      id: true,
     },
   });
 }
 
-function placeHelper(gameState: GameState, x: number, y: number, value: number) {
+function placeHelper(gameState: ClientGameState, x: number, y: number, value: number) {
   const index = xytoi(x, y);
 
   // place the piece
@@ -156,7 +317,7 @@ function placeHelper(gameState: GameState, x: number, y: number, value: number) 
   }
 }
 
-function checkConnections(gameState: GameState, x: number, y: number, value: number, visited: Set<number>) {
+function checkConnections(gameState: ClientGameState, x: number, y: number, value: number, visited: Set<number>) {
   const index = xytoi(x, y);
   if (!outOfBounds(x, y) && sameValue(gameState, index, value) && !visited.has(index)) {
     visited.add(index);
@@ -168,7 +329,7 @@ function checkConnections(gameState: GameState, x: number, y: number, value: num
   }
 }
 
-function sameValue(gameState: GameState, index: number, value: number) {
+function sameValue(gameState: ClientGameState, index: number, value: number) {
   return gameState.boardPieces[index] === value;
 }
 
@@ -211,3 +372,4 @@ function isValidName(name: string) {
 
   return true;
 }
+

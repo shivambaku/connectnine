@@ -10,6 +10,16 @@ datasource db {
   url      = env("DATABASE_URL") 
 }
 
+model Player {
+  id                  String        @id @default(uuid())
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  gameStates          GameState[]
+  currentName         String?       @default("guest")
+  currentGameStateId  String?
+  achievement         Achievement?          
+}
+
 model GameState {
   id                    String        @id @default(uuid())
   startedAt             DateTime      @default(now())
@@ -20,29 +30,18 @@ model GameState {
   previousState         String?
   name                  String?
   player                Player?       @relation(fields: [playerId], references: [id])
-  playerId              String        @unique
+  playerId              String?       
 
   @@index(score(sort: Desc))
-}
-
-model Player {
-  id                  String        @id @default(uuid())
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @default(now())
-  currentName         String?       @default("guest")
-  currentGameState    GameState?
-  bestScore           Int           @default(0)
-  totalGames          Int           @default(0)   
-  achievement         Achievement?          
 }
 
 model Achievement {
   id                  Int           @id @default(autoincrement())
   player              Player        @relation(fields: [playerId], references: [id])
   playerId            String        @unique
-  connectNine         Boolean       @default(false)
-  lonelyEight         Boolean       @default(false)
-  sevenAteNine        Boolean       @default(false)
-  fiveFives           Boolean       @default(false)
-  windmill            Boolean       @default(false)
+  // connectNine         Boolean       @default(false)
+  // lonelyEight         Boolean       @default(false)
+  // sevenAteNine        Boolean       @default(false)
+  // fiveFives           Boolean       @default(false)
+  // windmill            Boolean       @default(false)
 }

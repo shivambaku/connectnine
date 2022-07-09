@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
 const { gameState, selectedIndex, paused, boardSize, registeredName } = storeToRefs(gameStore);
-const { newGame, loadGame, animatedPlace, select, undo, registerName } = gameStore;
+const { newGame, load, animatedPlace, select, undo, registerName } = gameStore;
 const showNewGameConfirmation = ref(false);
 const inputRegisteredName = ref('');
 const inputRegisteredNameValid = ref(true);
@@ -45,7 +45,7 @@ const inputRegisteredNameKeyDown = (event) => {
   event.stopPropagation();
 };
 
-await loadGame();
+await load();
 </script>
 
 <template>

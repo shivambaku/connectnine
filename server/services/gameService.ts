@@ -86,6 +86,7 @@ export async function newGame(playerId: string) {
       boardPieces: Array(Settings.boardSize * Settings.boardSize).fill(0),
       selectorPieces: [...Array(Settings.selectorCount)].map(_ => getRandomPiece()),
       nextSelectorPiece: getRandomPiece(),
+      nextNextSelectorPiece: getRandomPiece(),
       name: player.currentName,
       playerId: player.id,
     },
@@ -148,6 +149,7 @@ export async function place(playerId: string, x: number, y: number, selectedInde
       boardPieces: true,
       selectorPieces: true,
       nextSelectorPiece: true,
+      nextNextSelectorPiece: true,
       score: true,
       previousState: true,
     },
@@ -155,8 +157,15 @@ export async function place(playerId: string, x: number, y: number, selectedInde
 
   // save the current state in the previous state before making changes
   // set previous state to null to not have previous state reference previous previous state
-  gameState.previousState = null;
-  gameState.previousState = JSON.stringify(gameState);
+  let clientGameState: ClientGameState = {
+    boardPieces: gameState.boardPieces,
+    selectorPieces: gameState.selectorPieces,
+    nextSelectorPiece: gameState.nextSelectorPiece,
+    score: gameState.score,
+    previousState: null,
+  };
+
+  gameState.previousState = JSON.stringify(clientGameState);
 
   // the value that we will be placing
   const value = gameState.selectorPieces[selectedIndex];
@@ -167,10 +176,11 @@ export async function place(playerId: string, x: number, y: number, selectedInde
   // get new random value for the selector from the predefined next selector
   const largestOnBoard = Math.max(...gameState.boardPieces);
   gameState.selectorPieces[selectedIndex] = gameState.nextSelectorPiece;
-  gameState.nextSelectorPiece = getRandomPiece(largestOnBoard);
+  gameState.nextSelectorPiece = gameState.nextNextSelectorPiece;
+  gameState.nextNextSelectorPiece = getRandomPiece(largestOnBoard);
 
   // update the gamestate in the database
-  const clientGameState = await prisma.gameState.update({
+  clientGameState = await prisma.gameState.update({
     data: gameState,
     where: {
       id: player.currentGameStateId,
@@ -211,6 +221,7 @@ export async function undo(playerId: string) {
       nextSelectorPiece: true,
       score: true,
       previousState: true,
+      nextNextSelectorPiece: true,
     },
   });
 
@@ -219,7 +230,9 @@ export async function undo(playerId: string) {
     const name = gameState.name;
 
     // undo the state
+    const nextSelectorPiece = gameState.nextSelectorPiece;
     gameState = JSON.parse(gameState.previousState);
+    gameState.nextNextSelectorPiece = nextSelectorPiece;
     gameState.name = name;
 
     // update the gamestate in the database

@@ -26,6 +26,7 @@ model GameState {
   boardPieces           Int[]
   selectorPieces        Int[]
   nextSelectorPiece     Int           @default(1)
+  nextNextSelectorPiece Int           @default(1)
   score                 Int           @default(0)
   previousState         String?
   name                  String?

@@ -5,7 +5,7 @@ import Settings from '../utils/settings';
 
 const prisma = new PrismaClient();
 
-export async function newGame(name: string) {
+export async function newGame(playerId: string) {
   if (!isValidName(name))
     throw new Error(`new game failed due to bad name ${name}`);
 
@@ -21,8 +21,8 @@ export async function newGame(name: string) {
   return gameState;
 }
 
-export async function loadGame(gameId: string) {
-  if (gameId === null)
+export async function loadGame(playerId: string) {
+  if (playerId === null)
     return await newGame(null);
 
   const gameState = await prisma.gameState.findUnique({

@@ -19,6 +19,30 @@ model GameState {
   score                 Int           @default(0)
   previousState         String?
   name                  String?
+  player                Player?       @relation(fields: [playerId], references: [id])
+  playerId              String        @unique
 
   @@index(score(sort: Desc))
+}
+
+model Player {
+  id                  String        @id @default(uuid())
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @default(now())
+  currentName         String?       @default("guest")
+  currentGameState    GameState?
+  bestScore           Int           @default(0)
+  totalGames          Int           @default(0)   
+  achievement         Achievement?          
+}
+
+model Achievement {
+  id                  Int           @id @default(autoincrement())
+  player              Player        @relation(fields: [playerId], references: [id])
+  playerId            String        @unique
+  connectNine         Boolean       @default(false)
+  lonelyEight         Boolean       @default(false)
+  sevenAteNine        Boolean       @default(false)
+  fiveFives           Boolean       @default(false)
+  windmill            Boolean       @default(false)
 }

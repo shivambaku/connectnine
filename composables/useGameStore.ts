@@ -164,7 +164,7 @@ export const useGameStore = defineStore('gameStore', () => {
     animatedPlaceHelper(x, y, gameState.value.selectorPieces[selectedIndex.value], animateConnection);
 
     // set the selected piece to the next piece
-    gameState.value.selectorPieces[selectedIndex.value] = gameState.value.futureSelectorPieces[selectedIndex.value];
+    gameState.value.selectorPieces[selectedIndex.value] = gameState.value.nextSelectorPiece;
   };
 
   const registerName = async (name: string) => {

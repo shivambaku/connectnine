@@ -10,7 +10,7 @@ export interface ConnectionAnimationDataPart {
 export interface ClientGameState {
   boardPieces: number[]
   selectorPieces: number[]
-  futureSelectorPieces: number[]
+  nextSelectorPiece: number
   score: number
   previousState: string
 }

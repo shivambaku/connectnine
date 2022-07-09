@@ -52,7 +52,7 @@ export async function load(playerId: string) {
       select: {
         boardPieces: true,
         selectorPieces: true,
-        futureSelectorPieces: true,
+        nextSelectorPiece: true,
         score: true,
         previousState: true,
       },
@@ -85,7 +85,7 @@ export async function newGame(playerId: string) {
     data: {
       boardPieces: Array(Settings.boardSize * Settings.boardSize).fill(0),
       selectorPieces: [...Array(Settings.selectorCount)].map(_ => getRandomPiece()),
-      futureSelectorPieces: [...Array(Settings.selectorCount)].map(_ => getRandomPiece()),
+      nextSelectorPiece: getRandomPiece(),
       name: player.currentName,
       playerId: player.id,
     },
@@ -93,7 +93,7 @@ export async function newGame(playerId: string) {
       id: true,
       boardPieces: true,
       selectorPieces: true,
-      futureSelectorPieces: true,
+      nextSelectorPiece: true,
       score: true,
       previousState: true,
     },
@@ -114,7 +114,7 @@ export async function newGame(playerId: string) {
   const clientGameState: ClientGameState = {
     boardPieces: gameState.boardPieces,
     selectorPieces: gameState.selectorPieces,
-    futureSelectorPieces: gameState.futureSelectorPieces,
+    nextSelectorPiece: gameState.nextSelectorPiece,
     score: gameState.score,
     previousState: gameState.previousState,
   };
@@ -147,7 +147,7 @@ export async function place(playerId: string, x: number, y: number, selectedInde
     select: {
       boardPieces: true,
       selectorPieces: true,
-      futureSelectorPieces: true,
+      nextSelectorPiece: true,
       score: true,
       previousState: true,
     },
@@ -164,10 +164,10 @@ export async function place(playerId: string, x: number, y: number, selectedInde
   // place the piece and connect the pieces if needed
   placeHelper(gameState, x, y, value);
 
-  // get new random value for the selector from the predifned future selectors
+  // get new random value for the selector from the predefined next selector
   const largestOnBoard = Math.max(...gameState.boardPieces);
-  gameState.selectorPieces[selectedIndex] = gameState.futureSelectorPieces[selectedIndex];
-  gameState.futureSelectorPieces[selectedIndex] = getRandomPiece(largestOnBoard);
+  gameState.selectorPieces[selectedIndex] = gameState.nextSelectorPiece;
+  gameState.nextSelectorPiece = getRandomPiece(largestOnBoard);
 
   // update the gamestate in the database
   const clientGameState = await prisma.gameState.update({
@@ -178,7 +178,7 @@ export async function place(playerId: string, x: number, y: number, selectedInde
     select: {
       boardPieces: true,
       selectorPieces: true,
-      futureSelectorPieces: true,
+      nextSelectorPiece: true,
       score: true,
       previousState: true,
     },
@@ -208,7 +208,7 @@ export async function undo(playerId: string) {
       name: true,
       boardPieces: true,
       selectorPieces: true,
-      futureSelectorPieces: true,
+      nextSelectorPiece: true,
       score: true,
       previousState: true,
     },
@@ -231,7 +231,7 @@ export async function undo(playerId: string) {
       select: {
         boardPieces: true,
         selectorPieces: true,
-        futureSelectorPieces: true,
+        nextSelectorPiece: true,
         score: true,
         previousState: true,
       },
@@ -243,7 +243,7 @@ export async function undo(playerId: string) {
     const clientGameState: ClientGameState = {
       boardPieces: gameState.boardPieces,
       selectorPieces: gameState.selectorPieces,
-      futureSelectorPieces: gameState.futureSelectorPieces,
+      nextSelectorPiece: gameState.nextSelectorPiece,
       score: gameState.score,
       previousState: gameState.previousState,
     };

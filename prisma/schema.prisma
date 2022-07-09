@@ -25,7 +25,7 @@ model GameState {
   startedAt             DateTime      @default(now())
   boardPieces           Int[]
   selectorPieces        Int[]
-  futureSelectorPieces  Int[]
+  nextSelectorPiece     Int           @default(1)
   score                 Int           @default(0)
   previousState         String?
   name                  String?

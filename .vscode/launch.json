@@ -1,0 +1,43 @@
+{
+  "version": "0.1.0",
+  "configurations": [
+    {
+      "name": "Server: Nuxt3",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "presentation": {
+        "hidden": true,
+      }
+    },
+    {
+      "name": "Client: Nuxt3 (Firefox)",
+      "type": "firefox",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "presentation": {
+        "hidden": true,
+      }
+    },
+    {
+      "name": "Client: Nuxt3 (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "presentation": {
+        "hidden": true,
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Fullstack: Nuxt3 (Firefox)",
+      "configurations": ["Server: Nuxt3", "Client: Nuxt3 (Firefox)"]
+    },
+    {
+      "name": "Fullstack: Nuxt3 (Chrome)",
+      "configurations": ["Server: Nuxt3", "Client: Nuxt3 (Chrome)"]
+    }
+  ],
+  "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"]
+}

@@ -1,8 +1,8 @@
 {
-    "recommendations": [
-      "Vue.volar",
-      "dbaeumer.vscode-eslint",
-      "usernamehw.errorlens",
-      "streetsidesoftware.code-spell-checker",
-    ]
-  }
+  "recommendations": [
+    "Vue.volar",
+    "dbaeumer.vscode-eslint",
+    "usernamehw.errorlens",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}

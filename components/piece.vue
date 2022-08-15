@@ -30,7 +30,7 @@ const styleClass = computed(() => {
     />
     <text
       v-if="props.value !== 0"
-      class="piece-text noselect"
+      class="piece-text no-select"
       dominant-baseline="central"
       text-anchor="middle"
       :x="props.x"

@@ -1,16 +1,15 @@
 import { defineStore } from 'pinia';
-import { useStorage } from '@vueuse/core';
-interface LeaderbaordInfo {
+interface LeaderboardInfo {
   score: number
   name: string
   boardPieces: number[]
 }
 
 export const useLeaderboardStore = defineStore('leaderboardStore', () => {
-  const leaderboard = ref<LeaderbaordInfo[]>(null);
+  const leaderboard = ref<LeaderboardInfo[]>(null);
 
   const getTopTen = async () => {
-    leaderboard.value = await $fetch('/api/leaderboard/topten');
+    leaderboard.value = await $fetch('/api/leaderboard/top-ten');
   };
 
   return { leaderboard, getTopTen };

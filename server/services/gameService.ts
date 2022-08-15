@@ -179,7 +179,7 @@ export async function place(playerId: string, x: number, y: number, selectedInde
   gameState.nextSelectorPiece = gameState.nextNextSelectorPiece;
   gameState.nextNextSelectorPiece = getRandomPiece(largestOnBoard);
 
-  // update the gamestate in the database
+  // update the gameState in the database
   clientGameState = await prisma.gameState.update({
     data: gameState,
     where: {
@@ -235,7 +235,7 @@ export async function undo(playerId: string) {
     gameState.nextNextSelectorPiece = nextSelectorPiece;
     gameState.name = name;
 
-    // update the gamestate in the database
+    // update the gameState in the database
     const clientGameState = await prisma.gameState.update({
       data: gameState,
       where: {
@@ -293,7 +293,7 @@ export async function changeName(playerId: string, name: string) {
     },
   });
 
-  // update the gamestate in the database
+  // update the gameState in the database
   await prisma.gameState.update({
     data: {
       name,

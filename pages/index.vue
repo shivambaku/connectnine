@@ -108,12 +108,12 @@ await load();
         Connect three or more of the same adjacent numbers to get a higher number.
       </p>
     </div>
-    <div class="name-registeration">
+    <div class="name-registration">
       <h5>Register name to show up on the leaderboard.</h5>
-      <div class="name-registeration-row">
+      <div class="name-registration-row">
         <input
           v-model="inputRegisteredName"
-          :class="`name-registeration-input ${inputRegisteredNameValid ? '' : 'invalid'}`" :placeholder="registeredName"
+          :class="`name-registration-input ${inputRegisteredNameValid ? '' : 'invalid'}`" :placeholder="registeredName"
           maxlength="16"
           @keydown="inputRegisteredNameKeyDown"
         >
@@ -226,12 +226,12 @@ await load();
   margin: 5px;
 }
 
-.name-registeration h5 {
+.name-registration h5 {
   margin-top: 15px;
   margin-bottom: 5px;
 }
 
-.name-registeration-row {
+.name-registration-row {
   max-width: 300px;
   min-width: 300px;
   margin: 0 auto;
@@ -240,7 +240,7 @@ await load();
   align-items: center;
 }
 
-.name-registeration-input {
+.name-registration-input {
   all: unset;
   border-radius: 6px;
   margin-left:15px;
@@ -248,7 +248,7 @@ await load();
   height: 70%;
 }
 
-.name-registeration-input.invalid {
+.name-registration-input.invalid {
   border: 1px solid red;
 }
 </style>

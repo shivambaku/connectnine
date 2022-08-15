@@ -1,9 +1,35 @@
 {
-    "prettier.enable": false,
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true
-    },
-    "eslint.alwaysShowStatus": true,
-    "eslint.validate": ["vue", "javascript", "typescript"],
-    "typescript.tsdk": "node_modules/typescript/lib",
-  }
+  "editor.tabSize": 2,
+  "prettier.enable": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": false,
+    "source.fixAll.eslint": true
+  },
+  "eslint.quiet": true,
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact",
+    "vue",
+    "html",
+    "markdown",
+    "json",
+    "jsonc",
+    "json5"
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "cSpell.words": [
+    "animejs",
+    "Avenir",
+    "itox",
+    "itoy",
+    "Leaderboard",
+    "Nuxt",
+    "pinia",
+    "unclickable",
+    "videogame",
+    "vueuse",
+    "xytoi"
+  ]
+}

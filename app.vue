@@ -73,7 +73,7 @@ a:hover {
   color: var(--accent-color);
 }
 
-.noselect {
+.no-select {
   user-select: none;
 }
 

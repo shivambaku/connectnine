@@ -2,11 +2,9 @@
 import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
-const { gameState, selectedIndex, paused, boardSize, registeredName } = storeToRefs(gameStore);
-const { newGame, load, animatedPlace, select, undo, registerName } = gameStore;
+const { gameState, selectedIndex, paused, boardSize, loadingGame } = storeToRefs(gameStore);
+const { newGame, animatedPlace, select, undo } = gameStore;
 const showNewGameConfirmation = ref(false);
-const inputRegisteredName = ref('');
-const inputRegisteredNameValid = ref(true);
 
 onMounted(() => {
   paused.value = false;
@@ -26,100 +24,71 @@ const newGameConfirmationClick = async () => {
   closeConfirmation();
   await newGame();
 };
-
-const registerNameClick = async () => {
-  inputRegisteredNameValid.value = true;
-  if (inputRegisteredName.value === '')
-    return;
-
-  if (await registerName(inputRegisteredName.value))
-    inputRegisteredName.value = '';
-  else
-    inputRegisteredNameValid.value = false;
-};
-
-const inputRegisteredNameKeyDown = (event) => {
-  if (event.key === 'Enter')
-    registerNameClick();
-
-  event.stopPropagation();
-};
-
-await load();
 </script>
 
 <template>
   <div>
-    <div :class="`game ${paused ? 'paused' : ''}`">
-      <div class="header">
-        <div style="float: left">
-          <h1 class="title">
-            Connect 9
-          </h1>
-          <Button @click="newGameClick">
-            New Game
-          </Button>
-          <Button ml-10px :disabled="gameState.previousState === null" @click="undo">
-            Undo
-          </Button>
-        </div>
-        <div class="score-container">
-          <div class="score">
-            {{ gameState.score }}
+    <div v-if="loadingGame">
+      Loading Game...
+    </div>
+    <div v-else>
+      <div :class="`game ${paused ? 'paused' : ''}`">
+        <div class="header">
+          <div style="float: left">
+            <h1 class="title">
+              Connect 9
+            </h1>
+            <Button @click="newGameClick">
+              New Game
+            </Button>
+            <Button ml-10px :disabled="gameState.previousState === null" @click="undo">
+              Undo
+            </Button>
+          </div>
+          <div class="score-container">
+            <div class="score">
+              {{ gameState.score }}
+            </div>
           </div>
         </div>
-      </div>
-      <div position="relative">
-        <Board
-          :padding="10"
-          :width="400"
-          :piece-padding="4"
-          :piece-radius="6"
-          :board-size="boardSize"
-          :pieces="gameState.boardPieces"
-          :unclickable="paused"
-          @animated-place="animatedPlace"
-        />
-        <div
-          v-show="showNewGameConfirmation"
-          class="confirmation-overlay"
-        >
-          <Confirmation
-            text="Start new game?"
-            @yes="newGameConfirmationClick"
-            @no="closeConfirmation"
+        <div position="relative">
+          <Board
+            :padding="10"
+            :width="400"
+            :piece-padding="4"
+            :piece-radius="6"
+            :board-size="boardSize"
+            :pieces="gameState.boardPieces"
+            :unclickable="paused"
+            @animated-place="animatedPlace"
           />
+          <div
+            v-show="showNewGameConfirmation"
+            class="confirmation-overlay"
+          >
+            <Confirmation
+              text="Start new game?"
+              @yes="newGameConfirmationClick"
+              @no="closeConfirmation"
+            />
+          </div>
         </div>
+        <Selector
+          :padding="10"
+          :width="200"
+          :selected-index="selectedIndex"
+          :pieces="gameState.selectorPieces"
+          :unclickable="paused"
+          @select="select"
+        />
       </div>
-      <Selector
-        :padding="10"
-        :width="200"
-        :selected-index="selectedIndex"
-        :pieces="gameState.selectorPieces"
-        :unclickable="paused"
-        @select="select"
-      />
-    </div>
-    <div class="rules">
-      <h4>How to Play</h4>
-      <p>
-        Select one of the three available numbers and place it in an empty spot.
-        <br>
-        Connect three or more of the same adjacent numbers to get a higher number.
-      </p>
-    </div>
-    <div class="name-registration">
-      <h5>Register name to show up on the leaderboard.</h5>
-      <div class="name-registration-row">
-        <input
-          v-model="inputRegisteredName"
-          :class="`name-registration-input ${inputRegisteredNameValid ? '' : 'invalid'}`" :placeholder="registeredName"
-          maxlength="16"
-          @keydown="inputRegisteredNameKeyDown"
-        >
-        <Button @click="registerNameClick">
-          Register
-        </Button>
+      <div class="rules">
+        <h4>How to Play</h4>
+        <p>
+          Select one of the three available numbers and place it in an empty spot.
+          <br>
+          Connect three or more of the same adjacent numbers to get a higher number.
+        </p>
       </div>
     </div>
   </div>
@@ -224,31 +193,5 @@ await load();
   font-size: 15px;
   font-weight: 200;
   margin: 5px;
-}
-
-.name-registration h5 {
-  margin-top: 15px;
-  margin-bottom: 5px;
-}
-
-.name-registration-row {
-  max-width: 300px;
-  min-width: 300px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 70% 30%;
-  align-items: center;
-}
-
-.name-registration-input {
-  all: unset;
-  border-radius: 6px;
-  margin-left:15px;
-  border: 1px solid var(--primary-color);
-  height: 70%;
-}
-
-.name-registration-input.invalid {
-  border: 1px solid red;
 }
 </style>

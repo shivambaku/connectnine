@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 
-const leaderboardStore = useLeaderboardStore();
-const { leaderboard } = storeToRefs(leaderboardStore);
-const { getTopTen } = leaderboardStore;
+const { data: leaderboard, refresh: getTopTen } = useLazyFetch('/api/leaderboard/top-ten', { immediate: false });
+
+const gameStore = useGameStore();
+const { registeredName } = storeToRefs(gameStore);
+const { registerName } = gameStore;
+
 const expandedLeaderboardInfo = ref(-1);
+const inputRegisteredName = ref('');
+const inputRegisteredNameValid = ref(true);
+
+getTopTen();
 
 const expand = (i: number) => {
   if (expandedLeaderboardInfo.value === i)
@@ -13,54 +20,90 @@ const expand = (i: number) => {
     expandedLeaderboardInfo.value = i;
 };
 
-await getTopTen();
+const registerNameClick = async () => {
+  inputRegisteredNameValid.value = true;
+  if (inputRegisteredName.value === '')
+    return;
+
+  if (await registerName(inputRegisteredName.value)) {
+    inputRegisteredName.value = '';
+    getTopTen();
+  }
+  else { inputRegisteredNameValid.value = false; }
+};
+
+const inputRegisteredNameKeyDown = (event) => {
+  if (event.key === 'Enter')
+    registerNameClick();
+
+  event.stopPropagation();
+};
 </script>
 
 <template>
   <div>
-    <h1 class="title">
-      Leaderboard
-    </h1>
-    <div class="leaderboard">
-      <div class="leaderboard-row">
-        <div class="leaderboard-header">
-          <div style="text-align: left;">
-            Name
+    <div v-if="leaderboard === null">
+      Loading Leaderboard...
+    </div>
+    <div v-else>
+      <h1 class="title">
+        Leaderboard
+      </h1>
+      <div class="leaderboard">
+        <div class="leaderboard-row">
+          <div class="leaderboard-header">
+            <div style="text-align: left;">
+              Name
+            </div>
+            <div>
+              Score
+            </div>
           </div>
-          <div>
-            Score
+        </div>
+        <div
+          v-for="(leaderboardInfo, i) in leaderboard"
+          :key="`leaderboardInfo${i}`"
+          class="leaderboard-row"
+        >
+          <div class="leaderboard-rank">
+            {{ i + 1 }}
+          </div>
+          <div class="leaderboard-info" @click="expand(i)">
+            <div style="text-align: left;">
+              {{ leaderboardInfo.name === null ? 'guest' : leaderboardInfo.name }}
+            </div>
+            <div>
+              {{ leaderboardInfo.score }}
+            </div>
+            <div
+              v-if="expandedLeaderboardInfo === i"
+              class="leaderboard-info-board"
+            >
+              <Board
+                :padding="10"
+                :width="400"
+                :piece-padding="4"
+                :piece-radius="6"
+                :board-size="5"
+                :unclickable="true"
+                :pieces="leaderboardInfo.boardPieces"
+              />
+            </div>
           </div>
         </div>
       </div>
-      <div
-        v-for="(leaderboardInfo, i) in leaderboard"
-        :key="`leaderboardInfo${i}`"
-        class="leaderboard-row"
-      >
-        <div class="leaderboard-rank">
-          {{ i + 1 }}
-        </div>
-        <div class="leaderboard-info" @click="expand(i)">
-          <div style="text-align: left;">
-            {{ leaderboardInfo.name === null ? 'guest' : leaderboardInfo.name }}
-          </div>
-          <div>
-            {{ leaderboardInfo.score }}
-          </div>
-          <div
-            v-if="expandedLeaderboardInfo === i"
-            class="leaderboard-info-board"
+      <div class="name-registration">
+        <h5>Register name to show up on the leaderboard.</h5>
+        <div class="name-registration-row">
+          <input
+            v-model="inputRegisteredName"
+            :class="`name-registration-input ${inputRegisteredNameValid ? '' : 'invalid'}`" :placeholder="registeredName"
+            maxlength="16"
+            @keydown="inputRegisteredNameKeyDown"
           >
-            <Board
-              :padding="10"
-              :width="400"
-              :piece-padding="4"
-              :piece-radius="6"
-              :board-size="5"
-              :unclickable="true"
-              :pieces="leaderboardInfo.boardPieces"
-            />
-          </div>
+          <Button @click="registerNameClick">
+            Register
+          </Button>
         </div>
       </div>
     </div>
@@ -139,5 +182,31 @@ await getTopTen();
   min-width: 175px;
   max-width: 200px;
   margin: 0 auto;
+}
+
+.name-registration h5 {
+  margin-top: 30px;
+  margin-bottom: 5px;
+}
+
+.name-registration-row {
+  max-width: 300px;
+  min-width: 300px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 70% 30%;
+  align-items: center;
+}
+
+.name-registration-input {
+  all: unset;
+  border-radius: 6px;
+  margin-left:15px;
+  border: 1px solid var(--primary-color);
+  height: 70%;
+}
+
+.name-registration-input.invalid {
+  border: 1px solid red;
 }
 </style>

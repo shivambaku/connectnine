@@ -1,7 +1,7 @@
 import { onKeyDown, useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import Filter from 'bad-words';
-import type { ClientGameState, ConnectionAnimationDataPart } from '~~/interfaces';
+import type { ClientGameState, ClientPlayer, ConnectionAnimationDataPart } from '~~/interfaces';
 
 export const useGameStore = defineStore('gameStore', () => {
   const gameState = ref({} as ClientGameState);
@@ -11,15 +11,27 @@ export const useGameStore = defineStore('gameStore', () => {
   const currentName = ref('guest');
   const awaitingServer = ref(false);
   const filter = new Filter();
+  const { pending: loadingGame, refresh: load } = useLazyFetch('/api/game/load',
+    {
+      method: 'POST',
+      body: { playerId: playerId.value },
+      onResponse({ response }) {
+        const clientPlayer: ClientPlayer = response._data;
+        playerId.value = clientPlayer.id;
+        currentName.value = clientPlayer.currentName;
+        gameState.value = clientPlayer.currentGameState;
+        return response._data;
+      },
+    });
   let animating = false;
   let placedCachedGameState: string = null;
 
-  const load = async () => {
-    const clientPlayer = await $fetch('/api/game/load', { method: 'post', body: { playerId: playerId.value } });
-    playerId.value = clientPlayer.id;
-    currentName.value = clientPlayer.currentName;
-    gameState.value = clientPlayer.currentGameState;
-  };
+  // const load = async () => {
+  //   const clientPlayer = await $fetch('/api/game/load', { method: 'post', body: { playerId: playerId.value } });
+  //   playerId.value = clientPlayer.id;
+  //   currentName.value = clientPlayer.currentName;
+  //   gameState.value = clientPlayer.currentGameState;
+  // };
 
   const newGame = async () => {
     if (animating || awaitingServer.value)
@@ -176,6 +188,6 @@ export const useGameStore = defineStore('gameStore', () => {
     return true;
   };
 
-  return { gameState, selectedIndex, paused, boardSize, registeredName: currentName, load, newGame, place, select, undo, animatedPlace, registerName };
+  return { gameState, selectedIndex, paused, boardSize, registeredName: currentName, loadingGame, load, newGame, place, select, undo, animatedPlace, registerName };
 });
 

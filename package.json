@@ -8,20 +8,20 @@
     "preview": "nuxt preview"
   },
   "dependencies": {
-    "@prisma/client": "^4.5.0",
-    "@vueuse/core": "^9.3.1",
+    "@prisma/client": "^4.8.0",
+    "@vueuse/core": "^9.10.0",
     "animejs": "^3.2.1",
     "bad-words": "^3.0.4",
     "pinia": "^2.0.14"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.27.0",
-    "@iconify-json/ic": "^1.1.9",
+    "@antfu/eslint-config": "^0.34.0",
+    "@iconify-json/ic": "^1.1.12",
     "@pinia/nuxt": "^0.4.3",
-    "@unocss/nuxt": "^0.45.30",
-    "@vueuse/nuxt": "^9.3.1",
+    "@unocss/nuxt": "^0.48.0",
+    "@vueuse/nuxt": "^9.10.0",
     "eslint": "^8.26.0",
-    "nuxt": "3.0.0-rc.12",
-    "prisma": "^4.5.0"
+    "nuxt": "3.0.0",
+    "prisma": "^4.8.0"
   }
 }

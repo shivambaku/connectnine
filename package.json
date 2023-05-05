@@ -2,26 +2,26 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "migrate": "DATABASE_URL=$MIGRATION_DATABASE_URL prisma generate && prisma migrate deploy",
+    "migrate": "prisma generate && prisma migrate deploy",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview"
   },
   "dependencies": {
-    "@prisma/client": "^4.8.0",
-    "@vueuse/core": "^9.10.0",
+    "@prisma/client": "^4.13.0",
+    "@vueuse/core": "^10.1.2",
     "animejs": "^3.2.1",
     "bad-words": "^3.0.4",
     "pinia": "^2.0.14"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.34.0",
+    "@antfu/eslint-config": "^0.38.5",
     "@iconify-json/ic": "^1.1.12",
     "@pinia/nuxt": "^0.4.3",
-    "@unocss/nuxt": "^0.48.0",
-    "@vueuse/nuxt": "^9.10.0",
-    "eslint": "^8.26.0",
-    "nuxt": "3.0.0",
-    "prisma": "^4.8.0"
+    "@unocss/nuxt": "^0.51.8",
+    "@vueuse/nuxt": "^10.1.2",
+    "eslint": "^8.39.0",
+    "nuxt": "3.4.3",
+    "prisma": "^4.13.0"
   }
 }

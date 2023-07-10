@@ -10,20 +10,20 @@ onMounted(() => {
   paused.value = false;
 });
 
-const newGameClick = () => {
+function newGameClick() {
   paused.value = true;
   showNewGameConfirmation.value = true;
-};
+}
 
-const closeConfirmation = () => {
+function closeConfirmation() {
   paused.value = false;
   showNewGameConfirmation.value = false;
-};
+}
 
-const newGameConfirmationClick = async () => {
+async function newGameConfirmationClick() {
   closeConfirmation();
   await newGame();
-};
+}
 </script>
 
 <template>

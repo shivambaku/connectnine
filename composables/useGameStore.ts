@@ -24,7 +24,7 @@ export const useGameStore = defineStore('gameStore', () => {
       },
     });
   let animating = false;
-  let placedCachedGameState: string = null;
+  let placedCachedGameState: string | null = null;
 
   // const load = async () => {
   //   const clientPlayer = await $fetch('/api/game/load', { method: 'post', body: { playerId: playerId.value } });
@@ -190,4 +190,3 @@ export const useGameStore = defineStore('gameStore', () => {
 
   return { gameState, selectedIndex, paused, boardSize, registeredName: currentName, loadingGame, load, newGame, place, select, undo, animatedPlace, registerName };
 });
-

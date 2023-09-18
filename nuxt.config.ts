@@ -2,13 +2,8 @@
 export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
-    '@unocss/nuxt',
     '@vueuse/nuxt',
+    'nuxt-icon',
   ],
-  unocss: {
-    uno: true,
-    icons: true,
-    attributify: true,
-  },
   ssr: false,
 });

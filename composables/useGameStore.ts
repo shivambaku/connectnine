@@ -79,7 +79,7 @@ export const useGameStore = defineStore('gameStore', () => {
   onKeyDown(['1', '2', '3'], (e) => {
     if (paused.value)
       return;
-    select(parseInt(e.key) - 1);
+    select(Number.parseInt(e.key) - 1);
   });
 
   const undo = async () => {

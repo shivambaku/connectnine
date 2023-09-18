@@ -41,7 +41,7 @@ async function newGameConfirmationClick() {
             <Button @click="newGameClick">
               New Game
             </Button>
-            <Button ml-10px :disabled="gameState.previousState === null" @click="undo">
+            <Button style="margin-left: 10px" :disabled="gameState.previousState === null" @click="undo">
               Undo
             </Button>
           </div>
@@ -51,7 +51,7 @@ async function newGameConfirmationClick() {
             </div>
           </div>
         </div>
-        <div position="relative">
+        <div style="position: relative;">
           <Board
             :padding="10"
             :width="400"

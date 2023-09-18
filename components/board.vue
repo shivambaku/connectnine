@@ -13,8 +13,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'place', x: number, y: number)
-  (e: 'animatedPlace', x: number, y: number, animationCallback)
+  place: [x: number, y: number]
+  animatedPlace: [x: number, y: number, animationCallback: any]
 }>();
 
 const connectionAnimationData = ref(new Array<ConnectionAnimationDataPart>());
@@ -39,16 +39,16 @@ const itox = (i: number) => i % props.boardSize;
 
 const itoy = (i: number) => Math.floor(i / props.boardSize);
 
-const scale = (x: number) => {
+function scale(x: number) {
   const t = x / props.boardSize;
   return innerWidth.value * t;
-};
+}
 
-const animatedPieceScale = (x: number) => {
+function animatedPieceScale(x: number) {
   return scale(x) + props.piecePadding;
-};
+}
 
-const animateConnection = async (connectionAnimationDataArg: Array<ConnectionAnimationDataPart>, callback) => {
+async function animateConnection(connectionAnimationDataArg: Array<ConnectionAnimationDataPart>, callback) {
   connectionAnimationData.value = connectionAnimationDataArg;
 
   await nextTick();
@@ -93,13 +93,13 @@ const animateConnection = async (connectionAnimationDataArg: Array<ConnectionAni
       ],
       endDelay: 50,
     });
-};
+}
 
-const place = (i: number, value: number) => {
+function place(i: number, value: number) {
   // only place if the spot is empty
   if (value === 0 && !props.unclickable)
     emit('animatedPlace', itox(i), itoy(i), animateConnection);
-};
+}
 </script>
 
 <template>
@@ -145,4 +145,3 @@ const place = (i: number, value: number) => {
   pointer-events: none;
 }
 </style>
-

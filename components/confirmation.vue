@@ -4,8 +4,8 @@ defineProps<{
 }>();
 
 defineEmits<{
-  (e: 'yes', payload: MouseEvent)
-  (e: 'no', payload: MouseEvent)
+  yes: [payload: MouseEvent]
+  no: [payload: MouseEvent]
 }>();
 </script>
 
@@ -15,11 +15,11 @@ defineEmits<{
       {{ text }}
     </div>
     <div class="confirmation-buttons">
-      <div m-auto>
+      <div style="margin: auto;">
         <Button @click="(e) => $emit('yes', e)">
           Yes
         </Button>
-        <Button ml-20px @click="(e) => $emit('no', e)">
+        <Button style="margin-left: 20px" @click="(e) => $emit('no', e)">
           No
         </Button>
       </div>

@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { useColorMode } from '@vueuse/core';
+
 const mode = useColorMode();
+const router = useRouter();
+
+function donate() {
+  window.location = 'https://www.paypal.com/donate/?business=VG72YMC5HF2EG&no_recurring=0&item_name=Connect+9&currency_code=USD';
+}
 </script>
 
 <template>
@@ -14,14 +20,27 @@ const mode = useColorMode();
     <NuxtPage style="margin-top: 30px" />
     <hr class="footer-separator">
     <div class="footer-navigation">
-      <NuxtLink i-ic:outline-videogame-asset to="/" />
-      <NuxtLink i-ic:outline-leaderboard to="/leaderboard" />
-      <a
-        i-ic:outline-attach-money
-        href="https://www.paypal.com/donate/?business=VG72YMC5HF2EG&no_recurring=0&item_name=Connect+9&currency_code=USD"
+      <Icon
+        class="footer-navigation-button"
+        inline name="ic:outline-videogame-asset"
+        @click="router.push({ path: '/' })"
       />
-      <div
-        class="footer-navigation-button dark:i-ic:outline-dark-mode i-ic:outline-light-mode"
+      <Icon
+        class="footer-navigation-button"
+        inline name="ic:outline-leaderboard"
+        @click="router.push({ path: '/leaderboard' })"
+      />
+      <!-- <NuxtLink i-ic:outline-videogame-asset to="/" /> -->
+      <!-- <NuxtLink i-ic:outline-leaderboard to="/leaderboard" /> -->
+      <!-- i-ic:outline-attach-money -->
+      <Icon
+        class="footer-navigation-button"
+        name="ic:outline-attach-money"
+        @click="donate"
+      />
+      <Icon
+        class="footer-navigation-button"
+        :name="mode === 'dark' ? 'ic:outline-dark-mode' : 'ic:outline-light-mode'"
         @click="mode = mode === 'dark' ? 'light' : 'dark'"
       />
     </div>
@@ -65,14 +84,6 @@ svg {
   vertical-align: top;
 }
 
-a {
-  color: var(--primary-color);
-}
-
-a:hover {
-  color: var(--accent-color);
-}
-
 .no-select {
   user-select: none;
 }
@@ -95,6 +106,7 @@ a:hover {
 
 .footer-navigation-button {
   cursor: pointer;
+  color: var(--primary-color);
 }
 
 .footer-navigation-button:hover {

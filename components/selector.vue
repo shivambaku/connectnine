@@ -8,8 +8,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'select', i: number)
+  select: [i: number]
 }>();
+
 
 const selectorCount = computed(() => {
   return props.pieces.length;

@@ -33,7 +33,7 @@ export const useGameStore = defineStore('gameStore', () => {
   //   gameState.value = clientPlayer.currentGameState;
   // };
 
-  const newGame = async () => {
+  async function newGame() {
     if (animating || awaitingServer.value)
       return;
 

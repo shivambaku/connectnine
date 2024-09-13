@@ -18,5 +18,5 @@ export interface ClientGameState {
 export interface ClientPlayer {
   id: string
   currentGameState: ClientGameState
-  currentName: string
+  currentName: string | null
 }

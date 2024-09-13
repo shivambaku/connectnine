@@ -3,46 +3,45 @@
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["jsonProtocol"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
+  // shadowDatabaseUrl = env("POSTGRES_PRISMA_URL_SHADOW")
 }
 
 model Player {
-  id                  String        @id @default(uuid())
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
-  gameStates          GameState[]
-  currentName         String?       @default("guest")
-  currentGameStateId  String?
-  achievement         Achievement?          
+  id                 String       @id @default(uuid())
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  gameStates         GameState[]
+  currentName        String?      @default("guest")
+  currentGameStateId String?
+  achievement        Achievement?
 }
 
 model GameState {
-  id                    String        @id @default(uuid())
-  startedAt             DateTime      @default(now())
+  id                    String   @id @default(uuid())
+  startedAt             DateTime @default(now())
   boardPieces           Int[]
   selectorPieces        Int[]
-  nextSelectorPiece     Int           @default(1)
-  nextNextSelectorPiece Int           @default(1)
-  score                 Int           @default(0)
+  nextSelectorPiece     Int      @default(1)
+  nextNextSelectorPiece Int      @default(1)
+  score                 Int      @default(0)
   previousState         String?
   name                  String?
-  player                Player?       @relation(fields: [playerId], references: [id])
-  playerId              String?       
+  player                Player?  @relation(fields: [playerId], references: [id])
+  playerId              String?
 
   @@index(score(sort: Desc))
 }
 
 model Achievement {
-  id                  Int           @id @default(autoincrement())
-  player              Player        @relation(fields: [playerId], references: [id])
-  playerId            String        @unique
+  id       Int    @id @default(autoincrement())
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId String @unique
   // connectNine         Boolean       @default(false)
   // lonelyEight         Boolean       @default(false)
   // sevenAteNine        Boolean       @default(false)

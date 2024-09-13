@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import Filter from 'bad-words';
+import { Filter } from 'bad-words';
 import Settings from '../utils/settings';
 import type { ClientGameState, ClientPlayer } from '~~/interfaces';
 

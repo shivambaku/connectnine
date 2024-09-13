@@ -5,5 +5,7 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     'nuxt-icon',
   ],
+
   ssr: false,
+  compatibilityDate: '2024-09-12',
 });

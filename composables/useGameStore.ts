@@ -1,6 +1,6 @@
 import { onKeyDown, useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
-import Filter from 'bad-words';
+import { Filter } from 'bad-words';
 import type { ClientGameState, ClientPlayer, ConnectionAnimationDataPart } from '~~/interfaces';
 
 export const useGameStore = defineStore('gameStore', () => {

@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia';
 
 const gameStore = useGameStore();
-const { gameState, selectedIndex, paused, boardSize, loadingGame } = storeToRefs(gameStore);
+const { gameState, selectedIndex, paused, boardSize, loadingGameStatus } = storeToRefs(gameStore);
 const { newGame, animatedPlace, select, undo } = gameStore;
 const showNewGameConfirmation = ref(false);
 
@@ -28,24 +28,22 @@ async function newGameConfirmationClick() {
 
 <template>
   <div>
-    <div v-if="loadingGame">
-      Loading Game...
-    </div>
-    <div v-else>
+    <div>
       <div :class="`game ${paused ? 'paused' : ''}`">
         <div class="header">
           <div style="float: left">
             <h1 class="title">
               Connect 9
             </h1>
-            <Button @click="newGameClick">
+            <Button :loading="loadingGameStatus === 'pending'" @click="newGameClick">
               New Game
             </Button>
-            <Button style="margin-left: 10px" :disabled="gameState.previousState === null" @click="undo">
+            <Button :loading="loadingGameStatus === 'pending'" style="margin-left: 10px" :disabled="gameState.previousState === null" @click="undo">
               Undo
             </Button>
           </div>
-          <div class="score-container">
+          <div v-if="loadingGameStatus === 'pending'" class="score-container skeleton"/>
+          <div v-else class="score-container">
             <div class="score">
               {{ gameState.score }}
             </div>
@@ -53,6 +51,7 @@ async function newGameConfirmationClick() {
         </div>
         <div style="position: relative;">
           <Board
+            :loading="loadingGameStatus === 'pending'"
             :padding="10"
             :width="400"
             :piece-padding="4"
@@ -62,7 +61,7 @@ async function newGameConfirmationClick() {
             :unclickable="paused"
             @animated-place="animatedPlace"
           />
-          <div
+          <!-- <div
             v-show="showNewGameConfirmation"
             class="confirmation-overlay"
           >
@@ -71,16 +70,17 @@ async function newGameConfirmationClick() {
               @yes="newGameConfirmationClick"
               @no="closeConfirmation"
             />
-          </div>
+          </div> -->
         </div>
         <Selector
+          :loading="loadingGameStatus === 'pending'"
           :padding="10"
           :width="200"
           :selected-index="selectedIndex"
           :pieces="gameState.selectorPieces"
           :unclickable="paused"
           @select="select"
-        />
+        /> 
       </div>
       <div class="rules">
         <h4>How to Play</h4>
@@ -107,7 +107,7 @@ async function newGameConfirmationClick() {
 }
 
 @media(hover: hover) and (pointer: fine) {
-  .game:not(.paused) .button:hover {
+  .game:not(.paused) .button:not(.skeleton):hover {
     background: var(--game-foreground-color);
     color: var(--game-background-color);
     cursor: pointer;
@@ -135,6 +135,10 @@ async function newGameConfirmationClick() {
   width: 30%;
   border-radius: 10px;
   position: relative;
+}
+
+.game .header .score-container.skeleton {
+  opacity: 0.5;
 }
 
 .game .header .score::before {

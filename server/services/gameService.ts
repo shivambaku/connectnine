@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, type GameState } from '@prisma/client';
 import { Filter } from 'bad-words';
 import Settings from '../utils/settings';
 import type { ClientGameState, ClientPlayer } from '~~/interfaces';
@@ -45,6 +45,10 @@ export async function load(playerId: string) {
     if (player === null)
       throw new Error(`player id: ${playerId} is invalid`);
 
+    if (player.currentGameStateId === null) {
+      throw new Error(`player id: ${playerId} has no current game state`);
+    }
+
     const clientGameState = await prisma.gameState.findUnique({
       where: {
         id: player.currentGameStateId,
@@ -57,6 +61,10 @@ export async function load(playerId: string) {
         previousState: true,
       },
     });
+
+    if (clientGameState === null) {
+      throw new Error(`game state id: ${player.currentGameStateId} is invalid`);
+    }
 
     const clientPlayer: ClientPlayer = {
       id: player.id,
@@ -80,6 +88,9 @@ export async function newGame(playerId: string) {
       currentName: true,
     },
   });
+
+  if (player === null)
+    throw new Error(`player id: ${playerId} is invalid`);
 
   const gameState = await prisma.gameState.create({
     data: {
@@ -138,8 +149,13 @@ export async function place(playerId: string, x: number, y: number, selectedInde
     },
   });
 
-  if (player === null)
+  if (player === null) {
     throw new Error(`player id: ${playerId} is invalid`);
+  }
+
+  if (player.currentGameStateId === null) {
+    throw new Error(`player id: ${playerId} has no current game state`);
+  }
 
   const gameState = await prisma.gameState.findUnique({
     where: {
@@ -154,6 +170,10 @@ export async function place(playerId: string, x: number, y: number, selectedInde
       previousState: true,
     },
   });
+
+  if (gameState === null) {
+    throw new Error(`game state id: ${player.currentGameStateId} is invalid`);
+  }
 
   // save the current state in the previous state before making changes
   // set previous state to null to not have previous state reference previous previous state
@@ -207,8 +227,13 @@ export async function undo(playerId: string) {
     },
   });
 
-  if (player === null)
+  if (player === null) {
     throw new Error(`player id: ${playerId} is invalid`);
+  }
+
+  if (player.currentGameStateId === null) {
+    throw new Error(`player id: ${playerId} has no current game state`);
+  }
 
   let gameState = await prisma.gameState.findUnique({
     where: {
@@ -225,13 +250,17 @@ export async function undo(playerId: string) {
     },
   });
 
+  if (gameState === null) {
+    throw new Error(`game state id: ${player.currentGameStateId} is invalid`);
+  }
+
   if (gameState.previousState != null) {
     // do not undo the name
     const name = gameState.name;
 
     // undo the state
     const nextSelectorPiece = gameState.nextSelectorPiece;
-    gameState = JSON.parse(gameState.previousState);
+    gameState = JSON.parse(gameState.previousState) as GameState;
     gameState.nextNextSelectorPiece = nextSelectorPiece;
     gameState.name = name;
 
@@ -277,8 +306,9 @@ export async function changeName(playerId: string, name: string) {
     },
   });
 
-  if (player === null)
+  if (player === null) {
     throw new Error(`player id: ${playerId} is invalid`);
+  }
 
   // update the player in the database
   await prisma.player.update({
@@ -292,6 +322,10 @@ export async function changeName(playerId: string, name: string) {
       id: true,
     },
   });
+
+  if (player.currentGameStateId === null) {
+    throw new Error(`player id: ${playerId} has no current game state`);
+  }
 
   // update the gameState in the database
   await prisma.gameState.update({

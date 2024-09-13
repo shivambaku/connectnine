@@ -3,11 +3,12 @@ import anime from 'animejs/lib/anime.es';
 import type { ConnectionAnimationDataPart } from '~~/interfaces';
 
 const props = defineProps<{
+  loading: boolean
   width: number
   padding: number
   piecePadding: number
   pieceRadius: number
-  pieces: Array<number>
+  pieces: Array<number> | undefined
   boardSize: number
   unclickable?: boolean
 }>();
@@ -48,7 +49,7 @@ function animatedPieceScale(x: number) {
   return scale(x) + props.piecePadding;
 }
 
-async function animateConnection(connectionAnimationDataArg: Array<ConnectionAnimationDataPart>, callback) {
+async function animateConnection(connectionAnimationDataArg: Array<ConnectionAnimationDataPart>, callback: any) {
   connectionAnimationData.value = connectionAnimationDataArg;
 
   await nextTick();
@@ -74,8 +75,8 @@ async function animateConnection(connectionAnimationDataArg: Array<ConnectionAni
         {
           width: `${animatedPieceWidth.value}px`,
           height: `${animatedPieceWidth.value}px`,
-          x: el => `${animatedPieceScale(connectionAnimationData.value[el.id].parentX)}px`,
-          y: el => `${animatedPieceScale(connectionAnimationData.value[el.id].parentY)}px`,
+          x: (el: any) => `${animatedPieceScale(connectionAnimationData.value[el.id].parentX)}px`,
+          y: (el: any) => `${animatedPieceScale(connectionAnimationData.value[el.id].parentY)}px`,
         },
         { opacity: 0.0, duration: 0 },
       ],
@@ -86,8 +87,8 @@ async function animateConnection(connectionAnimationDataArg: Array<ConnectionAni
         {
           width: `${animatedPieceWidth.value}px`,
           height: `${animatedPieceWidth.value}px`,
-          x: el => `${animatedPieceScale(connectionAnimationData.value[el.id].parentX)}px`,
-          y: el => `${animatedPieceScale(connectionAnimationData.value[el.id].parentY)}px`,
+          x: (el: any) => `${animatedPieceScale(connectionAnimationData.value[el.id].parentX)}px`,
+          y: (el: any) => `${animatedPieceScale(connectionAnimationData.value[el.id].parentY)}px`,
         },
         { opacity: 0.0, duration: 50 },
       ],
@@ -104,6 +105,22 @@ function place(i: number, value: number) {
 
 <template>
   <svg
+    v-if="loading"
+    class="board skeleton" :viewBox="`0 0 ${props.width} ${props.width}`"
+  >
+    <g :transform="`translate(${props.padding}, ${props.padding})`">
+      <Piece
+        v-for="(piece, i) in Array.from({length: boardSize * boardSize}, () => 0)" :key="i"
+        :value="piece"
+        :x="scale(itox(i))" :y="scale(itoy(i))"
+        :width="pieceWidth"
+        :padding="piecePadding"
+        :radius="pieceRadius"
+      />
+    </g>
+  </svg>
+  <svg
+  v-else
     class="board" :viewBox="`0 0 ${props.width} ${props.width}`"
   >
     <g :transform="`translate(${props.padding}, ${props.padding})`">

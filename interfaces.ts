@@ -12,11 +12,11 @@ export interface ClientGameState {
   selectorPieces: number[]
   nextSelectorPiece: number
   score: number
-  previousState: string
+  previousState: string | null
 }
 
 export interface ClientPlayer {
   id: string
   currentGameState: ClientGameState
-  currentName: string | null
+  currentName: string
 }

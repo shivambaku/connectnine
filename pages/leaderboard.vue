@@ -32,7 +32,7 @@ const registerNameClick = async () => {
   else { inputRegisteredNameValid.value = false; }
 };
 
-const inputRegisteredNameKeyDown = (event) => {
+const inputRegisteredNameKeyDown = (event: any) => {
   if (event.key === 'Enter')
     registerNameClick();
 

@@ -7,11 +7,11 @@ export const useGameStore = defineStore('gameStore', () => {
   const gameState = ref({} as ClientGameState);
   const selectedIndex = ref(0);
   const paused = ref(false);
-  const playerId = useStorage('playerId', null);
+  const playerId = useStorage<string>('playerId', null);
   const currentName = ref('guest');
   const awaitingServer = ref(false);
   const filter = new Filter();
-  const { pending: loadingGame, refresh: load } = useLazyFetch('/api/game/load',
+  const { status: loadingGameStatus, refresh: load } = useLazyFetch('/api/game/load',
     {
       method: 'POST',
       body: { playerId: playerId.value },
@@ -87,12 +87,15 @@ export const useGameStore = defineStore('gameStore', () => {
       return;
 
     awaitingServer.value = true;
-    gameState.value = JSON.parse(gameState.value.previousState);
+    gameState.value = gameState.value.previousState ? JSON.parse(gameState.value.previousState) : gameState.value;
     gameState.value = await $fetch('/api/game/undo', { method: 'post', body: { playerId: playerId.value } });
     awaitingServer.value = false;
   };
 
   const boardSize = computed(() => {
+    if (!gameState.value.boardPieces)
+      return 5;
+
     return Math.sqrt(gameState.value.boardPieces.length);
   });
 
@@ -131,7 +134,7 @@ export const useGameStore = defineStore('gameStore', () => {
     }
   };
 
-  const animatedPlaceHelper = (x: number, y: number, value: number, animateConnection) => {
+  const animatedPlaceHelper = (x: number, y: number, value: number, animateConnection: any) => {
     const index = xytoi(x, y);
 
     // place the piece
@@ -164,7 +167,7 @@ export const useGameStore = defineStore('gameStore', () => {
     }
   };
 
-  const animatedPlace = (x: number, y: number, animateConnection) => {
+  const animatedPlace = (x: number, y: number, animateConnection: any) => {
     if (animating || awaitingServer.value)
       return;
 
@@ -188,5 +191,5 @@ export const useGameStore = defineStore('gameStore', () => {
     return true;
   };
 
-  return { gameState, selectedIndex, paused, boardSize, registeredName: currentName, loadingGame, load, newGame, place, select, undo, animatedPlace, registerName };
+  return { gameState, selectedIndex, paused, boardSize, registeredName: currentName, loadingGameStatus, load, newGame, place, select, undo, animatedPlace, registerName };
 });

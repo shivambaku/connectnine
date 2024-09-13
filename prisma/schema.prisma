@@ -17,7 +17,7 @@ model Player {
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
   gameStates         GameState[]
-  currentName        String?      @default("guest")
+  currentName        String       @default("guest")
   currentGameStateId String?
   achievement        Achievement?
 }
@@ -31,7 +31,7 @@ model GameState {
   nextNextSelectorPiece Int      @default(1)
   score                 Int      @default(0)
   previousState         String?
-  name                  String?
+  name                  String
   player                Player?  @relation(fields: [playerId], references: [id])
   playerId              String?
 

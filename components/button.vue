@@ -1,6 +1,7 @@
 <script setup lang="ts">
 defineProps<{
   disabled?: boolean
+  loading?: boolean
 }>();
 
 defineEmits<{
@@ -9,7 +10,8 @@ defineEmits<{
 </script>
 
 <template>
-  <div :class="`button ${disabled ? 'disabled' : ''}`" @click="(e) => $emit('click', e)">
+  <div v-if="loading" :class="`button skeleton`"><slot /></div>
+  <div v-else :class="`button ${disabled ? 'disabled' : ''}`" @click="(e) => $emit('click', e)">
     <slot />
   </div>
 </template>
@@ -26,8 +28,13 @@ defineEmits<{
   user-select: none;
 }
 
+.button.skeleton {
+  opacity: 0.5;
+  color: transparent !important;
+}
+
 @media(hover: hover) and (pointer: fine) {
-  .button:hover {
+  .button:not(.skeleton):hover {
     background: var(--background-color);
     color: var(--accent-color);
     cursor: pointer;

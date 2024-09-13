@@ -84,6 +84,10 @@ svg {
   vertical-align: top;
 }
 
+.skeleton {
+  opacity: 0.5;
+}
+
 .no-select {
   user-select: none;
 }

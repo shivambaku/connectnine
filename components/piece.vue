@@ -56,7 +56,7 @@ const styleClass = computed(() => {
 }
 
 @media(hover: hover) and (pointer: fine) {
-  .game:not(.paused) .piece.piece-0:hover {
+  .game:not(.paused):not(.loading) .piece.piece-0:hover {
     opacity: 1.0;
     cursor: pointer;
   }

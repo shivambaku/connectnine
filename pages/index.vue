@@ -6,6 +6,8 @@ const { gameState, selectedIndex, paused, boardSize, loadingGameStatus } = store
 const { newGame, animatedPlace, select, undo } = gameStore;
 const showNewGameConfirmation = ref(false);
 
+const loading = computed(() => loadingGameStatus.value === 'pending');
+
 onMounted(() => {
   paused.value = false;
 });
@@ -29,20 +31,20 @@ async function newGameConfirmationClick() {
 <template>
   <div>
     <div>
-      <div :class="`game ${paused ? 'paused' : ''}`">
+      <div :class="`game ${paused ? 'paused' : ''} ${loading ? 'loading' : ''}`">
         <div class="header">
           <div style="float: left">
             <h1 class="title">
               Connect 9
             </h1>
-            <Button :loading="loadingGameStatus === 'pending'" @click="newGameClick">
+            <Button :loading="loading" @click="newGameClick">
               New Game
             </Button>
-            <Button :loading="loadingGameStatus === 'pending'" style="margin-left: 10px" :disabled="gameState.previousState === null" @click="undo">
+            <Button :loading="loading" style="margin-left: 10px" :disabled="gameState.previousState === null" @click="undo">
               Undo
             </Button>
           </div>
-          <div v-if="loadingGameStatus === 'pending'" class="score-container skeleton"/>
+          <div v-if="loading" class="score-container skeleton"/>
           <div v-else class="score-container">
             <div class="score">
               {{ gameState.score }}
@@ -50,8 +52,9 @@ async function newGameConfirmationClick() {
           </div>
         </div>
         <div style="position: relative;">
+          <div v-if="loading" class="loader">Loading...</div> 
           <Board
-            :loading="loadingGameStatus === 'pending'"
+            :loading="loading"
             :padding="10"
             :width="400"
             :piece-padding="4"
@@ -61,7 +64,7 @@ async function newGameConfirmationClick() {
             :unclickable="paused"
             @animated-place="animatedPlace"
           />
-          <!-- <div
+          <div
             v-show="showNewGameConfirmation"
             class="confirmation-overlay"
           >
@@ -70,7 +73,7 @@ async function newGameConfirmationClick() {
               @yes="newGameConfirmationClick"
               @no="closeConfirmation"
             />
-          </div> -->
+          </div>
         </div>
         <Selector
           :loading="loadingGameStatus === 'pending'"

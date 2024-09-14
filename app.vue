@@ -123,4 +123,13 @@ svg {
   font-style: italic;
   margin: 10px 0 20px;
 }
+
+.loader {
+  font-size: 24px;
+  color: var(--primary-color);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 </style>

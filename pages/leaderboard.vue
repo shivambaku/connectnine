@@ -38,18 +38,38 @@ const inputRegisteredNameKeyDown = (event: any) => {
 
   event.stopPropagation();
 };
+
+const loading = computed(() => leaderboard.value === null);
 </script>
 
 <template>
   <div>
-    <div v-if="leaderboard === null">
-      Loading Leaderboard...
-    </div>
-    <div v-else>
+    <div>
       <h1 class="title">
         Leaderboard
       </h1>
-      <div class="leaderboard">
+      <div v-if="loading">
+        <div class="loader" style="top: 45%;">Loading...</div> 
+        <div class="leaderboard skeleton">
+          <div class="leaderboard-row">
+            <div class="leaderboard-header">
+              <div style="text-align: left; color: transparent;">
+                Name
+              </div>
+              <div style="color: transparent;">
+                Score
+              </div>
+            </div>
+          </div>
+          <div v-for="(_, i) in Array.from({ length: 10 })"
+                :key="`leaderboardInfoLoading${i}`"
+                class="leaderboard-row">
+              <div class="leaderboard-rank"/>
+              <div class="leaderboard-info" />
+          </div>
+        </div>
+      </div>
+      <div v-else :class="`leaderboard`">
         <div class="leaderboard-row">
           <div class="leaderboard-header">
             <div style="text-align: left;">
@@ -80,6 +100,7 @@ const inputRegisteredNameKeyDown = (event: any) => {
               class="leaderboard-info-board"
             >
               <Board
+                :loading="false"
                 :padding="10"
                 :width="400"
                 :piece-padding="4"
@@ -92,7 +113,10 @@ const inputRegisteredNameKeyDown = (event: any) => {
           </div>
         </div>
       </div>
-      <div class="name-registration">
+      <div v-if="loading">
+        
+      </div>
+      <div v-else class="name-registration">
         <h5>Register name to show up on the leaderboard.</h5>
         <div class="name-registration-row">
           <input
@@ -171,7 +195,7 @@ const inputRegisteredNameKeyDown = (event: any) => {
 }
 
 @media(hover: hover) and (pointer: fine) {
-  .leaderboard-info:hover {
+  .leaderboard:not(.skeleton) .leaderboard-info:hover {
     background: rgba(31, 120, 180, 0.5);
     cursor: pointer;
   }

@@ -49,7 +49,7 @@ const loading = computed(() => leaderboard.value === null);
         Leaderboard
       </h1>
       <div v-if="loading">
-        <div class="loader" style="top: 45%;">Loading...</div> 
+        <div class="loader">Loading...</div> 
         <div class="leaderboard skeleton">
           <div class="leaderboard-row">
             <div class="leaderboard-header">

@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
+import { storeToRefs } from 'pinia'
 
-const gameStore = useGameStore();
-const { gameState, selectedIndex, paused, boardSize, loadingGameStatus } = storeToRefs(gameStore);
-const { newGame, animatedPlace, select, undo } = gameStore;
-const showNewGameConfirmation = ref(false);
+const gameStore = useGameStore()
+const { gameState, selectedIndex, paused, boardSize, loadingGameStatus } = storeToRefs(gameStore)
+const { newGame, animatedPlace, select, undo } = gameStore
+const showNewGameConfirmation = ref(false)
 
-const loading = computed(() => loadingGameStatus.value === 'pending');
+const loading = computed(() => loadingGameStatus.value === 'pending')
 
 onMounted(() => {
-  paused.value = false;
-});
+  paused.value = false
+})
 
 function newGameClick() {
-  paused.value = true;
-  showNewGameConfirmation.value = true;
+  paused.value = true
+  showNewGameConfirmation.value = true
 }
 
 function closeConfirmation() {
-  paused.value = false;
-  showNewGameConfirmation.value = false;
+  paused.value = false
+  showNewGameConfirmation.value = false
 }
 
 async function newGameConfirmationClick() {
-  closeConfirmation();
-  await newGame();
+  closeConfirmation()
+  await newGame()
 }
 </script>
 
@@ -44,15 +44,60 @@ async function newGameConfirmationClick() {
               Undo
             </Button>
           </div>
-          <div v-if="loading" class="score-container skeleton"/>
+          <div v-if="loading" class="score-container skeleton" />
           <div v-else class="score-container">
-            <div class="score">
+            <!-- <div class="score">
               {{ gameState.score }}
-            </div>
+            </div> -->
+            <svg height="95px" width="140px">
+              <text
+                x="50%"
+                y="20%"
+                dominant-baseline="auto"
+                text-anchor="middle"
+                font-size="14"
+                fill="var(--game-foreground-color)"
+                :font-weight="500"
+              >SCORE</text>
+              <Piece
+                class="score"
+                :value="gameState.highestNumber"
+                :x="50" :y="28"
+                :width="40"
+                :padding="0"
+                :radius="6"
+              />
+              <rect
+                fill="var(--game-foreground-color)"
+                :rx="2" :ry="2"
+                :x="80" :y="55"
+                :width="25"
+                :height="20"
+              />
+              <text
+                :x="92.5" :y="66"
+                dominant-baseline="middle"
+                text-anchor="middle"
+                font-size="10"
+                fill="white"
+                font-style="italic"
+              >x{{ gameState.highestNumberCount }}</text>
+              <text
+                x="50%"
+                y="80%"
+                dominant-baseline="hanging"
+                text-anchor="middle"
+                font-size="12"
+                fill="var(--game-foreground-color)"
+                font-style="italic"
+              >with {{ gameState.highestNumberMoves }} moves</text>
+            </svg>
           </div>
         </div>
         <div style="position: relative;">
-          <div v-if="loading" class="loader">Loading...</div> 
+          <div v-if="loading" class="loader">
+            Loading...
+          </div>
           <Board
             :loading="loading"
             :padding="10"
@@ -83,7 +128,7 @@ async function newGameConfirmationClick() {
           :pieces="gameState.selectorPieces"
           :unclickable="paused"
           @select="select"
-        /> 
+        />
       </div>
       <div class="rules">
         <h4>How to Play</h4>
@@ -135,7 +180,9 @@ async function newGameConfirmationClick() {
 
 .game .header .score-container {
   background: var(--game-background-color);
-  width: 30%;
+  width: 35%;
+  top: 10px;
+  height: 95px;
   border-radius: 10px;
   position: relative;
 }
@@ -149,7 +196,7 @@ async function newGameConfirmationClick() {
   color: var(--game-foreground-color);
   font-size: 14px;
   position: absolute;
-  top: -60%;
+  top: -80%;
   left: 0;
   right: 0;
 }

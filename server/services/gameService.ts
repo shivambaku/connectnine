@@ -59,6 +59,10 @@ export async function load(playerId: string) {
         nextSelectorPiece: true,
         score: true,
         previousState: true,
+        moves: true,
+        highestNumber: true,
+        highestNumberCount: true,
+        highestNumberMoves: true,
       },
     });
 
@@ -108,6 +112,10 @@ export async function newGame(playerId: string) {
       nextSelectorPiece: true,
       score: true,
       previousState: true,
+      moves: true,
+      highestNumber: true,
+      highestNumberCount: true,
+      highestNumberMoves: true,
     },
   });
 
@@ -129,6 +137,10 @@ export async function newGame(playerId: string) {
     nextSelectorPiece: gameState.nextSelectorPiece,
     score: gameState.score,
     previousState: gameState.previousState,
+    moves: gameState.moves,
+    highestNumber: gameState.highestNumber,
+    highestNumberCount: gameState.highestNumberCount,
+    highestNumberMoves: gameState.highestNumberMoves,
   };
   return clientGameState;
 }
@@ -168,6 +180,10 @@ export async function place(playerId: string, x: number, y: number, selectedInde
       nextNextSelectorPiece: true,
       score: true,
       previousState: true,
+      moves: true,
+      highestNumber: true,
+      highestNumberCount: true,
+      highestNumberMoves: true,
     },
   });
 
@@ -183,6 +199,10 @@ export async function place(playerId: string, x: number, y: number, selectedInde
     nextSelectorPiece: gameState.nextSelectorPiece,
     score: gameState.score,
     previousState: null,
+    moves: gameState.moves,
+    highestNumber: gameState.highestNumber,
+    highestNumberCount: gameState.highestNumberCount,
+    highestNumberMoves: gameState.highestNumberMoves,
   };
 
   gameState.previousState = JSON.stringify(clientGameState);
@@ -192,6 +212,21 @@ export async function place(playerId: string, x: number, y: number, selectedInde
 
   // place the piece and connect the pieces if needed
   placeHelper(gameState, x, y, value);
+
+
+  gameState.moves += 1;
+
+  const placedPiece = gameState.boardPieces[xytoi(x, y)];
+
+  // setup everything for scoring
+  if (placedPiece > gameState.highestNumber) {
+    gameState.highestNumber = placedPiece;
+    gameState.highestNumberCount = 1;
+    gameState.highestNumberMoves = gameState.moves;
+  } else if (placedPiece === gameState.highestNumber) {
+    gameState.highestNumberCount += 1;
+    gameState.highestNumberMoves = gameState.moves;
+  }
 
   // get new random value for the selector from the predefined next selector
   const largestOnBoard = Math.max(...gameState.boardPieces);
@@ -211,6 +246,10 @@ export async function place(playerId: string, x: number, y: number, selectedInde
       nextSelectorPiece: true,
       score: true,
       previousState: true,
+      moves: true,
+      highestNumber: true,
+      highestNumberCount: true,
+      highestNumberMoves: true,
     },
   });
 
@@ -247,6 +286,10 @@ export async function undo(playerId: string) {
       score: true,
       previousState: true,
       nextNextSelectorPiece: true,
+      moves: true,
+      highestNumber: true,
+      highestNumberCount: true,
+      highestNumberMoves: true,
     },
   });
 
@@ -276,6 +319,10 @@ export async function undo(playerId: string) {
         nextSelectorPiece: true,
         score: true,
         previousState: true,
+        moves: true,
+        highestNumber: true,
+        highestNumberCount: true,
+        highestNumberMoves: true,
       },
     });
 
@@ -288,6 +335,10 @@ export async function undo(playerId: string) {
       nextSelectorPiece: gameState.nextSelectorPiece,
       score: gameState.score,
       previousState: gameState.previousState,
+      moves: gameState.moves,
+      highestNumber: gameState.highestNumber,
+      highestNumberCount: gameState.highestNumberCount,
+      highestNumberMoves: gameState.highestNumberMoves,
     };
     return clientGameState;
   }
@@ -419,4 +470,5 @@ function isValidName(name: string) {
 
   return true;
 }
+
 

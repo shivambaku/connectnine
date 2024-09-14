@@ -6,38 +6,39 @@ const props = defineProps<{
   pieces: Array<number> | undefined
   selectedIndex: number
   unclickable?: boolean
-}>();
+}>()
 
 const emit = defineEmits<{
   select: [i: number]
-}>();
+}>()
 
 const selectorCount = computed(() => {
-  if (props.loading) return 3;
-  return props.pieces!.length;
-});
+  if (props.loading)
+    return 3
+  return props.pieces!.length
+})
 
 const innerWidth = computed(() => {
-  return props.width - 2 * props.padding;
-});
+  return props.width - 2 * props.padding
+})
 
 const pieceWidth = computed(() => {
-  return innerWidth.value / selectorCount.value;
-});
+  return innerWidth.value / selectorCount.value
+})
 
 const height = computed(() => {
-  return pieceWidth.value + props.padding * 2.0;
-});
+  return pieceWidth.value + props.padding * 2.0
+})
 
-const scale = (value: number) => {
-  const t = value / selectorCount.value;
-  return innerWidth.value * t;
-};
+function scale(value: number) {
+  const t = value / selectorCount.value
+  return innerWidth.value * t
+}
 
-const select = (i: number) => {
+function select(i: number) {
   if (!props.unclickable)
-    emit('select', i);
-};
+    emit('select', i)
+}
 </script>
 
 <template>
@@ -79,5 +80,4 @@ const select = (i: number) => {
   border-radius: 10px;
   background: var(--game-background-color);
 }
-
 </style>

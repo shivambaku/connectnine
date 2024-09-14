@@ -34,6 +34,10 @@ model GameState {
   name                  String
   player                Player?  @relation(fields: [playerId], references: [id])
   playerId              String?
+  moves                 Int      @default(0)
+  highestNumber         Int      @default(0)
+  highestNumberCount    Int      @default(0)
+  highestNumberMoves    Int      @default(0)
 
   @@index(score(sort: Desc))
 }

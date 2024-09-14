@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useColorMode } from '@vueuse/core';
+import { useColorMode } from '@vueuse/core'
 
-const mode = useColorMode();
-const router = useRouter();
+const mode = useColorMode()
+const router = useRouter()
 
 function donate() {
-  window.location = 'https://www.paypal.com/donate/?business=VG72YMC5HF2EG&no_recurring=0&item_name=Connect+9&currency_code=USD';
+  window.location = 'https://www.paypal.com/donate/?business=VG72YMC5HF2EG&no_recurring=0&item_name=Connect+9&currency_code=USD'
 }
 </script>
 

@@ -6,15 +6,15 @@ const props = defineProps<{
   width: number
   padding: number
   radius: number
-}>();
+}>()
 
 const innerWidth = computed(() => {
-  return props.width - 2 * props.padding;
-});
+  return props.width - 2 * props.padding
+})
 
 const styleClass = computed(() => {
-  return `piece-${props.value}`;
-});
+  return `piece-${props.value}`
+})
 </script>
 
 <template>
@@ -33,6 +33,7 @@ const styleClass = computed(() => {
       class="piece-text no-select"
       dominant-baseline="central"
       text-anchor="middle"
+      :font-size="innerWidth / 3"
       :x="props.x"
       :y="props.y"
       :dx="innerWidth / 2"
@@ -47,7 +48,7 @@ const styleClass = computed(() => {
 .piece-text {
   fill: var(--game-foreground-color);
   font-weight: 900;
-  font-size: 22px;
+  /* font-size: 22px; */
 }
 
 .piece.piece-0 {
@@ -101,6 +102,12 @@ const styleClass = computed(() => {
 .selector .selected .piece {
   stroke: #1F78B4;
   stroke-width: 5px;
+}
+
+.score .piece {
+  stroke: var(--game-foreground-color);
+  stroke-opacity: 0.5;
+  stroke-width: 1px;
 }
 
 @media(hover: hover) and (pointer: fine) {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import anime from 'animejs/lib/anime.es';
-import type { ConnectionAnimationDataPart } from '~~/interfaces';
+import type { ConnectionAnimationDataPart } from '~~/interfaces'
+import anime from 'animejs/lib/anime.es'
 
 const props = defineProps<{
   loading: boolean
@@ -11,58 +11,58 @@ const props = defineProps<{
   pieces: Array<number> | undefined
   boardSize: number
   unclickable?: boolean
-}>();
+}>()
 
 const emit = defineEmits<{
   place: [x: number, y: number]
   animatedPlace: [x: number, y: number, animationCallback: any]
-}>();
+}>()
 
-const connectionAnimationData = ref(new Array<ConnectionAnimationDataPart>());
+const connectionAnimationData = ref(new Array<ConnectionAnimationDataPart>())
 
 const innerWidth = computed(() => {
-  return props.width - 2 * props.padding;
-});
+  return props.width - 2 * props.padding
+})
 
 const pieceWidth = computed(() => {
-  return innerWidth.value / props.boardSize;
-});
+  return innerWidth.value / props.boardSize
+})
 
 const animatedPieceWidth = computed(() => {
-  return pieceWidth.value - 2 * props.piecePadding;
-});
+  return pieceWidth.value - 2 * props.piecePadding
+})
 
 const twoAnimatedPiecesWidth = computed(() => {
-  return 2 * (animatedPieceWidth.value + props.piecePadding);
-});
+  return 2 * (animatedPieceWidth.value + props.piecePadding)
+})
 
-const itox = (i: number) => i % props.boardSize;
+const itox = (i: number) => i % props.boardSize
 
-const itoy = (i: number) => Math.floor(i / props.boardSize);
+const itoy = (i: number) => Math.floor(i / props.boardSize)
 
 function scale(x: number) {
-  const t = x / props.boardSize;
-  return innerWidth.value * t;
+  const t = x / props.boardSize
+  return innerWidth.value * t
 }
 
 function animatedPieceScale(x: number) {
-  return scale(x) + props.piecePadding;
+  return scale(x) + props.piecePadding
 }
 
 async function animateConnection(connectionAnimationDataArg: Array<ConnectionAnimationDataPart>, callback: any) {
-  connectionAnimationData.value = connectionAnimationDataArg;
+  connectionAnimationData.value = connectionAnimationDataArg
 
-  await nextTick();
+  await nextTick()
 
   const timeline = anime.timeline({
     easing: 'linear',
     duration: 150,
     complete: async () => {
-      connectionAnimationData.value = [];
-      await nextTick();
-      callback();
+      connectionAnimationData.value = []
+      await nextTick()
+      callback()
     },
-  });
+  })
 
   // Level 2 animation: first half of the connection
   // Level 1 animation: second half (connecting to the placed piece)
@@ -93,13 +93,13 @@ async function animateConnection(connectionAnimationDataArg: Array<ConnectionAni
         { opacity: 0.0, duration: 50 },
       ],
       endDelay: 50,
-    });
+    })
 }
 
 function place(i: number, value: number) {
   // only place if the spot is empty
   if (value === 0 && !props.unclickable)
-    emit('animatedPlace', itox(i), itoy(i), animateConnection);
+    emit('animatedPlace', itox(i), itoy(i), animateConnection)
 }
 </script>
 
@@ -110,7 +110,7 @@ function place(i: number, value: number) {
   >
     <g :transform="`translate(${props.padding}, ${props.padding})`">
       <Piece
-        v-for="(piece, i) in Array.from({length: boardSize * boardSize}, () => 0)" :key="i"
+        v-for="(piece, i) in Array.from({ length: boardSize * boardSize }, () => 0)" :key="i"
         :value="piece"
         :x="scale(itox(i))" :y="scale(itoy(i))"
         :width="pieceWidth"
@@ -120,7 +120,7 @@ function place(i: number, value: number) {
     </g>
   </svg>
   <svg
-  v-else
+    v-else
     class="board" :viewBox="`0 0 ${props.width} ${props.width}`"
   >
     <g :transform="`translate(${props.padding}, ${props.padding})`">

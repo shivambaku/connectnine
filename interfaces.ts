@@ -13,6 +13,10 @@ export interface ClientGameState {
   nextSelectorPiece: number
   score: number
   previousState: string | null
+  moves: number
+  highestNumber: number
+  highestNumberCount: number
+  highestNumberMoves: number
 }
 
 export interface ClientPlayer {

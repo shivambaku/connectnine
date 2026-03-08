@@ -38,6 +38,7 @@ model GameState {
   highestNumberMoves    Int      @default(0)
 
   @@index(score(sort: Desc))
+  @@index([highestNumber(sort: Desc), highestNumberCount(sort: Desc), highestNumberMoves(sort: Asc)])
 }
 
 model Achievement {

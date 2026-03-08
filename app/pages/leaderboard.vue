@@ -56,7 +56,7 @@ const loading = computed(() => leaderboard.value == null);
               <div style="text-align: left; color: transparent;">
                 Name
               </div>
-              <div style="color: transparent;">
+              <div style="text-align: center; width: 55px; color: transparent;">
                 Score
               </div>
             </div>
@@ -75,7 +75,7 @@ const loading = computed(() => leaderboard.value == null);
             <div style="text-align: left;">
               Name
             </div>
-            <div>
+            <div style="text-align: center; width: 55px;">
               Score
             </div>
           </div>
@@ -92,8 +92,40 @@ const loading = computed(() => leaderboard.value == null);
             <div style="text-align: left;">
               {{ leaderboardInfo.name === null ? 'guest' : leaderboardInfo.name }}
             </div>
-            <div>
-              {{ leaderboardInfo.score }}
+            <div class="leaderboard-score">
+              <svg viewBox="0 0 55 46" width="55" height="46">
+                <Piece
+                  :value="leaderboardInfo.highestNumber"
+                  :x="13" :y="2"
+                  :width="28"
+                  :padding="0"
+                  :radius="4"
+                />
+                <rect
+                  fill="var(--game-foreground-color)"
+                  :rx="2" :ry="2"
+                  :x="35" :y="17"
+                  :width="18"
+                  :height="13"
+                />
+                <text
+                  :x="44" :y="23.5"
+                  dominant-baseline="middle"
+                  text-anchor="middle"
+                  font-size="8"
+                  fill="white"
+                  font-style="italic"
+                >x{{ leaderboardInfo.highestNumberCount }}</text>
+                <text
+                  x="50%"
+                  y="36"
+                  dominant-baseline="hanging"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="var(--game-foreground-color)"
+                  font-style="italic"
+                >{{ leaderboardInfo.highestNumberMoves }} moves</text>
+              </svg>
             </div>
             <div
               v-if="expandedLeaderboardInfo === i"
@@ -170,27 +202,27 @@ const loading = computed(() => leaderboard.value == null);
 
 .leaderboard-header {
   grid-column: 2;
-  padding: 0px 20px;
+  padding: 0px 15px;
   font-weight: 800;
   display: grid;
-  grid-template-columns: 80% auto;
+  grid-template-columns: 1fr auto;
 }
 
 .leaderboard-rank {
   border-radius: 6px;
   background: rgba(31, 120, 180, 0.2);
-  padding: 10px;
-  width: 22px;
-  height: 22px;
-  line-height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
 }
 
 .leaderboard-info {
-  padding: 10px 20px;
+  padding: 8px 15px;
   border-radius: 6px;
   background: rgba(31, 120, 180, 0.2);
   display: grid;
-  grid-template-columns: 80% auto;
+  grid-template-columns: 1fr auto;
   align-items: center;
 }
 
@@ -199,6 +231,16 @@ const loading = computed(() => leaderboard.value == null);
     background: rgba(31, 120, 180, 0.5);
     cursor: pointer;
   }
+}
+
+.leaderboard-score {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.leaderboard-score svg {
+  flex-shrink: 0;
 }
 
 .leaderboard-info-board {

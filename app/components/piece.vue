@@ -108,6 +108,7 @@ const styleClass = computed(() => {
   stroke: var(--game-foreground-color);
   stroke-opacity: 0.5;
   stroke-width: 1px;
+  pointer-events: none;
 }
 
 @media(hover: hover) and (pointer: fine) {

@@ -210,12 +210,10 @@ export async function place(playerId: string, x: number, y: number, selectedInde
   const value = gameState.selectorPieces[selectedIndex];
 
   // place the piece and connect the pieces if needed
-  placeHelper(gameState, x, y, value);
+  const placedPiece = placeHelper(gameState, x, y, value);
 
 
   gameState.moves += 1;
-
-  const placedPiece = gameState.boardPieces[xytoi(x, y)];
 
   // setup everything for scoring
   if (placedPiece > gameState.highestNumber) {
@@ -391,7 +389,7 @@ export async function changeName(playerId: string, name: string) {
   });
 }
 
-function placeHelper(gameState: ClientGameState, x: number, y: number, value: number) {
+function placeHelper(gameState: ClientGameState, x: number, y: number, value: number): number {
   const index = xytoi(x, y);
 
   // place the piece
@@ -410,8 +408,20 @@ function placeHelper(gameState: ClientGameState, x: number, y: number, value: nu
     for (const visitedIndex of visited)
       gameState.boardPieces[visitedIndex] = 0;
 
-    placeHelper(gameState, x, y, value + 1);
+    const newValue = value + 1;
+
+    // reaching 9 clears the entire board
+    if (newValue >= 9) {
+      for (let i = 0; i < gameState.boardPieces.length; i++)
+        gameState.boardPieces[i] = 0;
+      return 9;
+    }
+    else {
+      return placeHelper(gameState, x, y, newValue);
+    }
   }
+
+  return value;
 }
 
 function checkConnections(gameState: ClientGameState, x: number, y: number, value: number, visited: Set<number>) {

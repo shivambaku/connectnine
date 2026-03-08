@@ -7,6 +7,12 @@ export interface ConnectionAnimationDataPart {
   value: number
 }
 
+export interface BoardClearAnimationDataPart {
+  x: number
+  y: number
+  value: number
+}
+
 export interface ClientGameState {
   boardPieces: number[]
   selectorPieces: number[]

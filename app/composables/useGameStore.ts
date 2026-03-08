@@ -133,7 +133,7 @@ export const useGameStore = defineStore('gameStore', () => {
         }
     }
 
-    const animatedPlaceHelper = (x: number, y: number, value: number, animateConnection: any) => {
+    const animatedPlaceHelper = (x: number, y: number, value: number, animateConnection: any, animateBoardClear: any) => {
         const index = xytoi(x, y)
 
         // place the piece
@@ -153,11 +153,33 @@ export const useGameStore = defineStore('gameStore', () => {
             for (const visitedIndex of visited)
                 gameState.value.boardPieces[visitedIndex] = 0
 
-            gameState.value.boardPieces[index] = value + 1
+            const newValue = value + 1
 
-            animateConnection(connectionAnimationData, () => {
-                animatedPlaceHelper(x, y, value + 1, animateConnection)
-            })
+            // reaching 9 clears the entire board with animation
+            if (newValue >= 9) {
+                gameState.value.boardPieces[index] = 9
+
+                animateConnection(connectionAnimationData, () => {
+                    // take a snapshot of the board before clearing for the animation
+                    const piecesSnapshot = [...gameState.value.boardPieces]
+
+                    // clear the board data
+                    for (let i = 0; i < gameState.value.boardPieces.length; i++)
+                        gameState.value.boardPieces[i] = 0
+
+                    animateBoardClear(x, y, piecesSnapshot, () => {
+                        animating = false
+                        setPlacedCacheToGameState()
+                    })
+                })
+            }
+            else {
+                gameState.value.boardPieces[index] = newValue
+
+                animateConnection(connectionAnimationData, () => {
+                    animatedPlaceHelper(x, y, newValue, animateConnection, animateBoardClear)
+                })
+            }
         }
         else {
             animating = false
@@ -166,7 +188,7 @@ export const useGameStore = defineStore('gameStore', () => {
         }
     }
 
-    const animatedPlace = (x: number, y: number, animateConnection: any) => {
+    const animatedPlace = (x: number, y: number, animateConnection: any, animateBoardClear: any) => {
         if (animating || awaitingServer.value)
             return
 
@@ -175,7 +197,7 @@ export const useGameStore = defineStore('gameStore', () => {
         placeInCacheIfAnimating(x, y)
 
         // run the game logic on the client as well while waiting for the real response
-        animatedPlaceHelper(x, y, gameState.value.selectorPieces[selectedIndex.value], animateConnection)
+        animatedPlaceHelper(x, y, gameState.value.selectorPieces[selectedIndex.value], animateConnection, animateBoardClear)
 
         // set the selected piece to the next piece
         gameState.value.selectorPieces[selectedIndex.value] = gameState.value.nextSelectorPiece

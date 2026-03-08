@@ -49,48 +49,39 @@ async function newGameConfirmationClick() {
             <!-- <div class="score">
               {{ gameState.score }}
             </div> -->
-            <svg height="95px" width="140px">
-              <text
-                x="50%"
-                y="20%"
-                dominant-baseline="auto"
-                text-anchor="middle"
-                font-size="14"
-                fill="var(--game-foreground-color)"
-                :font-weight="500"
-              >SCORE</text>
+            <svg viewBox="0 0 140 80" width="100%">
               <Piece
                 class="score"
                 :value="gameState.highestNumber"
-                :x="50" :y="28"
-                :width="40"
+                :x="45" :y="4"
+                :width="50"
                 :padding="0"
                 :radius="6"
               />
               <rect
                 fill="var(--game-foreground-color)"
                 :rx="2" :ry="2"
-                :x="80" :y="55"
-                :width="25"
-                :height="20"
+                :x="85" :y="32"
+                :width="28"
+                :height="22"
               />
               <text
-                :x="92.5" :y="66"
+                :x="99" :y="44"
                 dominant-baseline="middle"
                 text-anchor="middle"
-                font-size="10"
+                font-size="12"
                 fill="white"
                 font-style="italic"
               >x{{ gameState.highestNumberCount }}</text>
               <text
                 x="50%"
-                y="80%"
+                y="82%"
                 dominant-baseline="hanging"
                 text-anchor="middle"
                 font-size="12"
                 fill="var(--game-foreground-color)"
                 font-style="italic"
-              >with {{ gameState.highestNumberMoves }} moves</text>
+              >{{ gameState.highestNumberMoves }} moves</text>
             </svg>
           </div>
         </div>
@@ -176,51 +167,24 @@ async function newGameConfirmationClick() {
   letter-spacing: 2px;
   font-size: 38px;
   margin: 5px 0px 10px;
+  white-space: nowrap;
 }
 
 .game .header .score-container {
   background: var(--game-background-color);
   width: 35%;
-  top: 10px;
-  height: 95px;
+  min-width: 100px;
+  margin-left: 10px;
   border-radius: 10px;
-  position: relative;
+  align-self: stretch;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .game .header .score-container.skeleton {
   opacity: 0.5;
-}
-
-.game .header .score::before {
-  content: 'SCORE';
-  color: var(--game-foreground-color);
-  font-size: 14px;
-  position: absolute;
-  top: -80%;
-  left: 0;
-  right: 0;
-}
-
-.game .header .score {
-  color: var(--game-foreground-color);
-  font-size: 30px;
-  font-weight: 500;
-  position: absolute;
-  top: 42%;
-  left: 0;
-  right: 0;
-}
-
-@media screen and (max-width: 400px) {
-  .game .header .score {
-    font-size: 28px;
-  }
-}
-
-@media screen and (max-width: 350px) {
-  .game .header .score {
-    font-size: 24px;
-  }
+  min-height: 80px;
 }
 
 .game .confirmation-overlay {

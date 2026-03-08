@@ -261,11 +261,12 @@ function handleMilestone(scoreInfo: ScoreAnimationInfo, doneCallback: () => void
     scoreInfo.value,
     currentScoreTargetEl,
     () => {
-      // Trigger score animation on arrival
+      // Unblock the board first so the player can place the next piece
+      doneCallback()
+      // Then trigger the cosmetic score animation (pulse/counter roll)
       if (currentOnScoreAnimation) {
         currentOnScoreAnimation(scoreInfo)
       }
-      doneCallback()
     },
   )
 }

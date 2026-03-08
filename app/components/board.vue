@@ -25,6 +25,9 @@ const emit = defineEmits<{
 
 const connectionAnimationData = ref(new Array<ConnectionAnimationDataPart>())
 
+// Template refs for connection animation rect elements (populated by v-for ref)
+const connectionRefs = ref<SVGRectElement[]>([])
+
 // Flying tile state — rendered as a fixed-position HTML overlay
 const flyingTile = ref<{
   value: number
@@ -33,6 +36,9 @@ const flyingTile = ref<{
   width: number
   height: number
 } | null>(null)
+
+// Template ref for the flying tile element
+const flyingTileRef = ref<HTMLDivElement | null>(null)
 
 // Reference to the board SVG element for coordinate calculations
 const boardSvgRef = ref<SVGSVGElement | null>(null)
@@ -132,6 +138,12 @@ async function animateFlyToScore(
 
   await nextTick()
 
+  const el = flyingTileRef.value
+  if (!el) {
+    callback()
+    return
+  }
+
   createTimeline({
     defaults: { ease: 'inOutCubic' },
     onComplete: async () => {
@@ -140,15 +152,15 @@ async function animateFlyToScore(
       callback()
     },
   })
-    .add('.flying-tile', {
-      duration: 600,
+    .add(el, {
+      duration: 400,
       translateX: `${deltaX}px`,
       translateY: `${deltaY}px`,
       width: `${targetSize}px`,
       height: `${targetSize}px`,
       fontSize: `${targetSize * 0.35}px`,
     })
-    .add('.flying-tile', {
+    .add(el, {
       duration: 150,
       opacity: 0,
       ease: 'linear',
@@ -160,8 +172,19 @@ async function animateConnection(
   callback: () => void,
 ) {
   connectionAnimationData.value = connectionAnimationDataArg
+  connectionRefs.value = []
 
   await nextTick()
+
+  // Partition refs by level using the data array
+  const level1Els: SVGRectElement[] = []
+  const level2Els: SVGRectElement[] = []
+  for (let i = 0; i < connectionAnimationDataArg.length; i++) {
+    const el = connectionRefs.value[i]
+    if (!el) continue
+    if (connectionAnimationDataArg[i].level === 1) level1Els.push(el)
+    else level2Els.push(el)
+  }
 
   const timeline = createTimeline({
     defaults: {
@@ -175,29 +198,35 @@ async function animateConnection(
     },
   })
 
-  timeline
-    .add('.level2ConnectionAnimationDataPart', {
-      keyframes: [
-        {
-          width: `${animatedPieceWidth.value}px`,
-          height: `${animatedPieceWidth.value}px`,
-          x: (el: any) => `${animatedPieceScale(connectionAnimationData.value[el.id].parentX)}px`,
-          y: (el: any) => `${animatedPieceScale(connectionAnimationData.value[el.id].parentY)}px`,
-        },
-        { opacity: 0.0, duration: 0 },
-      ],
-    })
-    .add('.level1ConnectionAnimationDataPart', {
-      keyframes: [
-        {
-          width: `${animatedPieceWidth.value}px`,
-          height: `${animatedPieceWidth.value}px`,
-          x: (el: any) => `${animatedPieceScale(connectionAnimationData.value[el.id].parentX)}px`,
-          y: (el: any) => `${animatedPieceScale(connectionAnimationData.value[el.id].parentY)}px`,
-        },
-        { opacity: 0.0, duration: 100 },
-      ],
-    })
+  if (level2Els.length > 0) {
+    timeline
+      .add(level2Els, {
+        keyframes: [
+          {
+            width: `${animatedPieceWidth.value}px`,
+            height: `${animatedPieceWidth.value}px`,
+            x: (el: SVGRectElement) => `${animatedPieceScale(connectionAnimationData.value[Number(el.id)].parentX)}px`,
+            y: (el: SVGRectElement) => `${animatedPieceScale(connectionAnimationData.value[Number(el.id)].parentY)}px`,
+          },
+          { opacity: 0.0, duration: 0 },
+        ],
+      })
+  }
+
+  if (level1Els.length > 0) {
+    timeline
+      .add(level1Els, {
+        keyframes: [
+          {
+            width: `${animatedPieceWidth.value}px`,
+            height: `${animatedPieceWidth.value}px`,
+            x: (el: SVGRectElement) => `${animatedPieceScale(connectionAnimationData.value[Number(el.id)].parentX)}px`,
+            y: (el: SVGRectElement) => `${animatedPieceScale(connectionAnimationData.value[Number(el.id)].parentY)}px`,
+          },
+          { opacity: 0.0, duration: 100 },
+        ],
+      })
+  }
 }
 
 // Store references to score animation callback and target element.
@@ -285,8 +314,9 @@ function place(i: number, value: number) {
         <rect
           v-for="(d, i) in connectionAnimationData"
           :id="i.toString()"
+          :ref="(el: any) => { if (el) connectionRefs[i] = el as SVGRectElement }"
           :key="`connectionAnimationDataPart${i}`"
-          :class="`${d.level === 1 ? 'level1ConnectionAnimationDataPart' : 'level2ConnectionAnimationDataPart'} piece piece-${d.value}`"
+          :class="`piece piece-${d.value}`"
           :rx="pieceRadius"
           :ry="pieceRadius"
           :x="d.x < d.parentX ? animatedPieceScale(d.x) : animatedPieceScale(d.parentX)"
@@ -300,6 +330,7 @@ function place(i: number, value: number) {
   <!-- Flying tile overlay — positioned fixed to fly across SVG boundaries -->
   <div
     v-if="flyingTile"
+    ref="flyingTileRef"
     class="flying-tile"
     :class="`piece-bg-${flyingTile.value}`"
     :style="{

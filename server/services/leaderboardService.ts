@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../utils/prisma';
 
 export async function getTop(n = 10) {
   const topTen = await prisma.gameState.findMany({

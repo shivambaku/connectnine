@@ -1,9 +1,8 @@
-import { PrismaClient, type GameState } from '@prisma/client';
+import { type GameState } from '../../prisma/generated/client';
 import { Filter } from 'bad-words';
 import Settings from '../utils/settings';
-import type { ClientGameState, ClientPlayer } from '~~/interfaces';
-
-const prisma = new PrismaClient();
+import type { ClientGameState, ClientPlayer } from '~~/shared/types/interfaces';
+import { prisma } from '../utils/prisma';
 
 export async function load(playerId: string) {
   // create a player id if it does not exist

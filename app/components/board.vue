@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ConnectionAnimationDataPart } from '~~/interfaces'
+import type { ConnectionAnimationDataPart } from '~~/shared/types/interfaces'
 import anime from 'animejs/lib/anime.es'
 
 const props = defineProps<{

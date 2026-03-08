@@ -39,7 +39,7 @@ const inputRegisteredNameKeyDown = (event: any) => {
   event.stopPropagation();
 };
 
-const loading = computed(() => leaderboard.value === null);
+const loading = computed(() => leaderboard.value == null);
 </script>
 
 <template>

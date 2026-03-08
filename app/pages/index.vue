@@ -29,16 +29,19 @@ const displayedHighestNumber = ref(0)
 // When true, watchers defer — the fly-to-score animation will handle score updates
 const isFlyingToScore = ref(false)
 
-// Whether the game has been loaded at least once (skip animations on initial load)
-const hasInitialized = ref(false)
+// Track whether we've received the first real value from the server
+const hasLoadedCount = ref(false)
+const hasLoadedHighestNumber = ref(false)
 
 // Watch count changes — animate on change (unless flying, which handles its own animation)
 watch(() => gameState.value.highestNumberCount, (newVal) => {
+    if (newVal == null) return
     if (isFlyingToScore.value)
         return
-    if (!hasInitialized.value) {
-        // First load — just set the value silently
+    if (!hasLoadedCount.value) {
+        // First real value from server — set silently without animation
         displayedCount.value = newVal
+        hasLoadedCount.value = true
         return
     }
     if (newVal !== displayedCount.value) {
@@ -48,11 +51,13 @@ watch(() => gameState.value.highestNumberCount, (newVal) => {
 
 // Watch rank changes — animate on change (unless flying, which handles its own animation)
 watch(() => gameState.value.highestNumber, (newVal) => {
+    if (newVal == null) return
     if (isFlyingToScore.value)
         return
-    if (!hasInitialized.value) {
-        // First load — just set the value silently
+    if (!hasLoadedHighestNumber.value) {
+        // First real value from server — set silently without animation
         displayedHighestNumber.value = newVal
+        hasLoadedHighestNumber.value = true
         return
     }
     if (newVal !== displayedHighestNumber.value) {
@@ -65,10 +70,7 @@ watch(() => gameState.value.highestNumber, (newVal) => {
 onMounted(() => {
     paused.value = false
 
-    // Mark initialized after first tick so watchers can start animating
     nextTick(() => {
-        hasInitialized.value = true
-
         if (boardRef.value && scoreContainerRef.value) {
             boardRef.value.setScoreAnimationContext(onScoreAnimation, onFlyStart, scoreContainerRef.value)
         }

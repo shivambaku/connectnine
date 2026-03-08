@@ -64,39 +64,39 @@ const styleClass = computed(() => {
 }
 
 .piece.piece-1 {
-  fill: #FFFFB3;
+  fill: var(--piece-color-1);
 }
 
 .piece.piece-2 {
-  fill: #BEBADA;
+  fill: var(--piece-color-2);
 }
 
 .piece.piece-3 {
-  fill: #FB8072;
+  fill: var(--piece-color-3);
 }
 
 .piece.piece-4 {
-  fill: #80B1D3;
+  fill: var(--piece-color-4);
 }
 
 .piece.piece-5 {
-  fill: #FDB462;
+  fill: var(--piece-color-5);
 }
 
 .piece.piece-6 {
-  fill: #B3DE69;
+  fill: var(--piece-color-6);
 }
 
 .piece.piece-7 {
-  fill: #FCCDE5;
+  fill: var(--piece-color-7);
 }
 
 .piece.piece-8 {
-  fill: #D9D9D9;
+  fill: var(--piece-color-8);
 }
 
 .piece.piece-9 {
-  fill: #BC80BD;
+  fill: var(--piece-color-9);
 }
 
 .selector .selected .piece {

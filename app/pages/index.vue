@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ScoreAnimationInfo } from '~~/shared/types/interfaces'
+import { createTimeline } from 'animejs'
 import { storeToRefs } from 'pinia'
 
 const gameStore = useGameStore()
@@ -8,9 +10,148 @@ const showNewGameConfirmation = ref(false)
 
 const loading = computed(() => loadingGameStatus.value === 'pending')
 
+// Refs for score animation targets
+const scoreContainerRef = ref<HTMLElement | null>(null)
+const boardRef = ref<any>(null)
+
+// Rolling counter state
+const displayedCount = ref(0)
+const outgoingCount = ref<number | null>(null)
+
+// Track displayed highest number (for the rank piece)
+const displayedHighestNumber = ref(0)
+
+// When true, watchers defer — the fly-to-score animation will handle score updates
+const isFlyingToScore = ref(false)
+
+// Whether the game has been loaded at least once (skip animations on initial load)
+const hasInitialized = ref(false)
+
+// Watch count changes — animate on change (unless flying, which handles its own animation)
+watch(() => gameState.value.highestNumberCount, (newVal) => {
+  if (isFlyingToScore.value) return
+  if (!hasInitialized.value) {
+    // First load — just set the value silently
+    displayedCount.value = newVal
+    return
+  }
+  if (newVal !== displayedCount.value) {
+    animateCountChange(newVal)
+  }
+}, { immediate: true })
+
+// Watch rank changes — animate on change (unless flying, which handles its own animation)
+watch(() => gameState.value.highestNumber, (newVal) => {
+  if (isFlyingToScore.value) return
+  if (!hasInitialized.value) {
+    // First load — just set the value silently
+    displayedHighestNumber.value = newVal
+    return
+  }
+  if (newVal !== displayedHighestNumber.value) {
+    animateRankChange(newVal)
+    // When rank changes, count resets to 1
+    animateCountChange(gameState.value.highestNumberCount)
+  }
+}, { immediate: true })
+
 onMounted(() => {
   paused.value = false
+
+  // Mark initialized after first tick so watchers can start animating
+  nextTick(() => {
+    hasInitialized.value = true
+
+    if (boardRef.value && scoreContainerRef.value) {
+      boardRef.value.setScoreAnimationContext(onScoreAnimation, onFlyStart, scoreContainerRef.value)
+    }
+  })
 })
+
+// Watch for ref changes to update the board's context
+watch([scoreContainerRef, boardRef], () => {
+  if (boardRef.value && scoreContainerRef.value) {
+    boardRef.value.setScoreAnimationContext(onScoreAnimation, onFlyStart, scoreContainerRef.value)
+  }
+})
+
+/**
+ * Called when a flying tile arrives at the score container (any milestone).
+ * Triggers the appropriate score animation (counter roll and/or rank pulse).
+ * Also releases the isFlyingToScore flag so watchers resume normal behavior.
+ */
+function onScoreAnimation(info: ScoreAnimationInfo) {
+  isFlyingToScore.value = false
+
+  if (info.type === 'new_highest') {
+    animateRankChange(info.value)
+    animateCountChange(1)
+  }
+  else if (info.type === 'count_increase') {
+    animateCountChange(displayedCount.value + 1)
+  }
+}
+
+/**
+ * Called by the board BEFORE starting the fly-to-score animation.
+ * Prevents watchers from prematurely updating the score display.
+ */
+function onFlyStart() {
+  isFlyingToScore.value = true
+}
+
+/**
+ * Animate the xN counter rolling from old value to new value.
+ * Old number slides up and fades, new number slides in from below.
+ */
+function animateCountChange(newCount: number) {
+  if (newCount === displayedCount.value) return
+
+  outgoingCount.value = displayedCount.value
+  displayedCount.value = newCount
+
+  nextTick(() => {
+    createTimeline({
+      defaults: { ease: 'outCubic', duration: 300 },
+      onComplete: () => {
+        outgoingCount.value = null
+      },
+    })
+      .add('.count-outgoing', {
+        translateY: '-14px',
+        opacity: 0,
+      }, 0)
+      .add('.count-incoming', {
+        translateY: '0px',
+        opacity: 1,
+      }, 0)
+  })
+}
+
+/**
+ * Animate the rank tile: pulse/scale bounce when highest number changes.
+ */
+function animateRankChange(newValue: number) {
+  if (newValue === displayedHighestNumber.value) return
+
+  displayedHighestNumber.value = newValue
+
+  nextTick(() => {
+    // Animate the rank piece with a scale bounce
+    createTimeline({
+      defaults: { ease: 'outBack' },
+    })
+      .add('.score-piece-group', {
+        scale: 1.3,
+        duration: 200,
+      })
+      .add('.score-piece-group', {
+        scale: 1,
+        duration: 400,
+        ease: 'outElastic(1, 0.5)',
+      })
+  })
+}
 
 function newGameClick() {
   paused.value = true
@@ -45,19 +186,23 @@ async function newGameConfirmationClick() {
             </Button>
           </div>
           <div v-if="loading" class="score-container skeleton" />
-          <div v-else class="score-container">
-            <!-- <div class="score">
-              {{ gameState.score }}
-            </div> -->
+          <div v-else ref="scoreContainerRef" class="score-container">
             <svg viewBox="0 0 140 80" width="100%">
-              <Piece
-                class="score"
-                :value="gameState.highestNumber"
-                :x="45" :y="4"
-                :width="50"
-                :padding="0"
-                :radius="6"
-              />
+              <!-- Rank piece with scale animation group -->
+              <g
+                class="score-piece-group"
+                :style="{ transformOrigin: '70px 29px' }"
+              >
+                <Piece
+                  class="score"
+                  :value="displayedHighestNumber"
+                  :x="45" :y="4"
+                  :width="50"
+                  :padding="0"
+                  :radius="6"
+                />
+              </g>
+              <!-- Count badge background -->
               <rect
                 fill="var(--game-foreground-color)"
                 :rx="2" :ry="2"
@@ -65,14 +210,35 @@ async function newGameConfirmationClick() {
                 :width="28"
                 :height="22"
               />
-              <text
-                :x="99" :y="44"
-                dominant-baseline="middle"
-                text-anchor="middle"
-                font-size="12"
-                fill="white"
-                font-style="italic"
-              >x{{ gameState.highestNumberCount }}</text>
+              <!-- Clip path for count rolling animation -->
+              <clipPath id="count-clip">
+                <rect :x="85" :y="32" :width="28" :height="22" />
+              </clipPath>
+              <!-- Count text with rolling animation -->
+              <g class="count-text-group" clip-path="url(#count-clip)">
+                <!-- Outgoing count (slides up during animation) -->
+                <text
+                  v-if="outgoingCount !== null"
+                  class="count-outgoing"
+                  :x="99" :y="44"
+                  dominant-baseline="middle"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="white"
+                  font-style="italic"
+                >x{{ outgoingCount }}</text>
+                <!-- Current count (slides in from below during animation, or static) -->
+                <text
+                  :class="outgoingCount !== null ? 'count-incoming' : ''"
+                  :x="99" :y="44"
+                  dominant-baseline="middle"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="white"
+                  font-style="italic"
+                  :style="outgoingCount !== null ? { transform: 'translateY(14px)', opacity: 0 } : {}"
+                >x{{ displayedCount }}</text>
+              </g>
               <text
                 x="50%"
                 y="82%"
@@ -90,6 +256,7 @@ async function newGameConfirmationClick() {
             Loading...
           </div>
           <Board
+            ref="boardRef"
             :loading="loading"
             :padding="10"
             :width="400"
@@ -194,6 +361,8 @@ async function newGameConfirmationClick() {
   top: 32%;
   left: 18.75%;
 }
+
+/* Clipping is handled via SVG clipPath on the <g> element */
 
 .rules h4 {
   margin-top: 30px;

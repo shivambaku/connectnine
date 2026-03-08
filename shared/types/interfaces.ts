@@ -7,10 +7,12 @@ export interface ConnectionAnimationDataPart {
   value: number
 }
 
-export interface BoardClearAnimationDataPart {
-  x: number
-  y: number
+export interface ScoreAnimationInfo {
+  type: 'new_highest' | 'count_increase'
   value: number
+  // Board grid coordinates of the source tile (where the merge result sits)
+  sourceX: number
+  sourceY: number
 }
 
 export interface ClientGameState {

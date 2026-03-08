@@ -410,10 +410,9 @@ function placeHelper(gameState: ClientGameState, x: number, y: number, value: nu
 
     const newValue = value + 1;
 
-    // reaching 9 clears the entire board
+    // reaching 9: only clear the 9 cell (connected tiles already cleared above)
     if (newValue >= 9) {
-      for (let i = 0; i < gameState.boardPieces.length; i++)
-        gameState.boardPieces[i] = 0;
+      gameState.boardPieces[index] = 0;
       return 9;
     }
     else {

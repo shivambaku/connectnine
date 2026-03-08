@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ConnectionAnimationDataPart, BoardClearAnimationDataPart } from '~~/shared/types/interfaces'
+import type { ConnectionAnimationDataPart, ScoreAnimationInfo } from '~~/shared/types/interfaces'
 import { createTimeline } from 'animejs'
 
 const props = defineProps<{
@@ -15,19 +15,27 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   place: [x: number, y: number]
-  animatedPlace: [x: number, y: number, animateConnection: any, animateBoardClear: any]
+  animatedPlace: [
+    x: number,
+    y: number,
+    animateConnection: (data: ConnectionAnimationDataPart[], callback: () => void) => void,
+    onMilestone: (scoreInfo: ScoreAnimationInfo, doneCallback: () => void) => void,
+  ]
 }>()
 
 const connectionAnimationData = ref(new Array<ConnectionAnimationDataPart>())
-const boardClearAnimationData = ref(new Array<BoardClearAnimationDataPart>())
-const nineHighlightData = ref<{ x: number, y: number, size: number } | null>(null)
-const particleBurstData = ref<Array<{
+
+// Flying tile state — rendered as a fixed-position HTML overlay
+const flyingTile = ref<{
+  value: number
   x: number
   y: number
-  targetX: number
-  targetY: number
-  size: number
-}>>([])
+  width: number
+  height: number
+} | null>(null)
+
+// Reference to the board SVG element for coordinate calculations
+const boardSvgRef = ref<SVGSVGElement | null>(null)
 
 const innerWidth = computed(() => {
   return props.width - 2 * props.padding
@@ -58,7 +66,99 @@ function animatedPieceScale(x: number) {
   return scale(x) + props.piecePadding
 }
 
-async function animateConnection(connectionAnimationDataArg: Array<ConnectionAnimationDataPart>, callback: any) {
+/**
+ * Convert board grid coordinates to screen (page) pixel coordinates.
+ * Returns the center point of the tile in page coordinates.
+ */
+function boardCoordsToScreen(gridX: number, gridY: number): { x: number, y: number, size: number } {
+  if (!boardSvgRef.value) return { x: 0, y: 0, size: 0 }
+
+  const svgRect = boardSvgRef.value.getBoundingClientRect()
+  const svgViewBoxWidth = props.width
+  const scaleRatio = svgRect.width / svgViewBoxWidth
+
+  // SVG coordinates of the tile center (accounting for the padding translate on the <g>)
+  const svgX = props.padding + animatedPieceScale(gridX) + animatedPieceWidth.value / 2
+  const svgY = props.padding + animatedPieceScale(gridY) + animatedPieceWidth.value / 2
+
+  return {
+    x: svgRect.left + svgX * scaleRatio,
+    y: svgRect.top + svgY * scaleRatio,
+    size: animatedPieceWidth.value * scaleRatio,
+  }
+}
+
+/**
+ * Animate a tile flying from a board position to the score container.
+ * The tile is rendered as a fixed-position HTML overlay to cross SVG boundaries.
+ */
+async function animateFlyToScore(
+  sourceGridX: number,
+  sourceGridY: number,
+  value: number,
+  scoreTargetEl: HTMLElement | null,
+  callback: () => void,
+) {
+  if (!scoreTargetEl || !boardSvgRef.value) {
+    callback()
+    return
+  }
+
+  const source = boardCoordsToScreen(sourceGridX, sourceGridY)
+  const targetRect = scoreTargetEl.getBoundingClientRect()
+  const targetCenterX = targetRect.left + targetRect.width / 2
+  const targetCenterY = targetRect.top + targetRect.height / 2
+
+  const tileSize = source.size
+  const startX = source.x - tileSize / 2
+  const startY = source.y - tileSize / 2
+
+  // Target size — match the score tile roughly
+  const targetSize = Math.min(targetRect.width, targetRect.height) * 0.8
+
+  // Compute the delta for translate (anime.js maps x/y to translateX/translateY for DOM elements)
+  const targetLeft = targetCenterX - targetSize / 2
+  const targetTop = targetCenterY - targetSize / 2
+  const deltaX = targetLeft - startX
+  const deltaY = targetTop - startY
+
+  flyingTile.value = {
+    value,
+    x: startX,
+    y: startY,
+    width: tileSize,
+    height: tileSize,
+  }
+
+  await nextTick()
+
+  createTimeline({
+    defaults: { ease: 'inOutCubic' },
+    onComplete: async () => {
+      flyingTile.value = null
+      await nextTick()
+      callback()
+    },
+  })
+    .add('.flying-tile', {
+      duration: 600,
+      translateX: `${deltaX}px`,
+      translateY: `${deltaY}px`,
+      width: `${targetSize}px`,
+      height: `${targetSize}px`,
+      fontSize: `${targetSize * 0.35}px`,
+    })
+    .add('.flying-tile', {
+      duration: 150,
+      opacity: 0,
+      ease: 'linear',
+    })
+}
+
+async function animateConnection(
+  connectionAnimationDataArg: Array<ConnectionAnimationDataPart>,
+  callback: () => void,
+) {
   connectionAnimationData.value = connectionAnimationDataArg
 
   await nextTick()
@@ -75,10 +175,6 @@ async function animateConnection(connectionAnimationDataArg: Array<ConnectionAni
     },
   })
 
-  // Level 2 animation: first half of the connection
-  // Level 1 animation: second half (connecting to the placed piece)
-  // Both animations consist of scaling the rectangles (or translate + scale)
-  // and removing the opacity after done
   timeline
     .add('.level2ConnectionAnimationDataPart', {
       keyframes: [
@@ -104,137 +200,53 @@ async function animateConnection(connectionAnimationDataArg: Array<ConnectionAni
     })
 }
 
-async function animateBoardClear(targetX: number, targetY: number, piecesSnapshot: number[], callback: any) {
-  // collect all non-zero pieces from the board snapshot, excluding the 9 at the target position
-  const data: BoardClearAnimationDataPart[] = []
-  for (let i = 0; i < piecesSnapshot.length; i++) {
-    if (piecesSnapshot[i] !== 0 && !(itox(i) === targetX && itoy(i) === targetY)) {
-      data.push({
-        x: itox(i),
-        y: itoy(i),
-        value: piecesSnapshot[i]!,
-      })
-    }
-  }
+// Store references to score animation callback and target element.
+// These are set by the parent component via setScoreAnimationContext.
+let currentOnScoreAnimation: ((info: ScoreAnimationInfo) => void) | null = null
+let currentOnFlyStart: (() => void) | null = null
+let currentScoreTargetEl: HTMLElement | null = null
 
-  const targetPxX = animatedPieceScale(targetX)
-  const targetPxY = animatedPieceScale(targetY)
-  const pieceSize = animatedPieceWidth.value
-  const centerX = targetPxX + pieceSize / 2
-  const centerY = targetPxY + pieceSize / 2
-
-  // Show the 9 highlight immediately so it stays visible during converge
-  nineHighlightData.value = { x: targetPxX, y: targetPxY, size: pieceSize }
-
-  // Phase 2+3: scale-up the 9 then particle burst
-  const startScaleUpAndBurst = async () => {
-    boardClearAnimationData.value = []
-    await nextTick()
-
-    const scaledSize = pieceSize * 2.5
-    const scaledX = targetPxX - (scaledSize - pieceSize) / 2
-    const scaledY = targetPxY - (scaledSize - pieceSize) / 2
-
-    createTimeline({
-      defaults: { ease: 'outBack' },
-      onComplete: async () => {
-        nineHighlightData.value = null
-        await nextTick()
-
-        // Phase 3: Particle burst
-        const particleCount = 14
-        const particles: typeof particleBurstData.value = []
-        const baseSize = pieceSize * 0.3
-        for (let i = 0; i < particleCount; i++) {
-          const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.5
-          const distance = innerWidth.value * (0.5 + Math.random() * 0.5)
-          const pSize = baseSize * (0.6 + Math.random() * 0.4)
-          particles.push({
-            x: centerX - pSize / 2,
-            y: centerY - pSize / 2,
-            targetX: centerX + Math.cos(angle) * distance - pSize / 2,
-            targetY: centerY + Math.sin(angle) * distance - pSize / 2,
-            size: pSize,
-          })
-        }
-
-        particleBurstData.value = particles
-        await nextTick()
-
-        createTimeline({
-          defaults: { ease: 'outCubic' },
-          onComplete: async () => {
-            particleBurstData.value = []
-            await nextTick()
-            callback()
-          },
-        })
-          .add('.particleBurstPart', {
-            duration: 2000,
-            keyframes: [
-              {
-                x: (el: any) => `${particles[Number(el.id)].targetX}px`,
-                y: (el: any) => `${particles[Number(el.id)].targetY}px`,
-                width: `0px`,
-                height: `0px`,
-                opacity: 0,
-              },
-            ],
-          })
-      },
-    })
-      .add('.nineHighlightPiece', {
-        duration: 250,
-        x: `${scaledX}px`,
-        y: `${scaledY}px`,
-        width: `${scaledSize}px`,
-        height: `${scaledSize}px`,
-      })
-      .add('.nineHighlightPiece', {
-        duration: 350,
-      })
-      .add('.nineHighlightPiece', {
-        duration: 150,
-        opacity: 0,
-      })
-  }
-
-  // Phase 1: converge all other pieces toward the 9, or skip if none
-  if (data.length > 0) {
-    boardClearAnimationData.value = data
-    await nextTick()
-
-    const convergeTimeline = createTimeline({
-      defaults: {
-        ease: 'inOutQuad',
-      },
-      onComplete: startScaleUpAndBurst,
-    })
-
-    convergeTimeline
-      .add('.boardClearAnimationDataPart', {
-        duration: 600,
-        keyframes: [
-          {
-            x: `${targetPxX}px`,
-            y: `${targetPxY}px`,
-            width: `0px`,
-            height: `0px`,
-            opacity: 0.0,
-          },
-        ],
-      }, 200)
-  }
-  else {
-    await nextTick()
-    startScaleUpAndBurst()
-  }
+function setScoreAnimationContext(
+  onScoreAnimation: ((info: ScoreAnimationInfo) => void) | null,
+  onFlyStart: (() => void) | null,
+  scoreTargetEl: HTMLElement | null,
+) {
+  currentOnScoreAnimation = onScoreAnimation
+  currentOnFlyStart = onFlyStart
+  currentScoreTargetEl = scoreTargetEl
 }
+
+/**
+ * Called by the store when a milestone is reached (new highest number or count increase).
+ * Flies the milestone tile from the board to the score container, then calls doneCallback.
+ */
+function handleMilestone(scoreInfo: ScoreAnimationInfo, doneCallback: () => void) {
+  // Notify parent to suppress watchers during the fly
+  if (currentOnFlyStart) {
+    currentOnFlyStart()
+  }
+
+  animateFlyToScore(
+    scoreInfo.sourceX,
+    scoreInfo.sourceY,
+    scoreInfo.value,
+    currentScoreTargetEl,
+    () => {
+      // Trigger score animation on arrival
+      if (currentOnScoreAnimation) {
+        currentOnScoreAnimation(scoreInfo)
+      }
+      doneCallback()
+    },
+  )
+}
+
+defineExpose({ setScoreAnimationContext })
 
 function place(i: number, value: number) {
   // only place if the spot is empty
   if (value === 0 && !props.unclickable)
-    emit('animatedPlace', itox(i), itoy(i), animateConnection, animateBoardClear)
+    emit('animatedPlace', itox(i), itoy(i), animateConnection, handleMilestone)
 }
 </script>
 
@@ -256,6 +268,7 @@ function place(i: number, value: number) {
   </svg>
   <svg
     v-else
+    ref="boardSvgRef"
     class="board" :viewBox="`0 0 ${props.width} ${props.width}`"
   >
     <g :transform="`translate(${props.padding}, ${props.padding})`">
@@ -282,46 +295,23 @@ function place(i: number, value: number) {
           :height="d.y === d.parentY ? animatedPieceWidth : twoAnimatedPiecesWidth"
         />
       </g>
-      <g>
-        <rect
-          v-for="(d, i) in boardClearAnimationData"
-          :id="i.toString()"
-          :key="`boardClearAnimationDataPart${i}`"
-          :class="`boardClearAnimationDataPart piece piece-${d.value}`"
-          :rx="pieceRadius"
-          :ry="pieceRadius"
-          :x="animatedPieceScale(d.x)"
-          :y="animatedPieceScale(d.y)"
-          :width="animatedPieceWidth"
-          :height="animatedPieceWidth"
-        />
-      </g>
-      <g>
-        <rect
-          v-for="(d, i) in particleBurstData"
-          :id="i.toString()"
-          :key="`particleBurstPart${i}`"
-          class="particleBurstPart piece piece-9"
-          :rx="2"
-          :ry="2"
-          :x="d.x"
-          :y="d.y"
-          :width="d.size"
-          :height="d.size"
-        />
-      </g>
-      <rect
-        v-if="nineHighlightData"
-        class="nineHighlightPiece piece piece-9"
-        :rx="pieceRadius"
-        :ry="pieceRadius"
-        :x="nineHighlightData.x"
-        :y="nineHighlightData.y"
-        :width="nineHighlightData.size"
-        :height="nineHighlightData.size"
-      />
     </g>
   </svg>
+  <!-- Flying tile overlay — positioned fixed to fly across SVG boundaries -->
+  <div
+    v-if="flyingTile"
+    class="flying-tile"
+    :class="`piece-bg-${flyingTile.value}`"
+    :style="{
+      left: `${flyingTile.x}px`,
+      top: `${flyingTile.y}px`,
+      width: `${flyingTile.width}px`,
+      height: `${flyingTile.height}px`,
+      fontSize: `${flyingTile.width * 0.35}px`,
+    }"
+  >
+    {{ flyingTile.value }}
+  </div>
 </template>
 
 <style scoped>
@@ -334,4 +324,29 @@ function place(i: number, value: number) {
 .animated-piece {
   pointer-events: none;
 }
+
+.flying-tile {
+  position: fixed;
+  border-radius: 6px;
+  z-index: 1000;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: var(--game-foreground-color);
+}
+</style>
+
+<style>
+/* Flying tile background colors — uses same CSS custom properties as SVG piece fills */
+.piece-bg-1 { background-color: var(--piece-color-1); }
+.piece-bg-2 { background-color: var(--piece-color-2); }
+.piece-bg-3 { background-color: var(--piece-color-3); }
+.piece-bg-4 { background-color: var(--piece-color-4); }
+.piece-bg-5 { background-color: var(--piece-color-5); }
+.piece-bg-6 { background-color: var(--piece-color-6); }
+.piece-bg-7 { background-color: var(--piece-color-7); }
+.piece-bg-8 { background-color: var(--piece-color-8); }
+.piece-bg-9 { background-color: var(--piece-color-9); }
 </style>

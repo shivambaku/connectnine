@@ -1,4 +1,4 @@
-import type { ClientGameState, ClientPlayer, ConnectionAnimationDataPart } from '~~/shared/types/interfaces'
+import type { ClientGameState, ClientPlayer, ConnectionAnimationDataPart, ScoreAnimationInfo } from '~~/shared/types/interfaces'
 import { onKeyDown, useStorage } from '@vueuse/core'
 import { Filter } from 'bad-words'
 import { defineStore } from 'pinia'
@@ -24,6 +24,9 @@ export const useGameStore = defineStore('gameStore', () => {
     })
     let animating = false
     let placedCachedGameState: string | null = null
+
+    // Track the highest number before the current move for detecting milestones
+    let preMovHighestNumber = 0
 
     // const load = async () => {
     //   const clientPlayer = await $fetch('/api/game/load', { method: 'post', body: { playerId: playerId.value } });
@@ -133,7 +136,10 @@ export const useGameStore = defineStore('gameStore', () => {
         }
     }
 
-    const animatedPlaceHelper = (x: number, y: number, value: number, animateConnection: any, animateBoardClear: any) => {
+    type AnimateConnectionFn = (data: ConnectionAnimationDataPart[], callback: () => void) => void
+    type OnMilestoneFn = (scoreInfo: ScoreAnimationInfo, doneCallback: () => void) => void
+
+    const animatedPlaceHelper = (x: number, y: number, value: number, animateConnection: AnimateConnectionFn, onMilestone: OnMilestoneFn) => {
         const index = xytoi(x, y)
 
         // place the piece
@@ -155,19 +161,21 @@ export const useGameStore = defineStore('gameStore', () => {
 
             const newValue = value + 1
 
-            // reaching 9 clears the entire board with animation
+            // reaching 9: clear the 9 cell (connected tiles already cleared above), then fly it
             if (newValue >= 9) {
                 gameState.value.boardPieces[index] = 9
 
+                // Reaching 9 is always a milestone
+                const scoreInfo: ScoreAnimationInfo = 9 > preMovHighestNumber
+                    ? { type: 'new_highest', value: 9, sourceX: x, sourceY: y }
+                    : { type: 'count_increase', value: 9, sourceX: x, sourceY: y }
+
                 animateConnection(connectionAnimationData, () => {
-                    // take a snapshot of the board before clearing for the animation
-                    const piecesSnapshot = [...gameState.value.boardPieces]
+                    // Clear only the 9 cell from the board
+                    gameState.value.boardPieces[index] = 0
 
-                    // clear the board data
-                    for (let i = 0; i < gameState.value.boardPieces.length; i++)
-                        gameState.value.boardPieces[i] = 0
-
-                    animateBoardClear(x, y, piecesSnapshot, () => {
+                    // Fly the 9 to the score container
+                    onMilestone(scoreInfo, () => {
                         animating = false
                         setPlacedCacheToGameState()
                     })
@@ -177,27 +185,43 @@ export const useGameStore = defineStore('gameStore', () => {
                 gameState.value.boardPieces[index] = newValue
 
                 animateConnection(connectionAnimationData, () => {
-                    animatedPlaceHelper(x, y, newValue, animateConnection, animateBoardClear)
+                    // Recurse: the new value might chain into more connections
+                    animatedPlaceHelper(x, y, newValue, animateConnection, onMilestone)
                 })
             }
         }
         else {
+            // No more connections — chain has ended.
+            // Check if this value is a new highest number — fly it to the score.
+            // Count increases (same highest) are handled in-place by watchers in index.vue.
+            if (value > preMovHighestNumber) {
+                const scoreInfo: ScoreAnimationInfo = { type: 'new_highest', value, sourceX: x, sourceY: y }
+                onMilestone(scoreInfo, () => {
+                    animating = false
+                    setPlacedCacheToGameState()
+                })
+                return
+            }
+
             animating = false
             // set real placed data received from the server
             setPlacedCacheToGameState()
         }
     }
 
-    const animatedPlace = (x: number, y: number, animateConnection: any, animateBoardClear: any) => {
+    const animatedPlace = (x: number, y: number, animateConnection: AnimateConnectionFn, onMilestone: OnMilestoneFn) => {
         if (animating || awaitingServer.value)
             return
 
         animating = true
 
+        // Snapshot the pre-move highest number for milestone detection
+        preMovHighestNumber = gameState.value.highestNumber
+
         placeInCacheIfAnimating(x, y)
 
         // run the game logic on the client as well while waiting for the real response
-        animatedPlaceHelper(x, y, gameState.value.selectorPieces[selectedIndex.value], animateConnection, animateBoardClear)
+        animatedPlaceHelper(x, y, gameState.value.selectorPieces[selectedIndex.value], animateConnection, onMilestone)
 
         // set the selected piece to the next piece
         gameState.value.selectorPieces[selectedIndex.value] = gameState.value.nextSelectorPiece

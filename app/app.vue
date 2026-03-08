@@ -57,6 +57,17 @@ function donate() {
   --background-color: #dadada;
   --game-background-color: #8DD3C7;
   --game-foreground-color: #2c3e50;
+
+  /* Piece colors */
+  --piece-color-1: #FFFFB3;
+  --piece-color-2: #BEBADA;
+  --piece-color-3: #FB8072;
+  --piece-color-4: #80B1D3;
+  --piece-color-5: #FDB462;
+  --piece-color-6: #B3DE69;
+  --piece-color-7: #FCCDE5;
+  --piece-color-8: #D9D9D9;
+  --piece-color-9: #BC80BD;
 }
 
 :root.dark {

@@ -146,10 +146,8 @@ async function animateFlyToScore(
 
   createTimeline({
     defaults: { ease: 'inOutCubic' },
-    onComplete: async () => {
+    onComplete: () => {
       flyingTile.value = null
-      await nextTick()
-      callback()
     },
   })
     .add(el, {
@@ -160,6 +158,7 @@ async function animateFlyToScore(
       height: `${targetSize}px`,
       fontSize: `${targetSize * 0.35}px`,
     })
+    .call(() => callback())
     .add(el, {
       duration: 150,
       opacity: 0,

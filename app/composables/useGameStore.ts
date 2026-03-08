@@ -137,7 +137,7 @@ export const useGameStore = defineStore('gameStore', () => {
     }
 
     type AnimateConnectionFn = (data: ConnectionAnimationDataPart[], callback: () => void) => void
-    type OnMilestoneFn = (scoreInfo: ScoreAnimationInfo, doneCallback: () => void) => void
+    type OnMilestoneFn = (scoreInfo: ScoreAnimationInfo) => void
 
     const animatedPlaceHelper = (x: number, y: number, value: number, animateConnection: AnimateConnectionFn, onMilestone: OnMilestoneFn) => {
         const index = xytoi(x, y)
@@ -174,11 +174,13 @@ export const useGameStore = defineStore('gameStore', () => {
                     // Clear only the 9 cell from the board
                     gameState.value.boardPieces[index] = 0
 
-                    // Fly the 9 to the score container
-                    onMilestone(scoreInfo, () => {
-                        animating = false
-                        setPlacedCacheToGameState()
-                    })
+                    // Unblock the board immediately so the player can place the next piece.
+                    // The fly-to-score animation is purely cosmetic and runs independently.
+                    animating = false
+                    setPlacedCacheToGameState()
+
+                    // Fire-and-forget: fly the 9 to the score container
+                    onMilestone(scoreInfo)
                 })
             }
             else {
@@ -192,20 +194,16 @@ export const useGameStore = defineStore('gameStore', () => {
         }
         else {
             // No more connections — chain has ended.
-            // Check if this value is a new highest number — fly it to the score.
+            // Unblock the board immediately.
+            animating = false
+            setPlacedCacheToGameState()
+
+            // Check if this value is a new highest number — fly it to the score (cosmetic).
             // Count increases (same highest) are handled in-place by watchers in index.vue.
             if (value > preMovHighestNumber) {
                 const scoreInfo: ScoreAnimationInfo = { type: 'new_highest', value, sourceX: x, sourceY: y }
-                onMilestone(scoreInfo, () => {
-                    animating = false
-                    setPlacedCacheToGameState()
-                })
-                return
+                onMilestone(scoreInfo)
             }
-
-            animating = false
-            // set real placed data received from the server
-            setPlacedCacheToGameState()
         }
     }
 

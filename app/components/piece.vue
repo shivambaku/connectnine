@@ -53,14 +53,18 @@ const styleClass = computed(() => {
 
 .piece.piece-0 {
   fill: #1F78B4;
-  opacity: 0.20;
+  fill-opacity: 0.20;
 }
 
 @media(hover: hover) and (pointer: fine) {
   .game:not(.paused):not(.loading) .piece.piece-0:hover {
-    opacity: 1.0;
+    fill-opacity: 1.0;
     cursor: pointer;
   }
+}
+
+.game:not(.paused):not(.loading) .piece.piece-0:active {
+  fill-opacity: 0.6;
 }
 
 .piece.piece-1 {

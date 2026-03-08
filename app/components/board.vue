@@ -19,7 +19,7 @@ const emit = defineEmits<{
     x: number,
     y: number,
     animateConnection: (data: ConnectionAnimationDataPart[], callback: () => void) => void,
-    onMilestone: (scoreInfo: ScoreAnimationInfo, doneCallback: () => void) => void,
+    onMilestone: (scoreInfo: ScoreAnimationInfo) => void,
   ]
 }>()
 
@@ -247,9 +247,10 @@ function setScoreAnimationContext(
 
 /**
  * Called by the store when a milestone is reached (new highest number or count increase).
- * Flies the milestone tile from the board to the score container, then calls doneCallback.
+ * Flies the milestone tile from the board to the score container (fire-and-forget).
+ * The board is already unblocked by the store before this is called.
  */
-function handleMilestone(scoreInfo: ScoreAnimationInfo, doneCallback: () => void) {
+function handleMilestone(scoreInfo: ScoreAnimationInfo) {
   // Notify parent to suppress watchers during the fly
   if (currentOnFlyStart) {
     currentOnFlyStart()
@@ -261,9 +262,7 @@ function handleMilestone(scoreInfo: ScoreAnimationInfo, doneCallback: () => void
     scoreInfo.value,
     currentScoreTargetEl,
     () => {
-      // Unblock the board first so the player can place the next piece
-      doneCallback()
-      // Then trigger the cosmetic score animation (pulse/counter roll)
+      // Trigger the cosmetic score animation (pulse/counter roll)
       if (currentOnScoreAnimation) {
         currentOnScoreAnimation(scoreInfo)
       }
@@ -317,7 +316,7 @@ function place(i: number, value: number) {
           :id="i.toString()"
           :ref="(el: any) => { if (el) connectionRefs[i] = el as SVGRectElement }"
           :key="`connectionAnimationDataPart${i}`"
-          :class="`piece piece-${d.value}`"
+          :class="`animated-piece piece piece-${d.value}`"
           :rx="pieceRadius"
           :ry="pieceRadius"
           :x="d.x < d.parentX ? animatedPieceScale(d.x) : animatedPieceScale(d.parentX)"
@@ -351,6 +350,7 @@ function place(i: number, value: number) {
   border-radius: 10px;
   background: var(--game-background-color);
   margin: 10px 0px;
+  touch-action: manipulation;
 }
 
 .animated-piece {

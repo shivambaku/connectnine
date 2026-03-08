@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "migrate": "prisma generate && prisma migrate deploy",
+    "migrate": "nuxt prepare && prisma generate && prisma migrate deploy",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview"

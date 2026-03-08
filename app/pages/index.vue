@@ -274,6 +274,8 @@ async function newGameConfirmationClick() {
     max-width: 400px;
     min-width: 300px;
     margin: 0 auto;
+    touch-action: manipulation;
+    user-select: none;
 }
 
 .game .button {

@@ -350,7 +350,6 @@ function place(i: number, value: number) {
   border-radius: 10px;
   background: var(--game-background-color);
   margin: 10px 0px;
-  touch-action: manipulation;
 }
 
 .animated-piece {

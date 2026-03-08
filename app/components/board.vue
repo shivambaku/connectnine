@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ConnectionAnimationDataPart } from '~~/shared/types/interfaces'
-import anime from 'animejs/lib/anime.es'
+import { createTimeline } from 'animejs'
 
 const props = defineProps<{
   loading: boolean
@@ -54,10 +54,12 @@ async function animateConnection(connectionAnimationDataArg: Array<ConnectionAni
 
   await nextTick()
 
-  const timeline = anime.timeline({
-    easing: 'linear',
-    duration: 150,
-    complete: async () => {
+  const timeline = createTimeline({
+    defaults: {
+      ease: 'linear',
+      duration: 150,
+    },
+    onComplete: async () => {
       connectionAnimationData.value = []
       await nextTick()
       callback()
@@ -66,11 +68,10 @@ async function animateConnection(connectionAnimationDataArg: Array<ConnectionAni
 
   // Level 2 animation: first half of the connection
   // Level 1 animation: second half (connecting to the placed piece)
-  // Both animation consist of scaling the rectangles (or translate + scale)
+  // Both animations consist of scaling the rectangles (or translate + scale)
   // and removing the opacity after done
   timeline
-    .add({
-      targets: '.level2ConnectionAnimationDataPart',
+    .add('.level2ConnectionAnimationDataPart', {
       keyframes: [
         {
           width: `${animatedPieceWidth.value}px`,
@@ -81,8 +82,7 @@ async function animateConnection(connectionAnimationDataArg: Array<ConnectionAni
         { opacity: 0.0, duration: 0 },
       ],
     })
-    .add({
-      targets: '.level1ConnectionAnimationDataPart',
+    .add('.level1ConnectionAnimationDataPart', {
       keyframes: [
         {
           width: `${animatedPieceWidth.value}px`,
@@ -90,9 +90,8 @@ async function animateConnection(connectionAnimationDataArg: Array<ConnectionAni
           x: (el: any) => `${animatedPieceScale(connectionAnimationData.value[el.id].parentX)}px`,
           y: (el: any) => `${animatedPieceScale(connectionAnimationData.value[el.id].parentY)}px`,
         },
-        { opacity: 0.0, duration: 50 },
+        { opacity: 0.0, duration: 100 },
       ],
-      endDelay: 50,
     })
 }
 

@@ -226,6 +226,11 @@ const loading = computed(() => leaderboard.value == null);
   align-items: center;
 }
 
+.skeleton .leaderboard-rank,
+.skeleton .leaderboard-info {
+  min-height: 46px;
+}
+
 @media(hover: hover) and (pointer: fine) {
   .leaderboard:not(.skeleton) .leaderboard-info:hover {
     background: rgba(31, 120, 180, 0.5);

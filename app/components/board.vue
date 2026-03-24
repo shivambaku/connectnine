@@ -73,8 +73,8 @@ function animatedPieceScale(x: number) {
 }
 
 /**
- * Convert board grid coordinates to screen (page) pixel coordinates.
- * Returns the center point of the tile in page coordinates.
+ * Convert board grid coordinates to screen (viewport) pixel coordinates.
+ * Returns the center point of the tile in viewport coordinates.
  */
 function boardCoordsToScreen(gridX: number, gridY: number): { x: number, y: number, size: number } {
   if (!boardSvgRef.value) return { x: 0, y: 0, size: 0 }
@@ -128,10 +128,16 @@ async function animateFlyToScore(
   const deltaX = targetLeft - startX
   const deltaY = targetTop - startY
 
+  // On Safari, getBoundingClientRect() returns visual viewport coordinates,
+  // but position:fixed anchors to the layout viewport. Compensate for the
+  // offset between the two viewports when the page is pinch-zoomed.
+  const vvOffsetX = window.visualViewport?.offsetLeft ?? 0
+  const vvOffsetY = window.visualViewport?.offsetTop ?? 0
+
   flyingTile.value = {
     value,
-    x: startX,
-    y: startY,
+    x: startX + vvOffsetX,
+    y: startY + vvOffsetY,
     width: tileSize,
     height: tileSize,
   }
